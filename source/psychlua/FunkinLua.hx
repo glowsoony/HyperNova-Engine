@@ -875,7 +875,6 @@ class FunkinLua {
 			game.ratingFC = value;
 			game.setOnScripts('ratingFC', game.ratingFC);
 		});
-		Lua_helper.add_callback(lua, "updateScoreText", function() game.updateScoreText());
 		Lua_helper.add_callback(lua, "getMouseX", function(?camera:String = 'game') {
 			var cam:FlxCamera = LuaUtils.cameraFromString(camera);
 			return FlxG.mouse.getScreenPosition(cam).x;
