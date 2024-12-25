@@ -287,6 +287,18 @@ class PlayState extends MusicBeatState
 	public var camProxy:FlxCamera;
 	public var camVisuals:FlxCamera;
 
+	public var marvelouss:Int = 0;
+	public var sicks:Int = 0;
+	public var goods:Int = 0;
+	public var bads:Int = 0;
+	public var shits:Int = 0;
+
+	public var fantastics:Int = 0;
+	public var excelents:Int = 0;
+	public var greats:Int = 0;
+	public var decents:Int = 0;
+	public var wayoffs:Int = 0;
+
 	override public function create()
 	{
 		this.variables = new JoinedLuaVariables();
