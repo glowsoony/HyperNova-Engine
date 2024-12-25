@@ -1,9 +1,8 @@
 {
 	"songRating": 4,
 	"albumId": "expansion2",
-	"freeplayCharacter": "",
+	"freeplayCharacter": "bf",
 	"freeplaySongLength": 126.967732,
 	"freeplayPrevEnd": 20,
-	"altInstrumentalSongs": "",
 	"freeplayPrevStart": 0
 }
