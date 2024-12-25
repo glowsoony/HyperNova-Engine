@@ -80,34 +80,64 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 30;
 		addOption(option);
 
+		var option:Option = new Option('Marvelous! Hit Window',
+			'Changes the amount of time you have\nfor hitting a "Marvelous!!" in milliseconds.',
+			'marvelousWindow',
+			FLOAT);
+		option.displayFormat = '%vms';
+		option.scrollSpeed = 15;
+		option.minValue = 10;
+		option.decimals = 1;
+		option.changeValue = 0.1; 
+		option.maxValue = 22.5;
+		addOption(option);
+
 		var option:Option = new Option('Sick! Hit Window',
 			'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.',
 			'sickWindow',
-			INT);
+			FLOAT);
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 15;
 		option.minValue = 15;
+		option.decimals = 1;
+		option.changeValue = 0.1; 
 		option.maxValue = 45;
 		addOption(option);
 
 		var option:Option = new Option('Good Hit Window',
 			'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.',
 			'goodWindow',
-			INT);
+			FLOAT);
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 30;
 		option.minValue = 15;
+		option.decimals = 1;
+		option.changeValue = 0.1; 
 		option.maxValue = 90;
 		addOption(option);
 
 		var option:Option = new Option('Bad Hit Window',
 			'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.',
 			'badWindow',
-			INT);
+			FLOAT);
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 60;
 		option.minValue = 15;
+		option.decimals = 1;
+		option.changeValue = 0.1; 
 		option.maxValue = 135;
+		addOption(option);
+
+		var option:Option = new Option('Shit Hit Window',
+			'Changes the amount of time you have\nfor hitting a "Shit" in milliseconds.',
+			'shitWindow',
+			FLOAT);
+		option.displayFormat = '%vms';
+		option.scrollSpeed = 60;
+		option.minValue = 150;
+		option.maxValue = 166;
+		option.decimals = 1;
+		option.changeValue = 0.1; 
 		addOption(option);
 
 		var option:Option = new Option('Safe Frames',

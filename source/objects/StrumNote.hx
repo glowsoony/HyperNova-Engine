@@ -7,6 +7,9 @@ import shaders.RGBPalette.RGBShaderReference;
 
 class StrumNote extends FlxSprite
 {
+	public var arrowMesh:modcharting.NewModchartArrow;
+	public var z:Float = 0;
+	public var arrowPath:SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
 	public var resetAnim:Float = 0;
 	private var noteData:Int = 0;
@@ -14,6 +17,8 @@ class StrumNote extends FlxSprite
 	public var downScroll:Bool = false;
 	public var sustainReduce:Bool = true;
 	private var player:Int;
+
+	public var notITGStrums:Bool = false;
 	
 	public var texture(default, set):String = null;
 	private function set_texture(value:String):String {
@@ -24,9 +29,23 @@ class StrumNote extends FlxSprite
 		return value;
 	}
 
+	// Call this to create a mesh
+	public function setupMesh():Void
+	{
+		if (arrowMesh == null)
+		{
+			arrowMesh = new modcharting.NewModchartArrow();
+			arrowMesh.spriteGraphic = this;
+			arrowMesh.doDraw = false;
+			arrowMesh.copySpriteGraphic = false;
+		}
+		arrowMesh.setUp();
+	}
+
 	public var useRGBShader:Bool = true;
 	public function new(x:Float, y:Float, leData:Int, player:Int) {
 		animation = new PsychAnimationController(this);
+		notITGStrums = (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
 
 		rgbShader = new RGBShaderReference(this, Note.initializeGlobalRGBShader(leData));
 		rgbShader.enabled = false;
@@ -63,6 +82,12 @@ class StrumNote extends FlxSprite
 		playAnim('static');
 	}
 
+	override function updateColorTransform():Void
+	{
+		if (arrowMesh != null) arrowMesh.updateCol();
+		super.updateColorTransform();
+	}
+
 	public function reloadNote()
 	{
 		var lastAnim:String = null;
@@ -70,10 +95,10 @@ class StrumNote extends FlxSprite
 
 		if(PlayState.isPixelStage)
 		{
-			loadGraphic(Paths.image('pixelUI/' + texture));
+			loadGraphic(Paths.image('pixelUI/' + texture, null, !notITGStrums));
 			width = width / 4;
 			height = height / 5;
-			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
+			loadGraphic(Paths.image('pixelUI/' + texture, null, !notITGStrums), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -104,7 +129,7 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(texture);
+			frames = Paths.getSparrowAtlas(texture, null, !notITGStrums);
 			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('blue', 'arrowDOWN');
 			animation.addByPrefix('purple', 'arrowLEFT');

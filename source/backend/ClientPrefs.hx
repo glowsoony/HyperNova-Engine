@@ -89,19 +89,33 @@ import states.TitleState;
 		'instakill' => false,
 		'practice' => false,
 		'botplay' => false,
-		'opponentplay' => false
+		'opponentplay' => false,
+		'modchart' => true
 	];
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
 	public var ratingOffset:Int = 0;
-	public var sickWindow:Int = 45;
-	public var goodWindow:Int = 90;
-	public var badWindow:Int = 135;
+	public var marvelousWindow:Float = 22.5;
+	public var sickWindow:Float = 45;
+	public var goodWindow:Float = 90;
+	public var badWindow:Float = 135;
+	public var shitWindow:Float = 180;
 	public var safeFrames:Float = 10;
 	public var guitarHeroSustains:Bool = true;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;
 	public var language:String = 'en-US';
+	public var arrowRGBQuantize:Array<Array<FlxColor>> = [
+		[0xFFFF0000, 0xFFFFFFFF, 0xFF7F0000], // 4th step
+		[0xFF0000FF, 0xFFFFFFFF, 0xFF00007F], // 8th step
+		[0xFF800080, 0xFFFFFFFF, 0xFF400040], // 12th step
+		[0xFF00FF00, 0xFFFFFFFF, 0xFF007F00], // 16th step
+		[0xFFFFFF00, 0xFFFFFFFF, 0xFF7F7F00], // 24th step
+		[0xFF00FFDD, 0xFFFFFFFF, 0xFF018573], // 32nd step
+		[0xFFFF00FF, 0xFFFFFFFF, 0xFF8A018A], // 48th step
+		[0xFFFF7300, 0xFFFFFFFF, 0xFF883D00] // 64th step
+	  ];
+	public var hudStyle:String = 'CLASSIC';
 }
 
 class ClientPrefs {

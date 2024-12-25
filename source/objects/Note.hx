@@ -9,6 +9,7 @@ import shaders.RGBPalette.RGBShaderReference;
 import objects.StrumNote;
 
 import flixel.math.FlxRect;
+import flixel.addons.effects.FlxSkewedSprite;
 
 using StringTools;
 
@@ -33,7 +34,7 @@ typedef NoteSplashData = {
  * 
  * If you want to make a custom note type, you should search for: "function set_noteType"
 **/
-class Note extends FlxSprite
+class Note extends FlxSkewedSprite
 {
 	//This is needed for the hardcoded note types to appear on the Chart Editor,
 	//It's also used for backwards compatibility with 0.1 - 0.3.2 charts.
@@ -46,6 +47,11 @@ class Note extends FlxSprite
 		'No Animation'
 	];
 
+	public var notITGNotes:Bool = false;
+
+	public var mesh:modcharting.SustainStrip = null; 
+	public var arrowMesh:modcharting.NewModchartArrow;
+	public var z:Float = 0;
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
 	public var strumTime:Float = 0;
@@ -143,6 +149,19 @@ class Note extends FlxSprite
 	}
 	public var hitsound:String = 'hitsound';
 
+	// Call this to create a mesh
+	public function setupMesh():Void
+	{
+		if (arrowMesh == null)
+		{
+			arrowMesh = new modcharting.NewModchartArrow();
+			arrowMesh.spriteGraphic = this;
+			arrowMesh.doDraw = false;
+			arrowMesh.copySpriteGraphic = false;
+		}
+		arrowMesh.setUp();
+	}
+
 	private function set_multSpeed(value:Float):Float {
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;
@@ -233,6 +252,7 @@ class Note extends FlxSprite
 		super();
 
 		animation = new PsychAnimationController(this);
+		notITGNotes = (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
 
 		antialiasing = ClientPrefs.data.antialiasing;
 		if(createdFrom == null) createdFrom = PlayState.instance;
@@ -382,11 +402,11 @@ class Note extends FlxSprite
 
 		if(PlayState.isPixelStage) {
 			if(isSustainNote) {
-				var graphic = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix);
+				var graphic = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, !notITGNotes);
 				loadGraphic(graphic, true, Math.floor(graphic.width / 4), Math.floor(graphic.height / 2));
 				originalHeight = graphic.height / 2;
 			} else {
-				var graphic = Paths.image('pixelUI/' + skinPixel + skinPostfix);
+				var graphic = Paths.image('pixelUI/' + skinPixel + skinPostfix, null, !notITGNotes);
 				loadGraphic(graphic, true, Math.floor(graphic.width / 4), Math.floor(graphic.height / 5));
 			}
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -399,7 +419,7 @@ class Note extends FlxSprite
 				offsetX -= _lastNoteOffX;
 			}
 		} else {
-			frames = Paths.getSparrowAtlas(skin);
+			frames = Paths.getSparrowAtlas(skin, null, !notITGNotes);
 			loadNoteAnims();
 			if(!isSustainNote)
 			{
@@ -460,6 +480,12 @@ class Note extends FlxSprite
 		if(animFrames.length < 1) return;
 
 		animation.addByPrefix(name, prefix, framerate, doLoop);
+	}
+
+	override function updateColorTransform():Void
+	{
+		if (arrowMesh != null) arrowMesh.updateCol();
+		super.updateColorTransform();
 	}
 
 	override function update(elapsed:Float)

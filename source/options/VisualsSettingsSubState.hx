@@ -118,6 +118,13 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 			'hideHud',
 			BOOL);
 		addOption(option);
+
+		var option:Option = new Option('HUD Style', 
+			'Style to display?',
+			'hudStyle',
+			STRING,
+			['CLASSIC', 'HITMANS']);
+		addOption(option);
 		
 		var option:Option = new Option('Time Bar:',
 			"What should the Time Bar display?",

@@ -8,6 +8,7 @@ import openfl.display.BlendMode;
 import Type.ValueType;
 
 import substates.GameOverSubstate;
+import psychlua.FunkinLua.LuaCamera;
 
 typedef LuaTweenOptions = {
 	type:FlxTweenType,
@@ -519,10 +520,70 @@ class LuaUtils
 	}
 
 	public static function cameraFromString(cam:String):FlxCamera {
-		switch(cam.toLowerCase()) {
-			case 'camhud' | 'hud': return PlayState.instance.camHUD;
-			case 'camother' | 'other': return PlayState.instance.camOther;
+		var camera:LuaCamera = getCameraByName(cam);
+		if (camera == null)
+		{
+			trace('I am null!');
+			switch(cam.toLowerCase()) {
+				case 'camhud' | 'hud': return PlayState.instance.camHUD;
+				// case 'notecameras0' | 'notes0': return PlayState.instance.noteCameras0;
+				// case 'notecameras1' | 'notes1': return PlayState.instance.noteCameras1;
+				case 'camproxy' | 'proxy': return PlayState.instance.camProxy;
+				case 'camother' | 'other': return PlayState.instance.camOther;
+				case 'caminterfaz' | 'interfaz': return PlayState.instance.camInterfaz;
+				case 'camvisuals' | 'visuals': return PlayState.instance.camVisuals;
+			}
+			
+			//modded cameras
+			if (Std.isOfType(PlayState.instance.variables.get(cam), FlxCamera)){
+				return PlayState.instance.variables.get(cam);
+			}
+			return PlayState.instance.camGame;
 		}
-		return PlayState.instance.camGame;
+		return camera.cam;
+	}
+
+	public static function getCameraByName(id:String):LuaCamera
+    {
+        if(FunkinLua.lua_Cameras.exists(id)) return FunkinLua.lua_Cameras.get(id);
+        switch(id.toLowerCase())
+        {
+            case 'camhud' | 'hud': return FunkinLua.lua_Cameras.get("hud");
+			case 'notecameras0' | 'notes0': return FunkinLua.lua_Cameras.get("notecameras0");
+			case 'notecameras1' | 'notes1': return FunkinLua.lua_Cameras.get("notecameras1");
+			case 'camproxy' | 'proxy': return FunkinLua.lua_Cameras.get("proxy");
+			case 'camother' | 'other': return FunkinLua.lua_Cameras.get("other");
+			case 'caminterfaz' | 'interfaz': return FunkinLua.lua_Cameras.get("interfaz");
+			case 'camvisuals' | 'visuals': return FunkinLua.lua_Cameras.get("visuals");
+			case 'camgame' | 'game': return FunkinLua.lua_Cameras.get('game');
+        }
+        return null;
+    }
+
+    public static function killShaders() //dead
+    {
+        for (cam in FunkinLua.lua_Cameras)
+        {
+            cam.shaders = [];
+            cam.shaderNames = [];
+        }
+    }
+
+	public static function getActorByName(id:String):Dynamic //kade to psych
+	{
+		if (FunkinLua.lua_Cameras.exists(id))
+            return FunkinLua.lua_Cameras.get(id).cam;
+		
+		// pre defined names
+		switch(id)
+		{
+			case 'boyfriend' | 'bf':
+				return PlayState.instance.boyfriend;
+		}
+
+		if (Std.parseInt(id) == null)
+			return Reflect.getProperty(getTargetInstance(), id);
+
+		return PlayState.instance.strumLineNotes.members[Std.parseInt(id)];
 	}
 }

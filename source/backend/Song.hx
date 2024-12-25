@@ -21,6 +21,8 @@ typedef SwagSong =
 	var stage:String;
 	var format:String;
 
+	@:optional var notITG:Bool;
+
 	@:optional var gameOverChar:String;
 	@:optional var gameOverSound:String;
 	@:optional var gameOverLoop:String;
