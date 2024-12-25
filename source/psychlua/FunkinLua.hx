@@ -46,6 +46,10 @@ import mobile.psychlua.Functions;
 
 import mikolka.vslice.freeplay.FreeplayState;
 
+import openfl.filters.BitmapFilter;
+import openfl.filters.ShaderFilter;
+import codenameengine.CustomCodeShader;
+
 typedef LuaCamera =
 {
     var cam:FlxCamera;
@@ -54,7 +58,7 @@ typedef LuaCamera =
 }
 
 typedef NewNote = Note; 
-typedef StrumNew = pbjects.StrumNote;
+typedef StrumNew = objects.StrumNote;
 
 class FunkinLua {
 	public var lua:State = null;

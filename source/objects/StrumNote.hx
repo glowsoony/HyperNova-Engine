@@ -4,8 +4,9 @@ import backend.animation.PsychAnimationController;
 
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
+import flixel.addons.effects.FlxSkewedSprite;
 
-class StrumNote extends FlxSprite
+class StrumNote extends FlxSkewedSprite
 {
 	public var arrowMesh:modcharting.NewModchartArrow;
 	public var z:Float = 0;

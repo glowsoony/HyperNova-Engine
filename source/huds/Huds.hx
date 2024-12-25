@@ -111,7 +111,7 @@ class Huds extends FlxGroup
 
 	var hudadded:Bool = false;
 
-	var hudStyle:String = "HITMANS";
+	var hudStyle:String = ClientPrefs?.data?.hudStyle ?? "HITMANS";
 	var hudUsed:String = null; //so it grabs the hud you want and stuff (for now only like this, in a future it will be way complex)
 	var ratingsScaleMultiplier:Float = 1.0;
 	var comboOffset:Array<Float> = [0,0];

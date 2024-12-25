@@ -3,7 +3,7 @@ package backend;
 import flixel.FlxState;
 import backend.PsychCamera;
 
-class MusicBeatState extends FlxState
+class MusicBeatState extends modcharting.ModchartMusicBeatState
 {
 	private static var currentState:MusicBeatState;
 

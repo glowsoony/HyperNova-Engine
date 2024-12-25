@@ -129,8 +129,11 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="FlxPartialSound"/>
 	<haxelib name="grig.audio" />
 	<haxelib name="funkin.vis" />
-	<haxelib name="modcharting" />
+	<haxelib name="fnf-modcharting-tools" />
 	<haxelib name="hscript-improved" />
+	<haxelib name="compiletime" />
+
+	<define name="PSYCH" />
 
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
