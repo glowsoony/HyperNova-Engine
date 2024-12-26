@@ -1987,7 +1987,7 @@ class PlayState extends MusicBeatState
 				playerStrums.add(babyArrow);
 			else
 			{
-				if(ClientPrefs.data.middleScroll && !forceRightScroll || forceMiddleScroll)
+				if(!forcedAScroll ? (ClientPrefs.data.middleScroll) : (forceMiddleScroll && !forceRightScroll))
 				{
 					babyArrow.x += 310;
 					if(i > 1) { //Up and Right
