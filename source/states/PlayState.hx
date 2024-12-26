@@ -592,6 +592,14 @@ class PlayState extends MusicBeatState
 		dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
 		gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
 
+		checkpointSprite = new BGSprite('Huds/checkpoint/checkpointVignette', -600, -480, 0.5, 0.5);
+		checkpointSprite.setGraphicSize(FlxG.width, FlxG.height);
+		checkpointSprite.updateHitbox();
+		checkpointSprite.cameras = [camOther]; //hud funny
+		checkpointSprite.screenCenter();	
+		checkpointSprite.alpha=0;
+		add(checkpointSprite);
+
 		switch (curStage)
 		{
 			case 'stage': new StageWeek1(); 						//Week 1
@@ -1606,6 +1614,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.music.pause();
 		vocals.pause();
+		opponentVocals.pause();
 		if(songPosToGoTo == 0) Conductor.songPosition = introSkip * 1000;
 		else Conductor.songPosition = songPosToGoTo;
 		notes.forEachAlive(function(daNote:Note)
@@ -1638,6 +1647,9 @@ class PlayState extends MusicBeatState
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 		vocals.pitch = playbackRate;
+		opponentVocals.time = Conductor.songPosition;
+		opponentVocals.play();
+		opponentVocals.pitch = playbackRate;
 		if (startTimer != null && startTimer.finished)
 		{
 			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", hitmansHud.getDiscordRichName(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);

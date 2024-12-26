@@ -87,7 +87,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['Set Property', "Value 1: Variable name\nValue 2: New value"],
 		['Play Sound', "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"],
 		['SetCameraBop', "Sets how camera should bop.\nValue 1: Frequency (in beats)\nValue 2: Intensity scale (1 for default)"],
-		['ZoomCamera', "An attempt to emulate V-slice camera zoom.\nNot really accurate, but whatever.\n\nValue 1: Zoom length (in steps) and zoom scale.\n[separated with ',']\n\nValue 2: Zooming ease"]
+		['ZoomCamera', "An attempt to emulate V-slice camera zoom.\nNot really accurate, but whatever.\n\nValue 1: Zoom length (in steps) and zoom scale.\n[separated with ',']\n\nValue 2: Zooming ease"],
+		['Set CheckPoint', "Value 1: (Optional) hide checkpoint"],
+		['Sustain Divider', "Value1: Value to divide\n(this event will make sustains give more or less health, have in mind this apply for player and opponent if they have drain enabled)\nDefault value = 5"]
 	];
 	
 	public static var keysArray:Array<FlxKey> = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT]; //Used for Vortex Editor

@@ -353,6 +353,9 @@ class PauseSubState extends MusicBeatSubstate
 					specialAction = RESUME;
 					inCountDown = true;
 					hideCameraOverlay(true);
+					regenMenu();
+					deleteSkipTimeText();
+					stoppedUpdatingMusic = true;
 					unPauseTimer = new FlxTimer().start(Conductor.crochet / 1000, function(hmmm:FlxTimer)
 					{
 						if (unPauseTimer.loopsLeft == 4)
@@ -379,11 +382,6 @@ class PauseSubState extends MusicBeatSubstate
 					// pauseMusic.volume = 0;
 					// pauseMusic.destroy();
 					// pauseMusic = null;
-					// menuItems = [];
-					deleteSkipTimeText();
-					stoppedUpdatingMusic = true;
-					regenMenu();
-					//close();
 				case 'Restart From Checkpoint':
 					if(PlayState.checkpointHistory.length > 0){
 						FlxG.mouse.visible = false;
@@ -644,6 +642,8 @@ class PauseSubState extends MusicBeatSubstate
 			grpMenuShit.remove(obj, true);
 			obj.destroy();
 		}
+
+		if (inCountDown) return;
 
 		for (num => str in menuItems) {
 			var item = new Alphabet(90, 320, Language.getPhrase('pause_$str', str), true);
