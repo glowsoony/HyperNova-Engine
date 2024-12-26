@@ -788,7 +788,7 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 
-		strumLineNotes.cameras = notes.cameras = [camHUD];
+		strumLineNotes.cameras = notes.cameras = grpNoteSplashes.cameras = grpHoldSplashes.cameras = [camHUD];
 
 		hitmansHud.healthBar.cameras = [camInterfaz];
 		hitmansHud.healthBarBG.cameras = [camInterfaz];
