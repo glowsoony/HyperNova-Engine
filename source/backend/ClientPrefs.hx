@@ -105,6 +105,16 @@ import states.TitleState;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;
 	public var language:String = 'en-US';
+
+	//Hitmans settings
+	public var mimicNoteAlpha:Float = 0.6;
+    public var memoryDisplay:Bool = true;
+	public var notesSkin:Array<String> = ['HITMANS', 'MIMIC', 'NONE']; //notes, hurts, holds
+	public var mineSkin:String = 'HITMANS';
+	public var userName:String = '';
+	public var isLogged:Bool = false;
+	public var quantization:Bool = false;
+	public var casualMode:Bool = false;
 	public var arrowRGBQuantize:Array<Array<FlxColor>> = [
 		[0xFFFF0000, 0xFFFFFFFF, 0xFF7F0000], // 4th step
 		[0xFF0000FF, 0xFFFFFFFF, 0xFF00007F], // 8th step
@@ -114,8 +124,28 @@ import states.TitleState;
 		[0xFF00FFDD, 0xFFFFFFFF, 0xFF018573], // 32nd step
 		[0xFFFF00FF, 0xFFFFFFFF, 0xFF8A018A], // 48th step
 		[0xFFFF7300, 0xFFFFFFFF, 0xFF883D00] // 64th step
-	  ];
+	];
+	public var hurtRGB:Array<Array<FlxColor>> = [
+		[0xFF101010, 0xFFFF0000, 0xFF990022],
+		[0xFF101010, 0xFFFF0000, 0xFF990022],
+		[0xFF101010, 0xFFFF0000, 0xFF990022],
+		[0xFF101010, 0xFFFF0000, 0xFF990022]
+	];
+	public var arrowRGB9:Array<Array<FlxColor>> = [
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+		[0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
+	];
 	public var hudStyle:String = 'CLASSIC';
+	
+	public var developerMode:Bool = false; // so they can have access to a lot of stuff (such as chart editor, modchart editor, blocked stuff and etc)
+	public var edwhakMode:Bool = false; //so i have way more stuff than devs lol (includes god mode, autoComplete and others that i'll don't say im not dumb LOL)
 }
 
 class ClientPrefs {

@@ -228,6 +228,7 @@ class FunkinLua {
 		set('shadersEnabled', ClientPrefs.data.shaders);
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
+		set('hudStyle', ClientPrefs.data.hudStyle);
 
 		// Noteskin/Splash
 		set('noteSkin', ClientPrefs.data.noteSkin);

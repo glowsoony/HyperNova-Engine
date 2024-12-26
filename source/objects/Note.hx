@@ -41,11 +41,39 @@ class Note extends FlxSkewedSprite
 	public static final defaultNoteTypes:Array<String> = [
 		'', //Always leave this one empty pls
 		'Alt Animation',
-		'Hey!',
 		'Hurt Note',
+		'HurtAgressive',
+		'Mimic Note',
+		'Invisible Hurt Note',
+		'Instakill Note',
+		'Mine Note',
+		'HD Note',
+		'Love Note',
+		'Fire Note',
 		'GF Sing',
 		'No Animation'
 	];
+
+	public static var canDamagePlayer:Bool = true; //for edwhak Instakill Notes and others :3 -Ed
+	public static var edwhakIsPlayer:Bool = false; //made to make Ed special Mechanics lmao
+
+	//added this so Hitmans game over can load this variables lmao -Ed
+	public var instakill:Bool = false;
+	public var mine:Bool = false;
+	public var ice:Bool = false;
+	public var corrupted:Bool = false;
+	public var hd:Bool = false;
+	public var love:Bool = false;
+	public var fire:Bool = false;
+	public var specialHurt:Bool = false;
+	public var hurtNote:Bool = false;
+	public var mimicNote:Bool = false;
+	public var tlove:Bool = false;
+
+	public var quantizedNotes:Bool = false;
+
+	//MAKES PUBLIC VAR NOT STATIC VAR IDIOT
+	public var sustainRGB:Bool = true; //so if it have only 1 sustain and colored it loads this LOL
 
 	public var notITGNotes:Bool = false;
 
@@ -71,6 +99,7 @@ class Note extends FlxSkewedSprite
 	public var nextNote:Note;
 
 	public var spawned:Bool = false;
+	public var isHoldEnd:Bool = false;
 
 	public var tail:Array<Note> = []; // for sustains
 	public var parent:Note;
@@ -88,6 +117,9 @@ class Note extends FlxSkewedSprite
 
 	public var rgbShader:RGBShaderReference;
 	public static var globalRgbShaders:Array<RGBPalette> = [];
+	public static var globalRgb9Shaders:Array<RGBPalette> = [];
+	public static var globalHurtRgbShaders:Array<RGBPalette> = [];
+	public static var globalQuantRgbShaders:Array<RGBPalette> = [];
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
@@ -185,10 +217,10 @@ class Note extends FlxSkewedSprite
 		return value;
 	}
 
-	public function defaultRGB()
+	public function defaultRGB(?moreThan8:Bool)
 	{
-		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[noteData];
-		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixel[noteData];
+		var arr:Array<FlxColor> = moreThan8 ? ClientPrefs.data.arrowRGB9[noteData] : ClientPrefs.data.arrowRGB[noteData];
+		if(PlayState.isPixelStage && !moreThan8) arr = ClientPrefs.data.arrowRGBPixel[noteData];
 
 		if (arr != null && noteData > -1 && noteData <= arr.length)
 		{
@@ -204,34 +236,198 @@ class Note extends FlxSkewedSprite
 		}
 	}
 
+	public function defaultRGBHurt() {
+		var arrHurt:Array<FlxColor> = ClientPrefs.data.hurtRGB[noteData];
+
+		if (arrHurt != null && noteData > -1 && noteData <= arrHurt.length)
+		{
+			rgbShader.r = arrHurt[0];
+			rgbShader.g = arrHurt[1];
+			rgbShader.b = arrHurt[2];
+		}
+		else
+		{
+			rgbShader.r = 0xFF101010;
+			rgbShader.g = 0xFFFF0000;
+			rgbShader.b = 0xFF990022;
+		}
+	}
+
+	public function defaultRGBQuant() {
+		var arrQuantRGB:Array<FlxColor> = ClientPrefs.data.arrowRGBQuantize[noteData];
+
+		if (noteData > -1 && noteData <= arrQuantRGB.length)
+		{
+			rgbShader.r = arrQuantRGB[0];
+			rgbShader.g = arrQuantRGB[0];
+			rgbShader.b = arrQuantRGB[2];
+		}	
+		else
+		{
+			rgbShader.r = 0xFFFF0000;
+			rgbShader.g = 0xFF00FF00;
+			rgbShader.b = 0xFF0000FF;
+		}
+	}
+
 	private function set_noteType(value:String):String {
 		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
 		defaultRGB();
 
 		if(noteData > -1 && noteType != value) {
 			switch(value) {
-				case 'Hurt Note':
+				case 'Hurt Note' | 'HurtAgressive':
+					var isAgressive:Bool = value == 'HurtAgressive';
+					defaultRGBHurt();
 					ignoreNote = mustPress;
-					//reloadNote('HURTNOTE_assets');
+					if(ClientPrefs.data.notesSkin[1] != 'MIMIC') {
+						reloadNote('', 'Skins/Hurts/'+ClientPrefs.data.notesSkin[1]+'-HURT_assets');				
+					}
+					if (!isAgressive){
+						copyAlpha=false;
+						alpha=0.55; //not fully invisible but yeah
+					}
 					//this used to change the note texture to HURTNOTE_assets.png,
 					//but i've changed it to something more optimized with the implementation of RGBPalette:
-
-					// note colors
-					rgbShader.r = 0xFF101010;
-					rgbShader.g = 0xFFFF0000;
-					rgbShader.b = 0xFF990022;
 
 					// splash data and colors
 					//noteSplashData.r = 0xFFFF0000;
 					//noteSplashData.g = 0xFF101010;
 					noteSplashData.texture = 'noteSplashes-electric';
 
+					if(isSustainNote) {
+						if (isAgressive)
+							missHealth = 0.2;
+						else
+							missHealth = 0.1;
+					} else {
+						if (isAgressive)
+							missHealth = 0.5;
+						else
+							missHealth = 0.3;
+					}
+					sustainRGB = true;
+					hurtNote = true;
+
 					// gameplay data
 					lowPriority = true;
-					missHealth = isSustainNote ? 0.25 : 0.1;
 					hitCausesMiss = true;
 					hitsound = 'cancelMenu';
 					hitsoundChartEditor = false;
+				case 'Invisible Hurt Note':
+					ignoreNote = mustPress;
+					copyAlpha=false;
+					alpha=0; //Makes them invisible.
+
+					rgbShader.r = 0xFF101010;
+					rgbShader.g = 0xFFFF0000;
+					rgbShader.b = 0xFF990022;
+
+					lowPriority = true;
+					if(isSustainNote) {
+						missHealth = 0.05;
+					} else {
+						missHealth = 0.15;
+					}
+					sustainRGB = true;
+					hurtNote = true;
+					specialHurt = true;
+					hitCausesMiss = true;
+				case 'Mimic Note':
+					ignoreNote = mustPress;
+					copyAlpha=false;
+					alpha=ClientPrefs.data.mimicNoteAlpha; //not fully invisible but yeah
+					lowPriority = true;
+
+					if(isSustainNote) {
+						missHealth = 0.1;
+					} else {
+						missHealth = 0.3;
+					}
+					mimicNote = true;
+					hitCausesMiss = true;
+				case 'Instakill Note':
+					ignoreNote = mustPress;
+					reloadNote('', 'Skins/Notes/INSTAKILLNOTE_assets');
+					rgbShader.enabled = false;
+					hitCausesMiss = !edwhakIsPlayer;
+					instakill = !edwhakIsPlayer;
+					// texture = 'INSTAKILLNOTE_assets';
+					lowPriority = true;
+					if(isSustainNote) {
+						missHealth = !hitCausesMiss ? 0 : 4; //doesn't kill ed
+						hitHealth = 0.35; //player doesn't get anything more than death
+					} else {
+						missHealth = !hitCausesMiss ? 0 : 4; //doesn't kill ed
+						hitHealth = 0.2; //player doesn't get anything more than death
+					}
+				case 'Mine Note':
+					ignoreNote = mustPress;
+					reloadNote('', 'Skins/Misc/'+ClientPrefs.data.mineSkin+'/MINENOTE_assets');
+					rgbShader.enabled = false;
+					// texture = 'MINENOTE_assets';
+					lowPriority = true;
+					if(isSustainNote) {
+						missHealth = 0.16;
+					} else {
+						missHealth = 0.8;
+					}
+					mine = true;
+					hitCausesMiss = true;
+					//not used since in Lua you can load that variables too lmao
+					//maybe in a future i'll port it to Haxe lmao -Ed
+				case 'HD Note':
+					reloadNote('', 'Skins/Notes/HDNOTE_assets');
+					rgbShader.enabled = false;
+					// texture = 'HDNOTE_assets';
+					if(isSustainNote) {
+						missHealth = 0.2;
+					} else {
+						missHealth = 1;
+					}
+					hd = true;
+					hitCausesMiss = false;
+				case 'Love Note':
+					ignoreNote = mustPress;
+					reloadNote('', 'Skins/Notes/LOVENOTE_assets');
+					rgbShader.enabled = false;
+					// texture = 'LOVENOTE_assets';
+					if (!edwhakIsPlayer){
+						if(isSustainNote) {
+							hitHealth = 0.5;
+						} else {
+							hitHealth = 0.5;
+						}
+					}
+					if (edwhakIsPlayer){
+					    love = true;
+						if(isSustainNote) {
+							hitHealth = 0;
+						} else {
+							hitHealth = 0;
+						}
+					}
+				case 'Fire Note':
+					ignoreNote = mustPress;
+					reloadNote('', 'Skins/Notes/FIRENOTE_assets');
+					rgbShader.enabled = false;
+					// texture = 'FIRENOTE_assets';
+					if (!edwhakIsPlayer){
+						if(isSustainNote) {
+							hitHealth = 0.1;
+						} else {
+							hitHealth = 0.1;
+						}
+					}
+					if (edwhakIsPlayer){
+						fire = true;
+						if(isSustainNote) {
+							hitHealth = -0.35;
+						} else {
+							hitHealth = -0.7;
+						}
+						fire = true;
+					}
 				case 'Alt Animation':
 					animSuffix = '-alt';
 				case 'No Animation':
@@ -275,7 +471,8 @@ class Note extends FlxSkewedSprite
 
 		if(noteData > -1)
 		{
-			rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
+			if (quantizedNotes) rgbShader = new RGBShaderReference(this, !hurtNote ? initializeGlobalQuantRBShader(noteData) : initializeGlobalHurtRGBShader(noteData));
+			else rgbShader = new RGBShaderReference(this, !hurtNote ? initializeGlobalRGBShader(noteData, false) : initializeGlobalHurtRGBShader(noteData));
 			if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) rgbShader.enabled = false;
 			texture = '';
 
@@ -303,6 +500,14 @@ class Note extends FlxSkewedSprite
 			copyAngle = false;
 
 			animation.play(colArray[noteData % colArray.length] + 'holdend');
+
+			if (ClientPrefs.data.notesSkin[0] == 'NOTITG'){ //make sure the game only forces this for notITG sking ig?
+				sustainRGB = false;
+			}else{
+				sustainRGB = true;
+			}
+
+			rgbShader.enabled = sustainRGB;
 
 			updateHitbox();
 
@@ -341,30 +546,75 @@ class Note extends FlxSkewedSprite
 		x += offsetX;
 	}
 
-	public static function initializeGlobalRGBShader(noteData:Int)
+	public static function initializeGlobalRGBShader(noteData:Int, ?moreThan8:Bool)
 	{
-		if(globalRgbShaders[noteData] == null)
+		if (moreThan8)
+		{
+			if(globalRgb9Shaders[noteData] == null)
+			{
+				var newRGB:RGBPalette = new RGBPalette();
+				globalRgb9Shaders[noteData] = newRGB;
+
+				var arr:Array<FlxColor> = (!PlayState.isPixelStage) ? ClientPrefs.data.arrowRGB[noteData] : ClientPrefs.data.arrowRGBPixel[noteData];
+				if (noteData > -1 && noteData <= arr.length)
+				{
+					newRGB.r = arr[0];
+					newRGB.g = arr[1];
+					newRGB.b = arr[2];
+				}
+			}
+		}else{
+			if(globalRgbShaders[noteData] == null)
+			{
+				var newRGB:RGBPalette = new RGBPalette();
+				globalRgbShaders[noteData] = newRGB;
+
+				var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[noteData];
+				if (noteData > -1 && noteData <= arr.length)
+				{
+					newRGB.r = arr[0];
+					newRGB.g = arr[1];
+					newRGB.b = arr[2];
+				}
+			}
+		}
+		return moreThan8 ? globalRgb9Shaders[noteData] : globalRgbShaders[noteData];
+	}
+	public static function initializeGlobalHurtRGBShader(noteData:Int)
+	{
+		if(globalHurtRgbShaders[noteData] == null)
 		{
 			var newRGB:RGBPalette = new RGBPalette();
-			var arr:Array<FlxColor> = (!PlayState.isPixelStage) ? ClientPrefs.data.arrowRGB[noteData] : ClientPrefs.data.arrowRGBPixel[noteData];
-			
-			if (arr != null && noteData > -1 && noteData <= arr.length)
+			globalHurtRgbShaders[noteData] = newRGB;
+
+			var arr:Array<FlxColor> = ClientPrefs.data.hurtRGB[noteData];
+			if (noteData > -1 && noteData <= arr.length)
 			{
 				newRGB.r = arr[0];
 				newRGB.g = arr[1];
 				newRGB.b = arr[2];
 			}
-			else
-			{
-				newRGB.r = 0xFFFF0000;
-				newRGB.g = 0xFF00FF00;
-				newRGB.b = 0xFF0000FF;
-			}
-			
-			globalRgbShaders[noteData] = newRGB;
 		}
-		return globalRgbShaders[noteData];
+		return globalHurtRgbShaders[noteData];
 	}
+	public static function initializeGlobalQuantRBShader(noteData:Int)
+	{
+		if(globalQuantRgbShaders[noteData] == null)
+		{
+			var newRGB:RGBPalette = new RGBPalette();
+			globalQuantRgbShaders[noteData] = newRGB;
+
+			var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBQuantize[noteData];
+
+			if (noteData > -1 && noteData <= arr.length)
+			{
+				newRGB.r = arr[0];
+				newRGB.g = arr[1];
+				newRGB.b = arr[2];
+			}
+		}
+		return globalQuantRgbShaders[noteData];
+	}	
 
 	var _lastNoteOffX:Float = 0;
 	static var _lastValidChecked:String; //optimization
@@ -379,7 +629,7 @@ class Note extends FlxSkewedSprite
 		{
 			skin = PlayState.SONG != null ? PlayState.SONG.arrowSkin : null;
 			if(skin == null || skin.length < 1)
-				skin = defaultNoteSkin + postfix;
+				skin = 'Skins/Notes/'+ClientPrefs.data.notesSkin[0]+'/NOTE_assets';
 		}
 		else rgbShader.enabled = false;
 
@@ -435,6 +685,8 @@ class Note extends FlxSkewedSprite
 
 		if(animName != null)
 			animation.play(animName, true);
+
+		updateHitbox();
 	}
 
 	public static function getNoteSkinPostfix()
@@ -584,6 +836,88 @@ class Note extends FlxSkewedSprite
 			}
 			clipRect = swagRect;
 		}
+	}
+
+	public function setCustomColor(type:String = 'quant', disableQuant:Bool)
+	{
+		var beat:Float = 0;
+		var dataStuff:Float = 0;
+		var col:FlxColor = 0xFFFFD700;
+		var col3:FlxColor = 0xFFFFD700;
+		var col2:FlxColor = 0xFFFFD700;
+
+		var bpmChanges = backend.Conductor.bpmChangeMap;
+		var currentBPM = states.PlayState.SONG.bpm;
+		var newStrumTime = strumTime;
+		var newTime = newStrumTime;
+		for (i in 0...bpmChanges.length)
+			if (newStrumTime > bpmChanges[i].songTime){
+				currentBPM = bpmChanges[i].bpm;
+				newTime = newStrumTime - bpmChanges[i].songTime;
+			}
+		if (rgbShader.enabled && !hurtNote && !disableQuant){
+			dataStuff = ((currentBPM * (newTime - ClientPrefs.data.noteOffset)) / 1000 / 60);
+			beat = round(dataStuff * 48, 0);
+			if (!isSustainNote){
+				if(beat%(192/4)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[0][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[0][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[0][2];
+				}
+				else if(beat%(192/8)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[1][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[1][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[1][2];
+				}
+				else if(beat%(192/12)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[2][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[2][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[2][2];
+				}
+				else if(beat%(192/16)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[3][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[3][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[3][2];
+				}
+				else if(beat%(192/24)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[4][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[4][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[4][2];
+				}
+				else if(beat%(192/32)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[5][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[5][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[5][2];
+				}
+				else if(beat%(192/48)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[6][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[6][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[6][2];
+				}
+				else if(beat%(192/64)==0){
+					col = ClientPrefs.data.arrowRGBQuantize[7][0];
+					col3 = ClientPrefs.data.arrowRGBQuantize[7][1];
+					col2 = ClientPrefs.data.arrowRGBQuantize[7][2];
+				}else{
+					col = 0xFF7C7C7C;
+					col3 = 0xFFFFFFFF;
+					col2 = 0xFF3A3A3A;
+				}
+				rgbShader.r = col;
+				rgbShader.g = col3;
+				rgbShader.b = col2;
+		
+			}else{
+				rgbShader.r = prevNote.rgbShader.r;
+				rgbShader.g = prevNote.rgbShader.g;
+				rgbShader.b = prevNote.rgbShader.b;  
+			}
+		}
+	}
+
+	private function round(num:Float, numDecimalPlaces:Int){
+		var mult = 10^numDecimalPlaces;
+		return Math.floor(num * mult + 0.5) / mult;
 	}
 
 	@:noCompletion
