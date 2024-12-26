@@ -75,7 +75,12 @@ class Note extends FlxSkewedSprite
 	//MAKES PUBLIC VAR NOT STATIC VAR IDIOT
 	public var sustainRGB:Bool = true; //so if it have only 1 sustain and colored it loads this LOL
 
-	public var notITGNotes:Bool = false;
+	public var notITGNotes(get, never):Bool;
+
+	function get_notITGNotes()
+	{
+		return (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
+	}
 
 	public var mesh:modcharting.SustainStrip = null; 
 	public var arrowMesh:modcharting.NewModchartArrow;
@@ -448,7 +453,6 @@ class Note extends FlxSkewedSprite
 		super();
 
 		animation = new PsychAnimationController(this);
-		notITGNotes = (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
 
 		antialiasing = ClientPrefs.data.antialiasing;
 		if(createdFrom == null) createdFrom = PlayState.instance;
