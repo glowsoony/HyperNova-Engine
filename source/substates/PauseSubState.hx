@@ -28,7 +28,7 @@ class PauseSubState extends MusicBeatSubstate
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
-	var pauseMusic:FlxSound;
+	public static var pauseMusic:FlxSound;
 	var practiceText:FlxText;
 	var skipTimeText:FlxText;
 	var skipTimeTracker:Alphabet;
@@ -209,7 +209,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		addCameraOverlay();
 		regenMenu();
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		#if TOUCH_CONTROLS_ALLOWED
 		addTouchPad(PlayState.chartingMode ? 'LEFT_FULL' : 'UP_DOWN', 'A');
@@ -217,6 +216,7 @@ class PauseSubState extends MusicBeatSubstate
 		#end
 
 		super.create();
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.indexOf(PlayState.instance.camOther)]];
 	}
 	
 	function getPauseSong()
@@ -379,7 +379,7 @@ class PauseSubState extends MusicBeatSubstate
 							close();
 						}
 					}, 5);
-					// pauseMusic.volume = 0;
+					pauseMusic.volume = 0;
 					// pauseMusic.destroy();
 					// pauseMusic = null;
 				case 'Restart From Checkpoint':
@@ -432,33 +432,34 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.hitmansHud.botplayTxt.alpha = 1;
 						PlayState.instance.hitmansHud.botplaySine = 0;
 				case 'Options':
-					// stoppedUpdatingMusic = true;
-					// pauseMusic.volume = 0;
-					// pauseMusic.destroy();
-					// goToOptions = true;
-					PlayState.instance.paused = true; // For lua
-					PlayState.instance.vocals.volume = 0;
-					PlayState.instance.canResync = false;
-					MusicBeatState.switchState(new OptionsState());
-					if(ClientPrefs.data.pauseMusic != 'None')
-					{
-						FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic)), pauseMusic.volume);
-						FlxTween.tween(FlxG.sound.music, {volume: 1}, 0.8);
-						FlxG.sound.music.time = pauseMusic.time;
-					}
-					OptionsState.onPlayState = true;
-				/*case 'Gameplay Modifiers':
+					stoppedUpdatingMusic = true;
+					pauseMusic.volume = 0;
+					//pauseMusic.destroy();
+					goToOptions = true;
+					close();
+					// PlayState.instance.paused = true; // For lua
+					// PlayState.instance.vocals.volume = 0;
+					// PlayState.instance.canResync = false;
+					// MusicBeatState.switchState(new OptionsState());
+					// if(ClientPrefs.data.pauseMusic != 'None')
+					// {
+					// 	FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic)), pauseMusic.volume);
+					// 	FlxTween.tween(FlxG.sound.music, {volume: 1}, 0.8);
+					// 	FlxG.sound.music.time = pauseMusic.time;
+					// }
+					// OptionsState.onPlayState = true;
+				case 'Gameplay Modifiers':
 					goToModifiers = true;
 					pauseMusic.volume = 0;
-					pauseMusic.destroy();
-					close();*/
+					//pauseMusic.destroy();
+					close();
 				case "Exit to menu":
 					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 
-					// stoppedUpdatingMusic = true;
-					// 	pauseMusic.volume = 0;
+					stoppedUpdatingMusic = true;
+					pauseMusic.volume = 0;
 					// 	pauseMusic.destroy();
 
 					PlayState.instance.canResync = false;

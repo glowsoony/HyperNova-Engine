@@ -211,8 +211,7 @@ class MainMenuState extends MusicBeatState
 							case 'credits':
 								MusicBeatState.switchState(new CreditsState());
 							case 'options':
-								MusicBeatState.switchState(new OptionsState());
-								OptionsState.onPlayState = false;
+								openSubState(new options.OptionsMenu());
 								if (PlayState.SONG != null)
 								{
 									PlayState.SONG.arrowSkin = null;

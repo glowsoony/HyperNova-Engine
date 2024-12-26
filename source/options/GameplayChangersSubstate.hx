@@ -70,6 +70,20 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		optionsArray.push(new GameplayOption('Practice Mode', 'practice', BOOL, false));
 		optionsArray.push(new GameplayOption('Botplay', 'botplay', BOOL, false));
 		optionsArray.push(new GameplayOption('Modcharts', 'modchart', BOOL, true));
+
+		var option:GameplayOption = new GameplayOption('Chaos Mode', 'chaosmode', BOOL, false);
+		optionsArray.push(option);
+
+		var option:GameplayOption = new GameplayOption('Chaos Difficulty', 'chaosdifficulty', FLOAT, 1);
+		option.scrollSpeed = 2.5;
+		option.minValue = 1;
+		option.maxValue = 5;
+		option.changeValue = 1;
+		option.displayFormat = '%vX';
+		optionsArray.push(option);
+
+		var option:GameplayOption = new GameplayOption('Randomized Notes', 'randomnotes', BOOL, false);
+		optionsArray.push(option);
 	}
 
 	public function getOptionByName(name:String)
@@ -83,11 +97,15 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		return null;
 	}
 
-	public function new()
+	public static var isInPause = false;
+
+	public function new(pauseMenu:Bool = false)
 	{
 		controls.isInSubstate = true;
 
 		super();
+
+		isInPause = pauseMenu;
 		
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
@@ -143,6 +161,11 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		#end
 		changeSelection();
 		reloadCheckboxes();
+
+		if (isInPause){
+			addCameraOverlay();
+			cameras = [FlxG.cameras.list[FlxG.cameras.list.indexOf(PlayState.instance.camOther)]];
+		}
 	}
 
 	var nextAccept:Int = 5;
@@ -158,6 +181,11 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		if (controls.BACK)
 		{
+			if (isInPause) 
+			{
+				substates.PauseSubState.goBackToPause = true;
+				hideCameraOverlay();
+			}
 			close();
 			ClientPrefs.saveSettings();
 			controls.isInSubstate = false;

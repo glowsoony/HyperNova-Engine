@@ -113,6 +113,7 @@ class ModchartEditorState extends MusicBeatState
 	public var unspawnNotes:Array<Note> = [];
     public var loadedNotes:Array<Note> = []; //stored notes from the chart that unspawnNotes can copy from
     public var vocals:FlxSound;
+    public var opponentVocals:FlxSound;
     var generatedMusic:Bool = false;
     
 
@@ -364,6 +365,7 @@ class ModchartEditorState extends MusicBeatState
                 {
                     inst.pause();
                     if(vocals != null) vocals.pause();
+                    if(opponentVocals != null) opponentVocals.pause();
                     playfieldRenderer.editorPaused = true;
                     dirtyUpdateEvents = true;
                 }
@@ -374,6 +376,12 @@ class ModchartEditorState extends MusicBeatState
                         vocals.pause();
                         vocals.time = inst.time;
                         vocals.play();
+                    }
+                    if(opponentVocals != null) {
+                        opponentVocals.play();
+                        opponentVocals.pause();
+                        opponentVocals.time = inst.time;
+                        opponentVocals.play();
                     }
                     inst.play();
                     playfieldRenderer.editorPaused = false;
@@ -388,10 +396,15 @@ class ModchartEditorState extends MusicBeatState
             {
                 inst.pause();
                 if(vocals != null) vocals.pause();
+                if(opponentVocals != null) opponentVocals.pause();
                 inst.time += (FlxG.mouse.wheel * Conductor.stepCrochet*0.8*shiftThing);
                 if(vocals != null) {
                     vocals.pause();
                     vocals.time = inst.time;
+                }
+                if(opponentVocals != null) {
+                    opponentVocals.pause();
+                    opponentVocals.time = inst.time;
                 }
                 playfieldRenderer.editorPaused = true;
                 dirtyUpdateNotes = true;
@@ -402,6 +415,7 @@ class ModchartEditorState extends MusicBeatState
             {
                 inst.pause();
                 if(vocals != null) vocals.pause();
+                if(opponentVocals != null) opponentVocals.pause();
                 inst.time += (Conductor.crochet*4*shiftThing);
                 dirtyUpdateNotes = true;
                 dirtyUpdateEvents = true;
@@ -410,6 +424,7 @@ class ModchartEditorState extends MusicBeatState
             {
                 inst.pause();
                 if(vocals != null) vocals.pause();
+                if(opponentVocals != null) opponentVocals.pause();
                 inst.time -= (Conductor.crochet*4*shiftThing);
                 dirtyUpdateNotes = true;
                 dirtyUpdateEvents = true;
@@ -446,6 +461,7 @@ class ModchartEditorState extends MusicBeatState
         #if FLX_PITCH
         inst.pitch = playbackSpeed;
         vocals.pitch = playbackSpeed;
+        opponentVocals.pitch = playbackSpeed;
         #end
         
 
@@ -593,6 +609,7 @@ class ModchartEditorState extends MusicBeatState
                 FlxG.mouse.visible = false;
                 inst.stop();
                 if(vocals != null) vocals.stop();
+                if(opponentVocals != null) opponentVocals.stop();
                 backend.StageData.loadDirectory(PlayState.SONG);
                 LoadingState.loadAndSwitchState(new PlayState());
             };
@@ -776,26 +793,78 @@ class ModchartEditorState extends MusicBeatState
         }
     }
 
+    function getFromCharacter(char:String):objects.Character.CharacterFile
+    {
+        try
+        {
+        var path:String = Paths.getPath('characters/$char.json', TEXT);
+        #if MODS_ALLOWED
+        var character:Dynamic = Json.parse(File.getContent(path));
+        #else
+        var character:Dynamic = Json.parse(Assets.getText(path));
+        #end
+        return character;
+        }
+        catch (e:Dynamic) {}
+        return null;
+    }
 
     public function generateSong(songData:SwagSong):Void
     {
         var songData = PlayState.SONG;
         Conductor.bpm = songData.bpm;
 
+        final vocalPl:String = getFromCharacter(PlayState.SONG.player1).vocals_file;
+        final vocalSuffix:String = (vocalPl != null && vocalPl.length > 0) ? vocalPl : 'Player';
+
+        final vocalOp:String = getFromCharacter(PlayState.SONG.player2).vocals_file;
+        final vocalSuffixOp:String = (vocalOp != null && vocalOp.length > 0) ? vocalOp : 'Opponent';
+
+        final formattedSong:String = Paths.formatToSongPath(songData.song);
+
         vocals = new FlxSound();
+        opponentVocals = new FlxSound();
         try {
             if (PlayState.SONG.needsVoices){
-                vocals.loadEmbedded(Paths.voices(PlayState.SONG.song));
+                var sng_name = Paths.formatToSongPath(songData.song); //!
+				var legacy_path = Paths.getPath('songs/${sng_name}/Voices.ogg');
+				var opponent_path = Paths.getPath('songs/${sng_name}/Voices-Opponent.ogg');
+				var is_base_legacy_path = legacy_path.startsWith("assets/shared/");
+				var is_base_opponent_path = opponent_path.startsWith("assets/shared/");
+
+				var legacyVoices = Paths.voices(songData.song);
+                if (PlayState.storyDifficulty == 1 && (formattedSong == "system-reloaded" || formattedSong == "metakill")) 
+				{
+					legacyVoices = Paths.voicesClassic(songData.song, vocalSuffix);
+					if (legacyVoices == null) legacyVoices = Paths.voicesClassic(songData.song);
+				}
+				if(legacyVoices == null){
+					var playerVocals = Paths.voices(songData.song, vocalSuffix);
+					vocals.loadEmbedded(playerVocals);
+				}
+				else vocals.loadEmbedded(legacyVoices);
+
+				if(legacyVoices == null || (is_base_legacy_path == is_base_opponent_path)){
+					var oppVocals = Paths.voices(songData.song, vocalSuffixOp);
+					if (PlayState.storyDifficulty == 1 && (sng_name == "system-reloaded" || sng_name == "metakill")) 
+					{
+						oppVocals = Paths.voicesClassic(songData.song, vocalSuffixOp);
+						if (oppVocals == null) oppVocals = Paths.voicesClassic(songData.song);
+					}
+					if (oppVocals != null && oppVocals.length > 0) opponentVocals.loadEmbedded(oppVocals);
+				}
             }
         }
 		catch(e:Dynamic) {}
 
         FlxG.sound.list.add(vocals);
-        //vocals.pitch = playbackRate;
+        FlxG.sound.list.add(opponentVocals);
 
         inst = new FlxSound();
         try {
-            inst.loadEmbedded(Paths.inst(PlayState.SONG.song));
+            inst.loadEmbedded(Paths.inst(songData.song));
+            if (PlayState.storyDifficulty == 1 && (formattedSong == "system-reloaded" || formattedSong == "metakill"))
+				inst.loadEmbedded(Paths.instClassic(PlayState.altInstrumentals ?? songData.song));
 		}
 		catch(e:Dynamic) {}
         FlxG.sound.list.add(inst);
@@ -808,6 +877,10 @@ class ModchartEditorState extends MusicBeatState
             if(vocals != null) {
                 vocals.pause();
                 vocals.time = 0;
+            }
+            if(opponentVocals != null) {
+                opponentVocals.pause();
+                opponentVocals.time = 0;
             }
         };
 
@@ -2176,6 +2249,7 @@ class ModchartEditorState extends MusicBeatState
         songSlider = new PsychUISlider(20, 200, function(val:Float) {
             inst.time = val;
             vocals.time = inst.time;
+            opponentVocals.time = inst.time;
             Conductor.songPosition = inst.time;
             dirtyUpdateEvents = true;
             dirtyUpdateNotes = true;
@@ -2204,6 +2278,15 @@ class ModchartEditorState extends MusicBeatState
 			if (vocals != null) vocals.volume = vol;
 		};
 
+        var check_mute_opponent_vocals = new PsychUICheckBox(check_mute_vocals.x + 120, check_mute_vocals.y, "Mute Opponent Vocals (in editor)", 100);
+        check_mute_opponent_vocals.checked = false;
+        check_mute_opponent_vocals.onClick = function()
+        {
+            var vol:Float = 1;
+            if (check_mute_opponent_vocals.checked)
+                vol = 0;
+            if (opponentVocals != null) opponentVocals.volume = vol;
+        };
 
         var resetSpeed:PsychUIButton = new PsychUIButton(sliderRate.x+300, sliderRate.y, 'Reset', function ()
         {

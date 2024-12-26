@@ -116,6 +116,13 @@ class StrumNote extends FlxSkewedSprite
 
 		if(PlayState.isPixelStage)
 		{
+			var testingGraphic = Paths.image('pixelUI/' + texture, null, !notITGStrums);
+			if (testingGraphic == null)
+			{
+				texture = "noteSkins/NOTE_assets" + Note.getNoteSkinPostfix();
+				testingGraphic = Paths.image('pixelUI/' + texture, null, !notITGStrums);
+				if (testingGraphic == null) texture = "NOTE_assets";
+			}
 			loadGraphic(Paths.image('pixelUI/' + texture, null, !notITGStrums));
 			width = width / 4;
 			height = height / 5;

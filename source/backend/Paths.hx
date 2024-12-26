@@ -18,6 +18,8 @@ import flash.media.Sound;
 
 import haxe.Json;
 
+import flixel.graphics.frames.FlxBitmapFont;
+
 
 #if MODS_ALLOWED
 import backend.Mods;
@@ -124,6 +126,12 @@ class Paths
 
 	inline public static function getSharedPath(file:String = '')
 		return 'assets/shared/$file';
+
+	inline static public function bitmapFont(key:String, ?library:String):FlxBitmapFont
+		return FlxBitmapFont.fromAngelCode(image(key, library), fontXML(key, library));
+	
+	  inline static public function fontXML(key:String, ?library:String):Xml
+		return Xml.parse(File.getContent(getPath('images/$key.fnt', TEXT, library)));
 
 	inline static public function txt(key:String, ?folder:String)
 		return getPath('data/$key.txt', TEXT, folder, true);

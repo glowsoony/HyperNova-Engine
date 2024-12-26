@@ -281,7 +281,7 @@ class Note extends FlxSkewedSprite
 					defaultRGBHurt();
 					ignoreNote = mustPress;
 					if(ClientPrefs.data.notesSkin[1] != 'MIMIC') {
-						reloadNote('', 'Skins/Hurts/'+ClientPrefs.data.notesSkin[1]+'-HURT_assets');				
+						reloadNote('Skins/Hurts/'+ClientPrefs.data.notesSkin[1]+'-HURT_assets');				
 					}
 					if (!isAgressive){
 						copyAlpha=false;
@@ -348,7 +348,7 @@ class Note extends FlxSkewedSprite
 					hitCausesMiss = true;
 				case 'Instakill Note':
 					ignoreNote = mustPress;
-					reloadNote('', 'Skins/Notes/INSTAKILLNOTE_assets');
+					reloadNote('Skins/Notes/INSTAKILLNOTE_assets');
 					rgbShader.enabled = false;
 					hitCausesMiss = !edwhakIsPlayer;
 					instakill = !edwhakIsPlayer;
@@ -363,7 +363,7 @@ class Note extends FlxSkewedSprite
 					}
 				case 'Mine Note':
 					ignoreNote = mustPress;
-					reloadNote('', 'Skins/Misc/'+ClientPrefs.data.mineSkin+'/MINENOTE_assets');
+					reloadNote('Skins/Misc/'+ClientPrefs.data.mineSkin+'/MINENOTE_assets');
 					rgbShader.enabled = false;
 					// texture = 'MINENOTE_assets';
 					lowPriority = true;
@@ -377,7 +377,7 @@ class Note extends FlxSkewedSprite
 					//not used since in Lua you can load that variables too lmao
 					//maybe in a future i'll port it to Haxe lmao -Ed
 				case 'HD Note':
-					reloadNote('', 'Skins/Notes/HDNOTE_assets');
+					reloadNote('Skins/Notes/HDNOTE_assets');
 					rgbShader.enabled = false;
 					// texture = 'HDNOTE_assets';
 					if(isSustainNote) {
@@ -389,7 +389,7 @@ class Note extends FlxSkewedSprite
 					hitCausesMiss = false;
 				case 'Love Note':
 					ignoreNote = mustPress;
-					reloadNote('', 'Skins/Notes/LOVENOTE_assets');
+					reloadNote('Skins/Notes/LOVENOTE_assets');
 					rgbShader.enabled = false;
 					// texture = 'LOVENOTE_assets';
 					if (!edwhakIsPlayer){
@@ -409,7 +409,7 @@ class Note extends FlxSkewedSprite
 					}
 				case 'Fire Note':
 					ignoreNote = mustPress;
-					reloadNote('', 'Skins/Notes/FIRENOTE_assets');
+					reloadNote('Skins/Notes/FIRENOTE_assets');
 					rgbShader.enabled = false;
 					// texture = 'FIRENOTE_assets';
 					if (!edwhakIsPlayer){
@@ -501,6 +501,8 @@ class Note extends FlxSkewedSprite
 
 			animation.play(colArray[noteData % colArray.length] + 'holdend');
 
+			updateHitbox();
+
 			if (ClientPrefs.data.notesSkin[0] == 'NOTITG'){ //make sure the game only forces this for notITG sking ig?
 				sustainRGB = false;
 			}else{
@@ -515,6 +517,8 @@ class Note extends FlxSkewedSprite
 
 			if (PlayState.isPixelStage)
 				offsetX += 30;
+
+			updateHitbox();
 
 			if (prevNote.isSustainNote)
 			{
@@ -531,11 +535,8 @@ class Note extends FlxSkewedSprite
 				// prevNote.setGraphicSize();
 			}
 
-			if(PlayState.isPixelStage)
-			{
-				scale.y *= PlayState.daPixelZoom;
-				updateHitbox();
-			}
+			if(PlayState.isPixelStage) scale.y *= PlayState.daPixelZoom;
+			updateHitbox();
 			earlyHitMult = 0;
 		}
 		else if(!isSustainNote)
@@ -650,7 +651,22 @@ class Note extends FlxSkewedSprite
 		}
 		else skinPostfix = '';
 
+
 		if(PlayState.isPixelStage) {
+			var graphicSkinTest = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, !notITGNotes);
+			if (graphicSkinTest == null) skinPixel = "noteSkins/NOTE_assets";
+
+			customSkin = skinPixel + skinPostfix;
+			if(customSkin == _lastValidChecked || Paths.fileExists('images/' + path + customSkin + '.png', IMAGE))
+			{
+				skinPixel = customSkin;
+				_lastValidChecked = customSkin;
+			}
+			else skinPostfix = '';
+
+			if (skinPixel.contains(skinPostfix)) skinPixel = skinPixel.replace(skinPostfix, "");
+
+			trace('Path ${'pixelUI/' + skinPixel + 'ENDS' + skinPostfix}');
 			if(isSustainNote) {
 				var graphic = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, !notITGNotes);
 				loadGraphic(graphic, true, Math.floor(graphic.width / 4), Math.floor(graphic.height / 2));

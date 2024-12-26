@@ -94,7 +94,7 @@ import states.TitleState;
 	];
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
-	public var ratingOffset:Int = 0;
+	public var ratingOffset:Float = 0;
 	public var marvelousWindow:Float = 22.5;
 	public var sickWindow:Float = 45;
 	public var goodWindow:Float = 90;

@@ -1533,6 +1533,7 @@ class PlayState extends MusicBeatState
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
 		FlxTween.tween(hitmansHud.timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(hitmansHud.timeBarBG, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 		FlxTween.tween(hitmansHud.timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
 		#if DISCORD_ALLOWED
@@ -1716,13 +1717,13 @@ class PlayState extends MusicBeatState
 				var is_base_opponent_path = opponent_path.startsWith("assets/shared/");
 
 				var legacyVoices = Paths.voices(songData.song);
+				if (storyDifficulty == 1 && (formattedSong == "system-reloaded" || formattedSong == "metakill")) 
+				{
+					legacyVoices = Paths.voicesClassic(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
+					if (legacyVoices == null) legacyVoices = Paths.voicesClassic(songData.song);
+				}
 				if(legacyVoices == null){
 					var playerVocals = Paths.voices(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
-					if (storyDifficulty == 1 && (formattedSong == "system-reloaded" || formattedSong == "metakill")) 
-					{
-						playerVocals = Paths.voicesClassic(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
-						if (playerVocals == null) playerVocals = Paths.voicesClassic(songData.song);
-					}
 					vocals.loadEmbedded(playerVocals);
 				}
 				else vocals.loadEmbedded(legacyVoices);
@@ -1751,7 +1752,7 @@ class PlayState extends MusicBeatState
 		try
 		{
 			inst.loadEmbedded(Paths.inst(altInstrumentals ?? songData.song));
-			if (inst == null)
+			if (storyDifficulty == 1 && (formattedSong == "system-reloaded" || formattedSong == "metakill"))
 				inst.loadEmbedded(Paths.instClassic(altInstrumentals ?? songData.song));
 		}
 		catch (e:Dynamic) {}
@@ -2026,7 +2027,35 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 		
 		stagesFunc(function(stage:BaseStage) stage.closeSubState());
-		if (paused)
+		if (PauseSubState.goToOptions){
+			if (PauseSubState.goBack)
+			{
+				PauseSubState.goToOptions = false;
+
+				openSubState(new PauseSubState());
+				PauseSubState.goBack = false;
+			}
+			else
+			{
+				openSubState(new options.OptionsMenu(true));
+			}
+		}else if (PauseSubState.goToModifiers)
+		{
+			trace("pause thingyt");
+			if (PauseSubState.goBackToPause)
+			{
+				trace("pause thingyt");
+				PauseSubState.goToModifiers = false;
+
+				openSubState(new PauseSubState());
+				PauseSubState.goBackToPause = false;
+			}
+			else
+			{
+				openSubState(new options.GameplayChangersSubstate(true));
+			}
+		}
+		else if (paused)
 		{
 			if (FlxG.sound.music != null && !startingSong && canResync)
 			{
