@@ -1959,7 +1959,6 @@ class PlayState extends MusicBeatState
 	public var skipArrowStartTween:Bool = false; //for lua
 	private function generateStaticArrows(player:Int):Void
 	{
-		var strumLineX:Float = ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X;
 		var strumLineY:Float = ClientPrefs.data.downScroll ? (FlxG.height - 150) : 50;
 		for (i in 0...4)
 		{
@@ -1968,7 +1967,7 @@ class PlayState extends MusicBeatState
 			if (player < 1)
 			{
 				if(!ClientPrefs.data.opponentStrums) targetAlpha = 0;
-				else if(ClientPrefs.data.middleScroll) targetAlpha = 0.35;
+				else if(ClientPrefs.data.middleScroll && !forceRightScroll || forceMiddleScroll) targetAlpha = 0.35;
 			}
 
 			var babyArrow:StrumNote = new StrumNote(!forcedAScroll ? (ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X) : 
@@ -1988,7 +1987,7 @@ class PlayState extends MusicBeatState
 				playerStrums.add(babyArrow);
 			else
 			{
-				if(ClientPrefs.data.middleScroll)
+				if(ClientPrefs.data.middleScroll && !forceRightScroll || forceMiddleScroll)
 				{
 					babyArrow.x += 310;
 					if(i > 1) { //Up and Right
