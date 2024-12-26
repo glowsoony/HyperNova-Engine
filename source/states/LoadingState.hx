@@ -334,14 +334,14 @@ class LoadingState extends MusicBeatState
 	
 			var customSkin:String = noteSkin + Note.getNoteSkinPostfix();
 			if(Paths.fileExists('images/$customSkin.png', IMAGE)) noteSkin = customSkin;
-			if(!PlayState.SONG.notITG) imagesToPrepare.push(noteSkin);
+			if(!song.notITG) imagesToPrepare.push(noteSkin);
 			//
 
 			// LOAD NOTE SPLASH IMAGE
 			var noteSplash:String = NoteSplash.DEFAULT_SKIN;
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) noteSplash = PlayState.SONG.splashSkin;
 			else noteSplash += NoteSplash.getSplashSkinPostfix();
-			imagesToPrepare.push(noteSplash);
+			if(!song.notITG) imagesToPrepare.push(noteSplash);
 
 			try
 			{

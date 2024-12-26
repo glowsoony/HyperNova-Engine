@@ -75,13 +75,6 @@ class Note extends FlxSkewedSprite
 	//MAKES PUBLIC VAR NOT STATIC VAR IDIOT
 	public var sustainRGB:Bool = true; //so if it have only 1 sustain and colored it loads this LOL
 
-	public var notITGNotes(get, never):Bool;
-
-	function get_notITGNotes()
-	{
-		return (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
-	}
-
 	public var mesh:modcharting.SustainStrip = null; 
 	public var arrowMesh:modcharting.NewModchartArrow;
 	public var z:Float = 0;
@@ -657,7 +650,7 @@ class Note extends FlxSkewedSprite
 
 
 		if(PlayState.isPixelStage) {
-			var graphicSkinTest = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, !notITGNotes);
+			var graphicSkinTest = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, false);
 			if (graphicSkinTest == null) skinPixel = "noteSkins/NOTE_assets";
 
 			customSkin = skinPixel + skinPostfix;
@@ -672,11 +665,11 @@ class Note extends FlxSkewedSprite
 
 			trace('Path ${'pixelUI/' + skinPixel + 'ENDS' + skinPostfix}');
 			if(isSustainNote) {
-				var graphic = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, !notITGNotes);
+				var graphic = Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, false);
 				loadGraphic(graphic, true, Math.floor(graphic.width / 4), Math.floor(graphic.height / 2));
 				originalHeight = graphic.height / 2;
 			} else {
-				var graphic = Paths.image('pixelUI/' + skinPixel + skinPostfix, null, !notITGNotes);
+				var graphic = Paths.image('pixelUI/' + skinPixel + skinPostfix, null, false);
 				loadGraphic(graphic, true, Math.floor(graphic.width / 4), Math.floor(graphic.height / 5));
 			}
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -689,7 +682,7 @@ class Note extends FlxSkewedSprite
 				offsetX -= _lastNoteOffX;
 			}
 		} else {
-			frames = Paths.getSparrowAtlas(skin, null, !notITGNotes);
+			frames = Paths.getSparrowAtlas(skin, null, false);
 			loadNoteAnims();
 			if(!isSustainNote)
 			{
