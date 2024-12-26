@@ -946,12 +946,12 @@ class ModchartEditorState extends MusicBeatState
             var targetAlpha:Float = 1;
             if (player < 1)
             {
-                if(ClientPrefs.data.middleScroll /*&& !PlayState.forceRightScroll || PlayState.forceMiddleScroll*/) targetAlpha = 0.35;
+                if(ClientPrefs.data.middleScroll && !PlayState.forceRightScroll || PlayState.forceMiddleScroll) targetAlpha = 0.35;
             }
-            var babyArrow:StrumNote = new StrumNote(/*!PlayState.forcedAScroll ? (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) : 
-            (if (PlayState.forceRightScroll && !PlayState.forceMiddleScroll) PlayState.STRUM_X 
-            else if (PlayState.forceMiddleScroll && !PlayState.forceRightScroll) PlayState.STRUM_X_MIDDLESCROLL 
-            else */ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X
+            var babyArrow:StrumNote = new StrumNote(!PlayState.forcedAScroll ? (ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) : 
+                                                                                if (PlayState.forceRightScroll && !PlayState.forceMiddleScroll) PlayState.STRUM_X 
+                                                                                else if (PlayState.forceMiddleScroll && !PlayState.forceRightScroll) PlayState.STRUM_X_MIDDLESCROLL 
+                                                                                else ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X
                 , strumLine.y, i, player);
             babyArrow.downScroll = ClientPrefs.data.downScroll;
             babyArrow.alpha = targetAlpha;
@@ -965,7 +965,7 @@ class ModchartEditorState extends MusicBeatState
             }
             else
             {
-                if(middleScroll /*&& !PlayState.forceRightScroll || PlayState.forceMiddleScroll*/)
+                if(middleScroll && !PlayState.forceRightScroll || PlayState.forceMiddleScroll)
                 {
                     babyArrow.x += 310;
                     if(i > 1) { //Up and Right
