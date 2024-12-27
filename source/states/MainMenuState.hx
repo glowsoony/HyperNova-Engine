@@ -211,6 +211,7 @@ class MainMenuState extends MusicBeatState
 							case 'credits':
 								MusicBeatState.switchState(new CreditsState());
 							case 'options':
+								persistentUpdate = false;
 								openSubState(new options.OptionsMenu());
 								if (PlayState.SONG != null)
 								{
@@ -221,17 +222,20 @@ class MainMenuState extends MusicBeatState
 						}
 					});
 
-					for (i in 0...menuItems.members.length)
+					if (optionShit[curSelected] != 'options')
 					{
-						if (i == curSelected)
-							continue;
-						FlxTween.tween(menuItems.members[i], {alpha: 0}, 0.4, {
-							ease: FlxEase.quadOut,
-							onComplete: function(twn:FlxTween)
-							{
-								menuItems.members[i].kill();
-							}
-						});
+						for (i in 0...menuItems.members.length)
+						{
+							if (i == curSelected)
+								continue;
+							FlxTween.tween(menuItems.members[i], {alpha: 0}, 0.4, {
+								ease: FlxEase.quadOut,
+								onComplete: function(twn:FlxTween)
+								{
+									menuItems.members[i].kill();
+								}
+							});
+						}
 					}
 				}
 			}
@@ -245,6 +249,13 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+	}
+
+	override function closeSubState()
+	{
+		super.closeSubState();
+		selectedSomethin = false;
+		persistentUpdate = true;
 	}
 
 	function changeItem(huh:Int = 0)

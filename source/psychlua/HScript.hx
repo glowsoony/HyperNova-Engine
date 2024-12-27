@@ -170,6 +170,16 @@ class HScript extends Iris
 			return LuaUtils.getModSetting(saveTag, modName);
 		});
 
+		set('pushCustomCameraToLua', function(name:String, camera:FlxCamera){
+			return LuaUtils.pushCustomCameras(name, camera);
+		});
+		set('startNewCustomCamera', function(name:String, newCamera:FlxCamera){
+			newCamera.bgColor.alpha = 0;
+			LuaUtils.pushCustomCameras(name, newCamera);
+			MusicBeatState.getVariables().set(name, newCamera);
+			return newCamera;
+		});
+
 		// Keyboard & Gamepads
 		set('keyboardJustPressed', function(name:String) return Reflect.getProperty(FlxG.keys.justPressed, name));
 		set('keyboardPressed', function(name:String) return Reflect.getProperty(FlxG.keys.pressed, name));

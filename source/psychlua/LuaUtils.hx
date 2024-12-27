@@ -586,4 +586,11 @@ class LuaUtils
 
 		return PlayState.instance.strumLineNotes.members[Std.parseInt(id)];
 	}
+
+	public static function pushCustomCameras(name:String, camera:FlxCamera)
+	{
+		final camBool:Bool = (camera != null);
+		trace('name for cam: ' + name + ', is camera not null: ' + camBool);
+		FunkinLua.lua_Cameras.set(name, {cam: camera, shaders: [], shaderNames: []});
+	}
 }
