@@ -411,6 +411,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public var aftBitmap:AFT_capture; //hazzy stuff :3
+	public var camBackground:FlxCamera;
 
 	override public function create()
 	{
@@ -488,12 +489,14 @@ class PlayState extends MusicBeatState
 		camInterfaz = new FlxCamera();
 		camVisuals = new FlxCamera();
 		camProxy = new FlxCamera();
+		camBackground = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
 		luaTpadCam.bgColor.alpha = 0;
 		camInterfaz.bgColor.alpha = 0;
 		camVisuals.bgColor.alpha = 0;
 		camProxy.bgColor.alpha = 0;
+		camBackground.bgColor.alpha = 0;
 		noteCameras0 = new FlxCamera();
 		noteCameras0.bgColor.alpha = 0;
 		noteCameras0.visible = false;
@@ -501,6 +504,7 @@ class PlayState extends MusicBeatState
 		noteCameras1.bgColor.alpha = 0;
 		noteCameras1.visible = false;
 
+		FlxG.cameras.add(camBackground, false);
 		FlxG.cameras.add(camInterfaz, false);
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(noteCameras0, false);
@@ -2008,6 +2012,8 @@ class PlayState extends MusicBeatState
 		stagesFunc(function(stage:BaseStage) stage.openSubState(SubState));
 		if (paused)
 		{
+			if (videoCutscene != null)
+				videoCutscene.pause(); 
 			if (FlxG.sound.music != null)
 			{
 				FlxG.sound.music.pause();
@@ -2056,7 +2062,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		else if (paused)
-		{
+		{	
 			if (FlxG.sound.music != null && !startingSong && canResync)
 			{
 				resyncVocals();
@@ -2068,16 +2074,23 @@ class PlayState extends MusicBeatState
 			callOnScripts('onResume');
 			resetRPC(startTimer != null && startTimer.finished);
 		}
+
+		if (videoCutscene != null && !paused && !PauseSubState.goToModifiers && !PauseSubState.goToOptions && !PauseSubState.goBack)
+			videoCutscene.resume(); 
 	}
 
 	override public function onFocus():Void
-	{
+	{	
+		if (videoCutscene != null && !paused && !PauseSubState.goToModifiers && !PauseSubState.goToOptions && !PauseSubState.goBack)
+			videoCutscene.resume(); 
 		if (health > 0 && !paused) resetRPC(Conductor.songPosition > 0.0);
 		super.onFocus();
 	}
 
 	override public function onFocusLost():Void
 	{
+		if (videoCutscene != null)
+			videoCutscene.pause(); 
 		#if DISCORD_ALLOWED
 		if (health > 0 && !paused && autoUpdateRPC) DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", hitmansHud.getDiscordRichName());
 		#end
