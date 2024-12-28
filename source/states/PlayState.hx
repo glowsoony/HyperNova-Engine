@@ -416,7 +416,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		//this.variables = new JoinedLuaVariables();
+		this.variables = new JoinedLuaVariables();
 		//trace('Playback Rate: ' + playbackRate);
 		Paths.clearUnusedMemory();
 		Paths.clearStoredMemory();
