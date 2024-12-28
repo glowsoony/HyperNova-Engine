@@ -1039,6 +1039,34 @@ class QuantOption extends SystemOptions
 	}
 }
 
+class NoteOffsetOption extends SystemOptions
+{
+	public function new(desc:String)
+	{
+		super();
+		if (OptionsMenu.isInPause){
+			blocked = true;
+			description = desc + "(NOT WORKING IN PAUSE MENU)";
+		}else{
+			blocked = false;
+			description = desc;
+		}
+		acceptType = true;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.state.closeSubState();
+		FlxG.switchState(function() { return new options.NoteOffsetState(); });
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Note Offset State";
+	}
+}
+
 class QuantizationOption extends SystemOptions
 {
     public function new(desc:String)
