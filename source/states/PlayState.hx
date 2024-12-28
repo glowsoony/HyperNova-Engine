@@ -2162,7 +2162,7 @@ class PlayState extends MusicBeatState
 
 		if (notITGMod && SONG.notITG)
 			playfieldRenderer.speed = playbackRate; //LMAO IT LOOKS SOO GOOFY AS FUCK
-		if (aftBitmap != null) aftBitmap.update(elapsed); //if it fail this don't load
+		// if (aftBitmap != null) aftBitmap.update(elapsed); //if it fail this don't load
 
 		if (drain){
 			if (!ClientPrefs.data.casualMode){
@@ -2376,13 +2376,16 @@ class PlayState extends MusicBeatState
 		}
 
 		
-		for(shaderKey in FunkinLua.lua_Shaders.keys())
+		if (FunkinLua.lua_Shaders != null)
 		{
-			if (FunkinLua.lua_Shaders.exists(shaderKey))
-				FunkinLua.lua_Shaders.get(shaderKey).update(elapsed);
+			for(shaderKey in FunkinLua.lua_Shaders.keys())
+			{
+				if (FunkinLua.lua_Shaders.exists(shaderKey))
+					FunkinLua.lua_Shaders.get(shaderKey).update(elapsed);
+			}
 		}
 
-		hitmansHud.setHealth(health, elapsed, playbackRate);
+	 	hitmansHud.setHealth(health, elapsed, playbackRate);
 		hitmansHud.setScore(songScore, songMisses, ratingName, ratingPercent, ratingFC, combo, comboOp, separateCombo);
 
 		#if debug
