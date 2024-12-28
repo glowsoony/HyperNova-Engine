@@ -3432,7 +3432,7 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
-		if(daRating.noteSplash && !note.noteSplashData.disabled)
+		if(daRating.noteSplash && !note.noteSplashData.disabled && !PlayState.SONG.notITG)
 			spawnNoteSplashOnNote(note);
 
 		if(!practiceMode && !cpuControlled) {
@@ -4065,7 +4065,7 @@ class PlayState extends MusicBeatState
 			}
 
 			noteMiss(note);
-			if(!note.noteSplashData.disabled && !note.isSustainNote) spawnNoteSplashOnNote(note);
+			if(!note.noteSplashData.disabled && !note.isSustainNote && !PlayState.SONG.notITG) spawnNoteSplashOnNote(note);
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
@@ -4122,6 +4122,7 @@ class PlayState extends MusicBeatState
 	public function spawnHoldSplashOnNote(note:Note) {
 		if (ClientPrefs.data.holdSplashAlpha <= 0)
 			return;
+		if (PlayState.SONG.notITG) return;
 
 		if (note != null) {
 			var strum:StrumNote = (note.mustPress ? playerStrums : opponentStrums).members[note.noteData];
@@ -4138,6 +4139,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function spawnNoteSplashOnNote(note:Note) {
+		if (PlayState.SONG.notITG) return;
 		if(note != null) {
 			var strum:StrumNote = playerStrums.members[note.noteData];
 			if(strum != null)
