@@ -284,6 +284,7 @@ class OptionsMenu extends MusicBeatSubstate
 					new LowQualityOption("Disables some background details, decreases loading times and improves performance."),
 					new AntiAliasOption("Disables anti-aliasing, increases performance at the cost of sharper visuals."),
 					new ShadersOption("Disables shaders. It\'s used for some visual effects, and also CPU intensive for weaker PCs."),
+					new NoteOffsetOption("Opens the state to change your offset in ms."),
 				]),
 				new OptionCata(935, 100, "Performance", [
 					new FPSOption("Toggle the FPS Counter"),

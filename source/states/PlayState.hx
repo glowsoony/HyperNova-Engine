@@ -415,7 +415,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		this.variables = new JoinedLuaVariables();
+		//this.variables = new JoinedLuaVariables();
 		//trace('Playback Rate: ' + playbackRate);
 		Paths.clearUnusedMemory();
 		Paths.clearStoredMemory();
@@ -2842,7 +2842,7 @@ class PlayState extends MusicBeatState
 								gf.visible = false;
 							}
 							dad.alpha = lastAlpha;
-							iconP2.changeIcon(dad.healthIcon);
+							hitmansHud.iconP2.changeIcon(dad.healthIcon);
 						}
 						setOnScripts('dadName', dad.curCharacter);
 
