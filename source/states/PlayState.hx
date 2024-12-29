@@ -764,10 +764,10 @@ class PlayState extends MusicBeatState
 			playfieldRenderer.cameras = [camHUD];
 			add(playfieldRenderer);
 		}
-		// else{
-		// 	add(grpNoteSplashes);
-		// 	add(grpHoldSplashes);
-		// }
+		else{
+			add(grpNoteSplashes);
+			add(grpHoldSplashes);
+		}
 
 		camFollow = new FlxObject();
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -3437,8 +3437,8 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
-		// if(daRating.noteSplash && !note.noteSplashData.disabled && !PlayState.SONG.notITG)
-		// 	spawnNoteSplashOnNote(note);
+		if(daRating.noteSplash && !note.noteSplashData.disabled && !PlayState.SONG.notITG)
+			spawnNoteSplashOnNote(note);
 
 		if(!practiceMode && !cpuControlled) {
 			songScore += score;
@@ -3898,7 +3898,7 @@ class PlayState extends MusicBeatState
 		var result:Dynamic = callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('opponentNoteHit', [note]);
 
-		// spawnHoldSplashOnNote(note);
+		spawnHoldSplashOnNote(note);
 
 		if (!note.isSustainNote) invalidateNote(note);
 	}
@@ -4070,13 +4070,13 @@ class PlayState extends MusicBeatState
 			}
 
 			noteMiss(note);
-			// if(!note.noteSplashData.disabled && !note.isSustainNote && !PlayState.SONG.notITG) spawnNoteSplashOnNote(note);
+			if(!note.noteSplashData.disabled && !note.isSustainNote && !PlayState.SONG.notITG) spawnNoteSplashOnNote(note);
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
 		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('goodNoteHit', [note]);
-		// spawnHoldSplashOnNote(note);
+		spawnHoldSplashOnNote(note);
 		if(!note.isSustainNote) invalidateNote(note);
 	}
 
@@ -4124,40 +4124,40 @@ class PlayState extends MusicBeatState
 		note.destroy();
 	}
 
-	// public function spawnHoldSplashOnNote(note:Note) {
-	// 	if (ClientPrefs.data.holdSplashAlpha <= 0)
-	// 		return;
-	// 	if (PlayState.SONG.notITG) return;
+	public function spawnHoldSplashOnNote(note:Note) {
+		if (ClientPrefs.data.holdSplashAlpha <= 0)
+			return;
+		if (PlayState.SONG.notITG) return;
 
-	// 	if (note != null) {
-	// 		var strum:StrumNote = (note.mustPress ? playerStrums : opponentStrums).members[note.noteData];
-	// 		if(strum != null && note.tail.length > 1)
-	// 			spawnHoldSplash(note);
-	// 	}
-	// }
+		if (note != null) {
+			var strum:StrumNote = (note.mustPress ? playerStrums : opponentStrums).members[note.noteData];
+			if(strum != null && note.tail.length > 1)
+				spawnHoldSplash(note);
+		}
+	}
 
-	// public function spawnHoldSplash(note:Note) {
-	// 	var end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
-	// 	var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
-	// 	splash.setupSusSplash((note.mustPress ? playerStrums : opponentStrums).members[note.noteData], note, playbackRate);
-	// 	grpHoldSplashes.add(end.noteHoldSplash = splash);
-	// }
+	public function spawnHoldSplash(note:Note) {
+		var end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
+		var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
+		splash.setupSusSplash((note.mustPress ? playerStrums : opponentStrums).members[note.noteData], note, playbackRate);
+		grpHoldSplashes.add(end.noteHoldSplash = splash);
+	}
 
-	// public function spawnNoteSplashOnNote(note:Note) {
-	// 	if (PlayState.SONG.notITG) return;
-	// 	if(note != null) {
-	// 		var strum:StrumNote = playerStrums.members[note.noteData];
-	// 		if(strum != null)
-	// 			spawnNoteSplash(note, strum);
-	// 	}
-	// }
+	public function spawnNoteSplashOnNote(note:Note) {
+		if (PlayState.SONG.notITG) return;
+		if(note != null) {
+			var strum:StrumNote = playerStrums.members[note.noteData];
+			if(strum != null)
+				spawnNoteSplash(note, strum);
+		}
+	}
 
-	// public function spawnNoteSplash(note:Note, strum:StrumNote) {
-	// 	var splash:NoteSplash = new NoteSplash();
-	// 	splash.babyArrow = strum;
-	// 	splash.spawnSplashNote(note);
-	// 	grpNoteSplashes.add(splash);
-	// }
+	public function spawnNoteSplash(note:Note, strum:StrumNote) {
+		var splash:NoteSplash = new NoteSplash();
+		splash.babyArrow = strum;
+		splash.spawnSplashNote(note);
+		grpNoteSplashes.add(splash);
+	}
 
 	override function destroy() {
 		if (psychlua.CustomSubstate.instance != null)
