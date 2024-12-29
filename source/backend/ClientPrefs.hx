@@ -369,4 +369,22 @@ class ClientPrefs {
 		FlxG.sound.volumeDownKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeDownKeys : emptyArray;
 		FlxG.sound.volumeUpKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeUpKeys : emptyArray;
 	}
+
+	  public static function get(key:String, isDefault:Bool = false):Dynamic
+	    return Reflect.field(isDefault ? defaultData : data, key);
+	
+	  public static function set(key:String, value:Dynamic, isDefault:Bool = false):Void
+	    Reflect.setField(isDefault ? defaultData : data, value, key);
+	
+	  public static function getKey(key:String, isDefault:Bool = false):Array<FlxKey>
+	    return isDefault ? defaultKeys.get(key) : keyBinds.get(key);
+	
+	  public static function setKey(key:String, newKeys:Array<FlxKey>, isDefault:Bool = false):Void
+	    isDefault ? defaultKeys.set(key, newKeys) : keyBinds.set(key, newKeys);
+	
+	  public static function getGamepadBind(bind:String, isDefault:Bool = false):Array<FlxGamepadInputID>
+	    return isDefault ? defaultButtons.get(bind) : gamepadBinds.get(bind);
+	
+	  public static function setGamepadBind(bind:String, newBinds:Array<FlxGamepadInputID>, isDefault:Bool = false):Void
+	    isDefault ? defaultButtons.set(bind, newBinds) : gamepadBinds.set(bind, newBinds);
 }
