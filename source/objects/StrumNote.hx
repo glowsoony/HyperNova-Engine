@@ -209,5 +209,9 @@ class StrumNote extends FlxSkewedSprite
 	override public function destroy():Void
 	{
 		super.destroy();
+		if (arrowMesh != null){ 
+			arrowMesh.clearOutCache();
+			arrowMesh.destroy();
 		}
+	}
 }

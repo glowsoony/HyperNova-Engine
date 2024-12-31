@@ -905,6 +905,9 @@ class PlayState extends MusicBeatState
 
 		
 		super.create();
+
+		for (note in unspawnNotes) note.setCustomColor("quant",!ClientPrefs.get("quantization"));
+
 		Paths.clearUnusedMemory();
 
 		cacheCountdown();
@@ -4073,6 +4076,11 @@ class PlayState extends MusicBeatState
 			if(!note.noteSplashData.disabled && !note.isSustainNote && !PlayState.SONG.notITG) spawnNoteSplashOnNote(note);
 		}
 
+		if (ClientPrefs.data.quantization)
+		{
+			playerStrums.members[note.noteData].rgbShader.r = note.rgbShader.r;
+			playerStrums.members[note.noteData].rgbShader.b = note.rgbShader.b;
+		}
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
 		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('goodNoteHit', [note]);

@@ -788,6 +788,10 @@ class Note extends FlxSkewedSprite
 	{
 		super.destroy();
 		_lastValidChecked = '';
+		if (arrowMesh != null){ 
+			arrowMesh.clearOutCache();
+			arrowMesh.destroy();
+		}
 	}
 
 	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)

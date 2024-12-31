@@ -183,11 +183,11 @@ class NewModchartArrow extends FlxSprite
 				var yPercent_SkewOffset:Float = yPercent - skewX_offset;
 				// Keep math the same as skewedsprite for parity reasons.
 				if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
-					point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h;
+					point3D.x += yPercent_SkewOffset * Math.tan((skewX/1.25) * FlxAngle.TO_RAD) * h;
 				if (skewY != 0) //
-					point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w;
+					point3D.y += xPercent_SkewOffset * Math.tan((skewY/1.25) * FlxAngle.TO_RAD) * w;
 				if (skewZ != 0) //
-					point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h;
+					point3D.z += yPercent_SkewOffset * Math.tan((skewZ/1.25) * FlxAngle.TO_RAD) * h;
 
 				// scale
 				var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
@@ -324,7 +324,7 @@ class NewModchartArrow extends FlxSprite
 	public var debugTesting:Bool = false;
 
 	// public var graphicAnimMap:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
-	public static var graphicCache3D:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
+	public var graphicCache3D:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 
 	public function drawManual(graphicToUse:FlxGraphic = null, noteStyleName:String = ""):Void
 	{
@@ -355,9 +355,9 @@ class NewModchartArrow extends FlxSprite
 			var animFrameName:String = spriteGraphic.animation.frameName + " - " + noteStyleName;
 
 			// check to see if we have this frame of animation saved
-			if (NewModchartArrow.graphicCache3D.exists(animFrameName))
+			if (graphicCache3D.exists(animFrameName))
 			{
-				graphicToUse = NewModchartArrow.graphicCache3D.get(animFrameName);
+				graphicToUse = graphicCache3D.get(animFrameName);
 				// if (debugTesting) trace("got: " + animFrameName);
 			}
 			else
@@ -381,7 +381,7 @@ class NewModchartArrow extends FlxSprite
 				graphicToUse = FlxGraphic.fromBitmapData(spriteGraphic.framePixels, true, animFrameName);
 				// graphicToUse.bitmap.colorTransform(graphicToUse.bitmap.rect, colorTransform);
 
-				NewModchartArrow.graphicCache3D.set(animFrameName, graphicToUse);
+				graphicCache3D.set(animFrameName, graphicToUse);
 				spriteGraphic.alpha = prevAlpha;
 				spriteGraphic.angle = prevAngle;
 				spriteGraphic.color = prevCol;
@@ -422,10 +422,9 @@ class NewModchartArrow extends FlxSprite
 		#end
 	}
 
-	public static function clearOutCache():Void
+	public function clearOutCache():Void
 	{
-		NewModchartArrow.graphicCache3D = new Map<String, FlxGraphic>();
-		trace("3D animation graphics cache cleared!");
+		graphicCache3D = new Map<String, FlxGraphic>();
 	}
 
 	override public function destroy():Void
