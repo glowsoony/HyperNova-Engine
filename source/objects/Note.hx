@@ -700,6 +700,7 @@ class Note extends FlxSkewedSprite
 			animation.play(animName, true);
 
 		updateHitbox();
+		if (arrowMesh != null) arrowMesh.updateCol();
 	}
 
 	public static function getNoteSkinPostfix()
@@ -747,11 +748,11 @@ class Note extends FlxSkewedSprite
 		animation.addByPrefix(name, prefix, framerate, doLoop);
 	}
 
-	override function updateColorTransform():Void
-	{
-		if (arrowMesh != null) arrowMesh.updateCol();
-		super.updateColorTransform();
-	}
+	// override function updateColorTransform():Void
+	// {
+	// 	if (arrowMesh != null) arrowMesh.updateCol();
+	// 	super.updateColorTransform();
+	// }
 
 	override function update(elapsed:Float)
 	{
@@ -942,5 +943,17 @@ class Note extends FlxSkewedSprite
 			frame = frames.frames[animation.frameIndex];
 
 		return rect;
+	}
+	
+	public override function kill():Void
+	{
+		super.kill();
+	}
+	
+	public override function revive():Void
+	{
+		super.revive();
+
+		if (arrowMesh != null) arrowMesh.updateCol();
 	}
 }

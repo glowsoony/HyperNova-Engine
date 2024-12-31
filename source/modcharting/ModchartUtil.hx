@@ -55,20 +55,21 @@ class ModchartUtil
     }
     public static function getScrollSpeed(instance:PlayState)
     {
+        var dividebyfix:Float = 1.25;
         if (instance == null)
-            return PlayState.SONG.speed;
+            return PlayState.SONG.speed/dividebyfix;
 
         #if PSYCH
-        return PlayState.SONG.speed;
+        return instance.songSpeed/dividebyfix;
         #elseif ANDROMEDA
-        return instance.songSpeed;
+        return instance.songSpeed/dividebyfix;
         #elseif LEATHER
         @:privateAccess
-        return instance.speed;
+        return instance.speed/dividebyfix;
         #elseif KADE 
-        return PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed;
+        return PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed/dividebyfix : PlayStateChangeables.scrollSpeed/dividebyfix;
         #else 
-        return PlayState.SONG.speed; //most engines just use this
+        return PlayState.SONG.speed/dividebyfix; //most engines just use this
         #end
     }
 

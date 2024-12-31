@@ -17,6 +17,7 @@ class StrumNote extends FlxSkewedSprite
 	public var direction:Float = 90;
 	public var downScroll:Bool = false;
 	public var sustainReduce:Bool = true;
+
 	private var player:Int;
 
 	public var notITGStrums:Bool = false;
@@ -97,11 +98,11 @@ class StrumNote extends FlxSkewedSprite
 		playAnim('static');
 	}
 
-	override function updateColorTransform():Void
-	{
-		if (arrowMesh != null) arrowMesh.updateCol();
-		super.updateColorTransform();
-	}
+	// override function updateColorTransform():Void
+	// {
+	// 	if (arrowMesh != null) arrowMesh.updateCol();
+	// 	super.updateColorTransform();
+	// }
 
 	public function reloadNote()
 	{
@@ -163,6 +164,7 @@ class StrumNote extends FlxSkewedSprite
 		{
 			playAnim(lastAnim, true);
 		}
+		if (arrowMesh != null) arrowMesh.updateCol();
 	}
 
 	public function playerPosition()
@@ -190,6 +192,22 @@ class StrumNote extends FlxSkewedSprite
 			centerOffsets();
 			centerOrigin();
 		}
-		if(useRGBShader) rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
+		if(loadShader && useRGBShader) rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
 	}
+
+	public override function kill():Void
+	{
+		super.kill();
+	}
+	
+	public override function revive():Void
+	{
+		super.revive();
+		if (arrowMesh != null) arrowMesh.updateCol();
+	}
+	
+	override public function destroy():Void
+	{
+		super.destroy();
+		}
 }
