@@ -764,8 +764,8 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 	{
 		for (noteData in notePositions)
 		{
-			// if(noteData.isStrum) //make sure we draw the path for each before we even draw each?
-			// 	drawArrowPathNew(noteData);
+			if(noteData.isStrum) //make sure we draw the path for each before we even draw each?
+				drawArrowPathNew(noteData);
 
 			if (noteData.isStrum) // draw strum
 				drawStrum(noteData);
