@@ -43,7 +43,7 @@ class ModchartMacros
             pos: Context.currentPos()
         });
 
-        Context.info(list.toString(), Context.currentPos());
+        // Context.info(list.toString(), Context.currentPos());
 
         return fields;
     }

@@ -12,7 +12,7 @@ haxelib install hxvlc 1.8.2 --quiet --skip-dependencies
 haxelib install compiletime --quiet
 haxelib install hscript --quiet
 haxelib git hxcpp https://github.com/mcagabe19-stuff/hxcpp --quiet
-haxelib git lime https://github.com/mcagabe19-stuff/lime --quiet
+haxelib git lime https://github.com/mcagabe19-stuff/lime 677f8b2878a9c35b74de0a91d6e6921e96ef5744 --quiet
 haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel 4cb4b8a51ef00abb4a7881bb869b13e399e82577 --quiet
 haxelib git flxanimate https://github.com/Psych-Slice/FlxAnimate.git 18091dfeb629ba2805a5f3e10f5de80433080359 --quiet
 haxelib git linc_luajit https://github.com/MobilePorting/linc_luajit --quiet
