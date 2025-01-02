@@ -1660,6 +1660,7 @@ class PlayState extends MusicBeatState
 		opponentVocals.time = Conductor.songPosition;
 		opponentVocals.play();
 		opponentVocals.pitch = playbackRate;
+		#if DISCORD_ALLOWED
 		if (startTimer != null && startTimer.finished)
 		{
 			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", hitmansHud.getDiscordRichName(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);
@@ -1668,6 +1669,7 @@ class PlayState extends MusicBeatState
 		{
 			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", hitmansHud.getDiscordRichName());
 		}
+		#end
 	}
 
 	public static var threadbeat:Array<ThreadBeatList> = [];
