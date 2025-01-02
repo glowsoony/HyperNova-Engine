@@ -25,5 +25,5 @@ haxelib git hscript-improved https://github.com/glowsoony/hscript-improved custo
 echo Finished!
 echo Now, get Android NDK: https://developer.android.com/ndk/downloads
 echo Then, get Android SDK: https://developer.android.com/studio - And install the SDK Tools
-echo And, get Java JDK: https://www.oracle.com/java/technologies/downloads
+echo And, get Java JDK Temurin: https://adoptium.net/es/temurin/releases/?version=17&os=windows
 pause
