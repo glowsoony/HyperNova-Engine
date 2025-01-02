@@ -101,7 +101,7 @@ class SustainTrail extends FlxSprite
     this.fullSustainLength = sustainLength;
     this.noteDirection = noteDirection;
     this.pfr = pfr;
-    super(0, 0, Paths.image('NOTE_ArrowPath'));
+    super(0, 0, Paths.image('NOTE_ArrowPath', null, false));
 
     antialiasing = true;
 
