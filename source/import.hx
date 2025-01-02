@@ -10,6 +10,10 @@ import llua.*;
 import llua.Lua;
 #end
 
+import openfl.Lib;
+import lime.app.Application;
+import lime.system.System;
+
 #if ACHIEVEMENTS_ALLOWED
 import backend.Achievements;
 #end
