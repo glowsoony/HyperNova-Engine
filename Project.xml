@@ -5,7 +5,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': HyperNova Eninge" file="HyperNovaEngine" packageName="com.edwahkkb.hypernova" package="com.edwahkkb.hypernova" main="Main" version="2.2.2" company="edwahkkb" />
+	<app title="Friday Night Funkin': HyperNova Engine" file="HyperNovaEngine" packageName="com.edwahkkb.hypernova" package="com.edwahkkb.hypernova" main="Main" version="2.2.2" company="edwahkkb" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
