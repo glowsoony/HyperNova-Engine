@@ -3,7 +3,6 @@ package backend.crashHandler;
 import flixel.FlxGame;
 import flixel.FlxState;
 
-
 /*
  * This class is the base game, the FlxGame, modified to make the in-game crash handler.
  *
@@ -18,7 +17,6 @@ class MainGame extends FlxGame
 
 	override public function switchState():Void
 	{
-
 		try
 		{
 			oldState = _state;
@@ -39,13 +37,6 @@ class MainGame extends FlxGame
 
 	override public function update()
 	{
-
-		// CRASH
-		if (FlxG.keys.justPressed.F3) {
-			var nullvar = null;
-			nullvar.toString();
-		}
-
 		try
 		{
 			super.update();
