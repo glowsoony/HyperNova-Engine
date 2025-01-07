@@ -670,6 +670,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		noteTextureInputText.text = PlayState.SONG.arrowSkin;
 		noteSplashesInputText.text = PlayState.SONG.splashSkin;
 		notITGModchart.checked = PlayState.SONG.notITG;
+		newModchartTool.checked = PlayState.SONG.newModchartTool;
 		rightScroll.checked = PlayState.SONG.rightScroll;
 		middleScroll.checked = PlayState.SONG.middleScroll;
 		versus.checked = PlayState.SONG.versus;
@@ -2724,6 +2725,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	var noteSplashesInputText:PsychUIInputText;
 
 	var notITGModchart:PsychUICheckBox;
+	var newModchartTool:PsychUICheckBox;
 	var rightScroll:PsychUICheckBox;
 	var middleScroll:PsychUICheckBox;
 	var versus:PsychUICheckBox;
@@ -2766,11 +2768,15 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		noRGBCheckBox = new PsychUICheckBox(objX, objY, 'Disable Note RGB', 100, updateNotesRGB);
 
 		
-		notITGModchart = new PsychUICheckBox(objX + 190, objY - 120, 'Is notITG Modchart', 200, function() {
+		notITGModchart = new PsychUICheckBox(objX + 190, objY -130, 'Modchart', 200, function() {
 			PlayState.SONG.notITG = notITGModchart.checked;
 		});
 
-		rightScroll = new PsychUICheckBox(notITGModchart.x, notITGModchart.y + 20, 'Force RightScroll', 200, function() {
+		newModchartTool = new PsychUICheckBox(notITGModchart.x, notITGModchart.y + 20, 'Use New Modchart tool', 200, function() {
+			PlayState.SONG.newModchartTool = newModchartTool.checked;
+		});
+
+		rightScroll = new PsychUICheckBox(newModchartTool.x, newModchartTool.y + 20, 'Force RightScroll', 200, function() {
 			PlayState.SONG.rightScroll = rightScroll.checked;
 		});
 
@@ -2832,6 +2838,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		tab_group.add(gameOverRetryInputText);
 		tab_group.add(noRGBCheckBox);
 		tab_group.add(notITGModchart);
+		tab_group.add(newModchartTool);
 		tab_group.add(rightScroll);
 		tab_group.add(middleScroll);
 		tab_group.add(versus);

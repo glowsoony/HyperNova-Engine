@@ -65,6 +65,8 @@ import psychlua.HScript;
 import crowplexus.iris.Iris;
 #end
 
+import modchart.Manager; //modchart stuff
+
 typedef ThreadBeatList = {
 	var beat:Float;
 	var func:Void->Void;
@@ -326,6 +328,9 @@ class PlayState extends MusicBeatState
 	public var edwhakIsEnemy:Bool = false;
 	public var allowEnemyDrain:Bool = false;
 	var edwhakDrain:Float = 0.03; //0.03 or more if changed
+
+	//Modchart stuff
+	public var modchartRenderer:Manager;
 
 	var staticDeath:FlxSprite;
     var offEffect:FlxSprite;
@@ -758,13 +763,35 @@ class PlayState extends MusicBeatState
 
 		generateSong();
 
-		if (SONG.notITG && notITGMod)
-		{
-			playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
-			playfieldRenderer.cameras = [camHUD];
-			add(playfieldRenderer);
+		//Loading silly notes :D!!
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+		NoteMovement.getDefaultStrumPos(this);
+		for (i in 0...playerStrums.length) {
+			setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+			setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
 		}
-		else{
+		for (i in 0...opponentStrums.length) {
+			setOnScripts('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+			setOnScripts('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
+			//if(ClientPrefs.data.middleScroll) opponentStrums.members[i].visible = false;
+		}
+
+		if (notITGMod){
+			if (SONG.notITG && !SONG.newModchartTool)
+			{
+				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
+				playfieldRenderer.cameras = [camHUD];
+				add(playfieldRenderer);
+			}
+			else if (SONG.notITG && SONG.newModchartTool){
+				modchartRenderer = new Manager();
+				add(modchartRenderer);
+			}else{ //if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes!
+				add(grpNoteSplashes);
+				add(grpHoldSplashes);
+			}
+		}else{
 			add(grpNoteSplashes);
 			add(grpHoldSplashes);
 		}
@@ -883,7 +910,7 @@ class PlayState extends MusicBeatState
 
 		stagesFunc(function(stage:BaseStage) stage.createPost());
 
-		if (notITGMod && SONG.notITG)
+		if (notITGMod && SONG.notITG && !SONG.newModchartTool)
 			ModchartFuncs.loadLuaFunctions();
 
 		callOnScripts('onCreatePost');
@@ -1259,18 +1286,6 @@ class PlayState extends MusicBeatState
 			if (skipCountdown || startOnTime > 0) skipArrowStartTween = true;
 
 			canPause = true;
-			generateStaticArrows(0);
-			generateStaticArrows(1);
-			NoteMovement.getDefaultStrumPos(this);
-			for (i in 0...playerStrums.length) {
-				setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
-				setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
-			}
-			for (i in 0...opponentStrums.length) {
-				setOnScripts('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
-				setOnScripts('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
-				//if(ClientPrefs.data.middleScroll) opponentStrums.members[i].visible = false;
-			}
 
 			startedCountdown = true;
 			Conductor.songPosition = -Conductor.crochet * 5 + Conductor.offset;
@@ -2165,7 +2180,7 @@ class PlayState extends MusicBeatState
 		else FlxG.camera.followLerp = 0;
 		callOnScripts('onUpdate', [elapsed]);
 
-		if (notITGMod && SONG.notITG)
+		if (notITGMod && SONG.notITG && !SONG.newModchartTool)
 			playfieldRenderer.speed = playbackRate; //LMAO IT LOOKS SOO GOOFY AS FUCK
 		// if (aftBitmap != null) aftBitmap.update(elapsed); //if it fail this don't load
 

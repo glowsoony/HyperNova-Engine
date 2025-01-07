@@ -135,6 +135,11 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 
 	<define name="PSYCH" />
 
+	<haxedef name="FM_ENGINE" value="PSYCH"/>
+	<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
+
+	<haxelib name="funkin-modchart" />
+
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
 	<haxelib name="hscript-iris" if="HSCRIPT_ALLOWED" version="1.1.3"/>

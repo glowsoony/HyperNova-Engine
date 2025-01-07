@@ -22,6 +22,7 @@ typedef SwagSong =
 	var format:String;
 
 	@:optional var notITG:Bool;
+	@:optional var newModchartTool:Bool;
 	@:optional var rightScroll:Bool;
 	@:optional var middleScroll:Bool;
 	@:optional var versus:Bool;
