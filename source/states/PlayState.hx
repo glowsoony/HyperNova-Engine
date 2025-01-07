@@ -933,7 +933,33 @@ class PlayState extends MusicBeatState
 		
 		super.create();
 
-		for (note in unspawnNotes) note.setCustomColor("quant",!ClientPrefs.get("quantization"));
+		for (note in unspawnNotes) 
+		{
+			note.setCustomColor("quant",!ClientPrefs.get("quantization"));
+			if (note.noteType == 'Custom Note')
+			{
+				note.customNoteMech = function(note:Note)
+				{
+					
+				}
+			}
+			else {
+				if (boyfriend.curCharacter.contains('boy'))
+				{
+					if (FlxG.random.bool(2))
+					{
+						note.allowCustomMech = FlxG.random.bool(2);
+						note.customNoteMech = function(self:Note)
+						{
+							self.hitHealth = 0;
+							self.extraData.set("constantHealth", true);
+						}
+					}else {
+						note.extraData.set("constantHealth", false);
+					}
+				}
+			}
+		}
 
 		Paths.clearUnusedMemory();
 
@@ -1823,7 +1849,13 @@ class PlayState extends MusicBeatState
 					// CLEAR ANY POSSIBLE GHOST NOTES
 					for (evilNote in unspawnNotes) {
 						var matches: Bool = (noteColumn == evilNote.noteData && gottaHitNote == evilNote.mustPress && evilNote.noteType == noteType);
-						if (matches && Math.abs(spawnTime - evilNote.strumTime) == 0.0) {
+						if (matches && Math.abs(spawnTime - evilNote.strumTime) < flixel.math.FlxMath.EPSILON) {
+							if (evilNote.tail.length > 0)
+								for (tail in evilNote.tail)
+								{
+									tail.destroy();
+									unspawnNotes.remove(tail);
+								}
 							evilNote.destroy();
 							unspawnNotes.remove(evilNote);
 							ghostNotesCaught++;
@@ -2361,6 +2393,11 @@ class PlayState extends MusicBeatState
 							var strum:StrumNote = strumGroup.members[daNote.noteData];
 							daNote.followStrumNote(strum, fakeCrochet, songSpeed / playbackRate);
 
+							if (daNote.extraData.get("constantHealth") != null)
+							{
+								addHealth = (daNote.extraData.get("constanHealth") == true);
+							}
+
 							if(daNote.mustPress)
 							{
 								if(cpuControlled && !daNote.blockHit && daNote.canBeHit && (daNote.isSustainNote || daNote.strumTime <= Conductor.songPosition))
@@ -2393,6 +2430,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 			checkEventNote();
+		}
+
+		if (addHealth)
+		{
+			health += 0.007;
 		}
 
 		
@@ -2441,6 +2483,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+
+	var addHealth:Bool = false;
 
 	
 	function antiCheat()

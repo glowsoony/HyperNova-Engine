@@ -433,6 +433,9 @@ class Note extends FlxSkewedSprite
 					noMissAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
+				case 'Custom Note':
+					allowCustomMech = true;
+					if (customNoteMech != null) customNoteMech(this);
 			}
 			if (value != null && value.length > 1) NoteTypesConfig.applyNoteTypeData(this, value);
 			if (hitsound != 'hitsound' && hitsoundVolume > 0) Paths.sound(hitsound); //precache new sound for being idiot-proof
@@ -440,6 +443,9 @@ class Note extends FlxSkewedSprite
 		}
 		return value;
 	}
+
+	public var allowCustomMech:Bool = false;
+	public var customNoteMech:Note->Void = null;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?createdFrom:Dynamic = null)
 	{
@@ -757,6 +763,8 @@ class Note extends FlxSkewedSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (allowCustomMech && customNoteMech != null) customNoteMech(this);
 
 		if (mustPress)
 		{
