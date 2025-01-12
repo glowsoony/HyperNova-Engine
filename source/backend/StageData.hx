@@ -40,12 +40,12 @@ class StageData {
 	{
 		return {
 			directory: "",
-			defaultZoom: 0.9,
+			defaultZoom: 0.8125,
 			stageUI: "normal",
 
-			boyfriend: [770, 100],
-			girlfriend: [400, 130],
-			opponent: [100, 100],
+			boyfriend: [875, 403],
+			girlfriend: [820, 355],
+			opponent: [628, 403],
 			hide_girlfriend: false,
 
 			camera_boyfriend: [0, 0],
@@ -110,6 +110,10 @@ class StageData {
 				return 'schoolEvil';
 			case 'ugh' | 'guns' | 'stress':
 				return 'tank';
+			case 'darnell', 'lit-up', '2hot':
+        		return 'phillyStreets';
+      		case 'blazin':
+        		return 'phillyBlazin';
 		}
 		return 'stage';
 	}

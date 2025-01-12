@@ -263,7 +263,10 @@ class LoadingState extends MusicBeatState
 	{
 		var directory:String = 'shared';
 		var weekDir:String = StageData.forceNextDirectory;
-		StageData.forceNextDirectory = null;
+		if (weekDir == null || weekDir.length <= 0 || weekDir == ''){
+			StageData.forceNextDirectory = null;
+			weekDir = 'shared'; //if something happens, load shared, else don't make the directory null and thats it
+		}
 
 		if (weekDir != null && weekDir.length > 0 && weekDir != '') directory = weekDir;
 
