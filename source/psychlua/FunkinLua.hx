@@ -1968,30 +1968,30 @@ class FunkinLua {
         //     // return retVal;
         // });
 
-		Lua_helper.add_callback(lua, "makeLuaProxy", function(tag:String, x:Float, y:Float, ?camera:String = '') {
-			var micamara:FlxCamera = PlayState.instance.camProxy;
+		// Lua_helper.add_callback(lua, "makeLuaProxy", function(tag:String, x:Float, y:Float, ?camera:String = '') {
+		// 	var micamara:FlxCamera = PlayState.instance.camProxy;
 
-			if(PlayState.instance.aftBitmap != null)
-			{
-				tag = tag.replace('.', '');
-				LuaUtils.destroyObject(tag);
-				var leSprite:FlxSkewedSprite = new FlxSkewedSprite(x, y);
+		// 	if(PlayState.instance.aftBitmap != null)
+		// 	{
+		// 		tag = tag.replace('.', '');
+		// 		LuaUtils.destroyObject(tag);
+		// 		var leSprite:FlxSkewedSprite = new FlxSkewedSprite(x, y);
 
-				leSprite.loadGraphic(PlayState.instance.aftBitmap.bitmap); //idk if this even works but whatever
+		// 		leSprite.loadGraphic(PlayState.instance.aftBitmap.bitmap); //idk if this even works but whatever
 				
-				leSprite.antialiasing = ClientPrefs.data.antialiasing;
-				MusicBeatState.getVariables().set(tag, leSprite);
-				leSprite.active = true;
+		// 		leSprite.antialiasing = ClientPrefs.data.antialiasing;
+		// 		MusicBeatState.getVariables().set(tag, leSprite);
+		// 		leSprite.active = true;
 
-				if (camera != null && camera != '') {
-					leSprite.camera = LuaUtils.cameraFromString(camera);
-				}else{
-					leSprite.camera = micamara;
-				}
-			}else{
-				luaTrace('makeLuaProxy: attempted to make a proxy but aftBitmap is null!', false, false, FlxColor.RED);
-			}
-		});
+		// 		if (camera != null && camera != '') {
+		// 			leSprite.camera = LuaUtils.cameraFromString(camera);
+		// 		}else{
+		// 			leSprite.camera = micamara;
+		// 		}
+		// 	}else{
+		// 		luaTrace('makeLuaProxy: attempted to make a proxy but aftBitmap is null!', false, false, FlxColor.RED);
+		// 	}
+		// });
 
 
 		#if DISCORD_ALLOWED DiscordClient.addLuaCallbacks(lua); #end

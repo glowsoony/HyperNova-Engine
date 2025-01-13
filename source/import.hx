@@ -113,7 +113,7 @@ import shaders.flixel.system.FlxShader;
 //Modcharting
 import modcharting.*;
 
-import HazardAFT_Capture as AFT_capture;
+// import HazardAFT as AFT_capture;
 
 using StringTools;
 #end

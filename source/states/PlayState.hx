@@ -416,7 +416,7 @@ class PlayState extends MusicBeatState
 		return timer.start(Time, OnComplete, Loops);
 	}
 
-	public var aftBitmap:AFT_capture; //hazzy stuff :3
+	// public var aftBitmap:AFT_capture; //hazzy stuff :3
 	public var camBackground:FlxCamera;
 
 	override public function create()
@@ -651,9 +651,9 @@ class PlayState extends MusicBeatState
 			add(boyfriendGroup);
 		}
 
-		aftBitmap = new AFT_capture(camHUD);
-		aftBitmap.updateRate = 0.0;
-		aftBitmap.recursive = false;
+		// aftBitmap = new AFT_capture(camHUD);
+		// aftBitmap.updateRate = 0.0;
+		// aftBitmap.recursive = false;
 		
 		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 		// "SCRIPTS FOLDER" SCRIPTS
