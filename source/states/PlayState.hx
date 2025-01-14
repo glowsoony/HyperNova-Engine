@@ -4215,6 +4215,8 @@ class PlayState extends MusicBeatState
 			resetSubState();
 		}
 
+		if (modchartRenderer != null) modchartRenderer.destroy();
+
 		#if LUA_ALLOWED
 		for (lua in luaArray)
 		{
