@@ -732,6 +732,8 @@ class PlayState extends MusicBeatState
 		comboGroup = new FlxSpriteGroup();
 		add(comboGroup);
 
+		Conductor.offset = SONG.offset;
+		
 		Conductor.songPosition = -Conductor.crochet * 5 + Conductor.offset;
 
 		add(strumLineNotes);

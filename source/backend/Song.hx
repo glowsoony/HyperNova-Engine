@@ -183,7 +183,7 @@ class Song
 					}
 			}
 		}
-		if (songJson.offset == null) songJson.offset = 0;
+		if (Math.isNaN(songJson.offset)) songJson.offset = 0;
 		return songJson;
 	}
 }
