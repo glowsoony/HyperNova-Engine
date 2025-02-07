@@ -63,7 +63,7 @@ class ModchartEditorEvent extends FlxSprite
     }
     public function getBeatTime():Float { return data[ModchartFile.EVENT_DATA][ModchartFile.EVENT_TIME]; }
 }
-class ModchartEditorState extends MusicBeatState
+class NewModchartEditorState extends MusicBeatState
 {
     var hasUnsavedChanges:Bool = false;
     override function closeSubState() 
@@ -79,8 +79,6 @@ class ModchartEditorState extends MusicBeatState
     // public static var modifierList:Array<Class<Modifier>> = ModchartMacros.getModifierList();
     // getAllClasses output its a haxe.ds.List so thats why im using another loop
     // ALSO, THE LIST IS UNSORTED !!
-    
-    //public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
     public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting', true, modcharting.Modifier)) cls];
     public static var easeList:Array<String> = ImprovedEases.easeList;
     
@@ -169,12 +167,12 @@ class ModchartEditorState extends MusicBeatState
         bg.setGraphicSize(Std.int(FlxG.width), Std.int(FlxG.height));
         add(bg);
 
-        // if (PlayState.isPixelStage) //Skew Kills Pixel Notes (How are you going to stretch already pixelated bit by bit notes?)
-        // {
-        //     modifierList.remove(SkewModifier);
-        //     modifierList.remove(SkewXModifier);
-        //     modifierList.remove(SkewYModifier);
-        // }
+        if (PlayState.isPixelStage) //Skew Kills Pixel Notes (How are you going to stretch already pixelated bit by bit notes?)
+        {
+            modifierList.remove(SkewModifier);
+            modifierList.remove(SkewXModifier);
+            modifierList.remove(SkewYModifier);
+        }
 
 		Conductor.mapBPMChanges(PlayState.SONG);
         // #if (PSYCH && PSYCHVERSION >= "0.7")

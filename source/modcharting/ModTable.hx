@@ -63,16 +63,16 @@ class ModTable
     {
         //default modifiers
         //got a sigly rework to make this shit work better ig? (added all modifiers so lua and hxscript can use them and no need add)
-        add(new XModifier('x'));
-        add(new YModifier('y'));
-        add(new ZModifier('z'));
-        add(new ConfusionModifier('confusion'));
+        add(new modcharting.modifiers.Transform.XModifier('x'));
+        add(new modcharting.modifiers.Transform.YModifier('y'));
+        add(new modcharting.modifiers.Transform.ZModifier('z'));
+        add(new modcharting.modifiers.Confusion.ConfusionModifier('confusion'));
         for (i in 0...((NoteMovement.keyCount+NoteMovement.playerKeyCount)))
         {
-            add(new XModifier('x'+i, ModifierType.LANESPECIFIC));
-            add(new YModifier('y'+i, ModifierType.LANESPECIFIC));
-            add(new ZModifier('z'+i, ModifierType.LANESPECIFIC));
-            add(new ConfusionModifier('confusion'+i, ModifierType.LANESPECIFIC));
+            add(new modcharting.modifiers.Transform.XModifier('x'+i, ModifierType.LANESPECIFIC));
+            add(new modcharting.modifiers.Transform.YModifier('y'+i, ModifierType.LANESPECIFIC));
+            add(new modcharting.modifiers.Transform.ZModifier('z'+i, ModifierType.LANESPECIFIC));
+            add(new modcharting.modifiers.Confusion.ConfusionModifier('confusion'+i, ModifierType.LANESPECIFIC));
             setModTargetLane('x'+i, i);
             setModTargetLane('y'+i, i);
             setModTargetLane('z'+i, i);
