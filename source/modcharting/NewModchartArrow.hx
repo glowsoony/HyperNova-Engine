@@ -299,17 +299,17 @@ class NewModchartArrow extends FlxSprite
 			{
 				if (copySpriteGraphic)
 				{
-					this.x = spriteGraphic.x;
-					this.y = spriteGraphic.y;
+					if (spriteGraphic.x != this.x) this.x = spriteGraphic.x;
+					if (spriteGraphic.y != this.y) this.y = spriteGraphic.y;
 					// this.z = spriteGraphic.z;
 			
-					this.scaleX = spriteGraphic.scale.x;
-					this.scaleY = spriteGraphic.scale.y;
+					if (spriteGraphic.scale.x != this.scaleX) this.scaleX = spriteGraphic.scale.x;
+					if (spriteGraphic.scale.y != this.scaleY) this.scaleY = spriteGraphic.scale.y;
 			
-					this.angleZ = spriteGraphic.angle;
+					if (spriteGraphic.angleZ != this.angle) this.angleZ = spriteGraphic.angle;
 			
-					this.offset = spriteGraphic.offset;
-					this.cameras = spriteGraphic.cameras;
+					if (spriteGraphic.offset != this.offset) this.offset = spriteGraphic.offset;
+					if (spriteGraphic.cameras != this.cameras) this.cameras = spriteGraphic.cameras;
 				}
 				updateTris();
 				drawManual(spriteGraphic.graphic != null ? spriteGraphic.graphic : null);
@@ -345,7 +345,7 @@ class NewModchartArrow extends FlxSprite
 
 		if (spriteGraphic != null)
 		{
-			this.antialiasing = spriteGraphic.antialiasing;
+			if (spriteGraphic.antialiasing != this.antialiasing) this.antialiasing = spriteGraphic.antialiasing;
 
 			// var animFrameName:String = "ligma";
 
@@ -355,11 +355,7 @@ class NewModchartArrow extends FlxSprite
 			var animFrameName:String = spriteGraphic.animation.frameName + " - " + noteStyleName;
 
 			// check to see if we have this frame of animation saved
-			if (graphicCache3D.exists(animFrameName))
-			{
-				graphicToUse = graphicCache3D.get(animFrameName);
-				// if (debugTesting) trace("got: " + animFrameName);
-			}
+			if (graphicCache3D.exists(animFrameName)) graphicToUse = graphicCache3D.get(animFrameName);
 			else
 			{
 				// TODO: MAKE IT SO IT AUTOMATICALLY PRECACHES ALL THE ANIMATION FRAMES BEFORE THE SONG STARTS TO AVOID MID-SONG LAGSPIKES AS IT CACHES NEW ANIMATIONS!
@@ -407,7 +403,7 @@ class NewModchartArrow extends FlxSprite
 		for (camera in cameras)
 		{
 			if (!camera.visible || !camera.exists) continue;
-			// if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
+			if (spriteGraphic != null && !spriteGraphic.isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
 			// memory leak with drawTriangles :c
 
@@ -447,10 +443,7 @@ class NewModchartArrow extends FlxSprite
 	{
 		super.updateColorTransform();
 
-		if (originalWidthHeight == null && spriteGraphic != null)
-		{
-		originalWidthHeight = new Vector2(spriteGraphic.frameWidth, spriteGraphic.frameHeight);
-		}
+		if (originalWidthHeight == null && spriteGraphic != null) originalWidthHeight = new Vector2(spriteGraphic.frameWidth, spriteGraphic.frameHeight);
 	}
 
 	public var offsetBeforeRotation:FlxPoint = new FlxPoint(0, 0);
