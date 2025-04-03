@@ -30,15 +30,61 @@ import flixel.util.FlxColor;
 */
 class NewModchartArrow extends FlxSprite
 {
+	// Makes the mesh all wobbly!
+	public var vibrateEffect:Float = 0.0;
+
+	public var vertOffsetX:Array<Float> = [];
+	public var vertOffsetY:Array<Float> = [];
+	public var vertOffsetZ:Array<Float> = [];
+
   	public var z:Float = 0.0;
 
 	// If set, will reference this sprites graphic! Very useful for animations!
 	public var spriteGraphic(default, set):FlxSprite;
 
+	var precacheSpriteGraphic:Bool = false;
+
 	function set_spriteGraphic(value:FlxSprite):FlxSprite
 	{
-	  spriteGraphic = value;
-	  return spriteGraphic;
+	  	spriteGraphic = value;
+	  	if (value != null)
+		{
+			this.antialiasing = spriteGraphic.antialiasing;
+			// SCAN THROUGH ALL THE ANIMATIONS OF THIS GRAPHIC AND CACHE EVERY ANIMATION FRAME!
+			if (precacheSpriteGraphic)
+			{
+				precacheSpriteAnims(spriteGraphic, graphicCacheSuffix);
+			}
+		}
+	  	return spriteGraphic;
+	}
+
+	public function precacheSpriteAnims(s:FlxSprite, suffix:String)
+	{
+		var allFrames = s.frames;
+		for (i in 0...allFrames.frames.length)
+		{
+			var frame = allFrames.frames[i];
+			var animFrameName:String = frame.name + " - " + suffix;
+		
+			// trace(animFrameName);
+		
+			// check to see if we have this frame of animation saved
+			if (graphicCache3D.exists(animFrameName))
+			{
+				continue; // already cached...
+			}
+			else
+			{
+				// trace("PRECACHE -> New frame for: " + animFrameName);
+				var graphicToUse:FlxGraphic;
+		
+				// grab the bitmap
+				// grab only
+				graphicToUse = FlxGraphic.fromFrame(frame, true, animFrameName);
+				graphicCache3D.set(animFrameName, graphicToUse);
+			}
+		}
 	}
   
 	public var projectionEnabled:Bool = true;
@@ -92,10 +138,12 @@ class NewModchartArrow extends FlxSprite
 	public var uvtData:DrawData<Float> = new DrawData<Float>();
 	
 	// custom setter to prevent values below 0, cuz otherwise we'll devide by 0!
-	public var subdivisions(default, set):Int = 2;
+	public var subdivisions(default, set):Int = 3;
 
 	function set_subdivisions(value:Int):Int
 	{
+		if (subdivisions == value) return subdivisions;
+
 		if (value < 0) value = 0;
 		subdivisions = value;
 		return subdivisions;
@@ -141,35 +189,217 @@ class NewModchartArrow extends FlxSprite
 		}
 		indices = new DrawData<Int>(noteIndices.length, true, noteIndices);
 
+		for (x in 0...subdivisions + 2) // x
+		{
+			for (y in 0...subdivisions + 2) // y
+			{
+			vertOffsetX.push(0);
+			vertOffsetY.push(0);
+			vertOffsetZ.push(0);
+			}
+		}
+		updateUV();
+		updateTris(true);
+	}
+	
+  	// V0.8.0a -> Can now modify UV's!
+	public function updateUV():Void
+	{
 		// UV coordinates are normalized, so they range from 0 to 1.
 		var i:Int = 0;
 		for (x in 0...subdivisions + 2) // x
 		{
 		  for (y in 0...subdivisions + 2) // y
 		  {
+			// the %
 			var xPercent:Float = x / (subdivisions + 1);
 			var yPercent:Float = y / (subdivisions + 1);
-			uvtData[i * 2] = xPercent;
-			uvtData[i * 2 + 1] = yPercent;
+
+			var uvX:Float = xPercent;
+			var uvY:Float = yPercent;
+	
+			// uv scale
+			uvX -= uvScaleOffset.x;
+			uvY -= uvScaleOffset.y;
+	
+			uvX *= uvScale.x;
+			uvY *= uvScale.y;
+	
+			uvX += uvScaleOffset.x;
+			uvY += uvScaleOffset.y;
+	
+			// uv offset
+			uvX += uvOffset.x;
+			uvY += uvOffset.y;
+	
+			// map it
+			uvtData[i * 2] = uvX;
+			uvtData[i * 2 + 1] = uvY;
 			i++;
 		  }
 		}
-		updateTris();
 	}
 
-	public function updateTris(debugTrace:Bool = false):Void
+	public var uvScale:Vector2 = new Vector2(1.0, 1.0);
+	public var uvScaleOffset:Vector2 = new Vector2(0.5, 0.5); // scale from center
+	public var uvOffset:Vector2 = new Vector2(0.0, 0.0);
+	
+	private var old_vertOffsetX:Array<Float> = [];
+	private var old_vertOffsetY:Array<Float> = [];
+	private var old_vertOffsetZ:Array<Float> = [];
+  
+	private var oldX:Float = 0;
+	private var oldY:Float = 0;
+	private var oldZ:Float = 0;
+	private var oldAngleX:Float = 0;
+	private var oldAngleY:Float = 0;
+	private var oldAngleZ:Float = 0;
+	private var oldScaleX:Float = 0;
+	private var oldScaleY:Float = 0;
+	private var oldScaleZ:Float = 0;
+	private var oldMoveX:Float = 0;
+	private var oldMoveY:Float = 0;
+	private var oldMoveZ:Float = 0;
+	private var oldSkewX:Float = 0;
+	private var oldSkewY:Float = 0;
+	private var oldSkewZ:Float = 0;
+	private var oldSkewX_offset:Float = 0;
+	private var oldSkewY_offset:Float = 0;
+	private var oldSkewZ_offset:Float = 0;
+	private var oldFovOffsetX:Float = 0;
+	private var oldFovOffsetY:Float = 0;
+	private var oldPivotOffsetX:Float = 0;
+	private var oldPivotOffsetY:Float = 0;
+	private var oldPivotOffsetZ:Float = 0;
+	private var oldOffset:FlxPoint;
+	private var oldFrameName:String = "";
+  
+	public function updateOldVars()
 	{
+		old_vertOffsetX = this.vertOffsetX.copy();
+		old_vertOffsetY = this.vertOffsetY.copy();
+		old_vertOffsetZ = this.vertOffsetZ.copy();
+	
+		oldOffset = this.offset;
+		oldX = this.x;
+		oldY = this.y;
+		oldZ = this.z;
+		oldScaleX = this.scaleX;
+		oldScaleY = this.scaleY;
+		oldScaleZ = this.scaleZ;
+		oldAngleY = this.angleY;
+		oldAngleX = this.angleX;
+		oldAngleZ = this.angleZ;
+		oldMoveX = this.moveX;
+		oldMoveY = this.moveY;
+		oldMoveZ = this.moveZ;
+		oldFovOffsetX = this.fovOffsetX;
+		oldFovOffsetY = this.fovOffsetY;
+		oldPivotOffsetX = this.pivotOffsetX;
+		oldPivotOffsetZ = this.pivotOffsetZ;
+		oldPivotOffsetY = this.pivotOffsetY;
+		oldSkewX_offset = this.skewX_offset;
+		oldSkewY_offset = this.skewY_offset;
+		oldSkewZ_offset = this.skewZ_offset;
+		oldSkewX = this.skewX;
+		oldSkewY = this.skewY;
+		oldSkewZ = this.skewZ;
+		if (spriteGraphic != null)
+		{
+			oldFrameName = spriteGraphic.animation.frameName;
+		}
+	}
+  
+	public var alwaysUpdate:Bool = false;
+  
+	public function trisNeedUpdate():Bool
+	{
+		if (PlayState.instance != null)
+		{
+			// @:privateAccess
+			// if (PlayState.instance.isGamePaused)
+			// {
+			// return false; // Never update if paused!
+			// }
+		}
+	
+		if (vibrateEffect != 0 || alwaysUpdate)
+		{
+			return true; // Since this effect needs to be updated constantly!
+		}
+	
+		// animation changed?
+		if (spriteGraphic != null)
+		{
+			if (spriteGraphic.animation.frameName != oldFrameName) return true;
+		}
+	
+		if (oldOffset != this.offset) return true;
+	
+		if (oldX != this.x) return true;
+		if (oldY != this.y) return true;
+		if (oldZ != this.z) return true;
+	
+		if (oldAngleX != this.angleX) return true;
+		if (oldAngleY != this.angleY) return true;
+		if (oldAngleZ != this.angleZ) return true;
+	
+		if (oldScaleX != this.scaleX) return true;
+		if (oldScaleY != this.scaleY) return true;
+		if (oldScaleZ != this.scaleZ) return true;
+	
+		if (oldSkewX != this.skewX) return true;
+		if (oldSkewY != this.skewY) return true;
+		if (oldSkewZ != this.skewZ) return true;
+	
+		if (oldSkewX_offset != this.skewX_offset) return true;
+		if (oldSkewY_offset != this.skewY_offset) return true;
+		if (oldSkewZ_offset != this.skewZ_offset) return true;
+	
+		if (oldFovOffsetX != this.fovOffsetX) return true;
+		if (oldFovOffsetY != this.fovOffsetY) return true;
+	
+		if (oldPivotOffsetX != this.pivotOffsetX) return true;
+		if (oldPivotOffsetY != this.pivotOffsetY) return true;
+		if (oldPivotOffsetZ != this.pivotOffsetZ) return true;
+	
+		if (oldMoveX != this.moveX) return true;
+		if (oldMoveY != this.moveY) return true;
+		if (oldMoveZ != this.moveZ) return true;
+	
+		if (old_vertOffsetX != vertOffsetX) return true;
+		if (old_vertOffsetY != vertOffsetY) return true;
+		if (old_vertOffsetZ != vertOffsetZ) return true;
+	
+		// All the variables are the same, return false as we don't need to update!
+		return false;
+	}
+  
+	public var skewOffsetFix:Float = 0; //???
+	public var skew3D:Bool = false; // Doesn't work with angle :(
+
+	public function updateTris(forceUpdate:Bool = false, debugTrace:Bool = false):Void
+	{
+		if (!trisNeedUpdate() && !forceUpdate)
+		{
+			return;
+		}
 		var wasAlreadyFlipped_X:Bool = flipX;
     	var wasAlreadyFlipped_Y:Bool = flipY;
 
 		var w:Float = spriteGraphic != null ? spriteGraphic.frameWidth : frameWidth;
 		var h:Float = spriteGraphic != null ? spriteGraphic.frameHeight : frameHeight;
 
+		culled = false;
+    	// var cullCheckX:Float = 0;
+    	// var cullCheckY:Float = 0;
+
 		var i:Int = 0;
 		for (x in 0...subdivisions + 2) // x
 		{
 			for (y in 0...subdivisions + 2) // y
 			{
+				// Setup point
 				var point2D:Vector2;
 				var point3D:Vector3D = new Vector3D(0, 0, 0);
 				point3D.x = (w / (subdivisions + 1)) * x;
@@ -178,22 +408,55 @@ class NewModchartArrow extends FlxSprite
 				// skew funny
 				var xPercent:Float = x / (subdivisions + 1);
 				var yPercent:Float = y / (subdivisions + 1);
-				// For some reason, we need a 0.5 offset for this??????????????????? //fuck you 0.5
-				var xPercent_SkewOffset:Float = xPercent - skewY_offset;
-				var yPercent_SkewOffset:Float = yPercent - skewX_offset;
-				// Keep math the same as skewedsprite for parity reasons.
-				if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
-					point3D.x += yPercent_SkewOffset * Math.tan((skewX/1.25) * FlxAngle.TO_RAD) * h;
-				if (skewY != 0) //
-					point3D.y += xPercent_SkewOffset * Math.tan((skewY/1.25) * FlxAngle.TO_RAD) * w;
-				if (skewZ != 0) //
-					point3D.z += yPercent_SkewOffset * Math.tan((skewZ/1.25) * FlxAngle.TO_RAD) * h;
+				
+				var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
+				var newHeight:Float = (scaleY - 1) * (yPercent - 0.5);
+
+				// Apply vibrate effect
+				if (vibrateEffect != 0)
+				{
+					point3D.x += FlxG.random.float(-1, 1) * vibrateEffect;
+					point3D.y += FlxG.random.float(-1, 1) * vibrateEffect;
+					point3D.z += FlxG.random.float(-1, 1) * vibrateEffect;
+				}
+
+				// Apply curVertOffsets
+				var curVertOffsetX:Float = 0;
+				var curVertOffsetY:Float = 0;
+				var curVertOffsetZ:Float = 0;
+		
+				if (i < vertOffsetX.length)
+				{
+				  curVertOffsetX = vertOffsetX[i];
+				}
+				if (i < vertOffsetY.length)
+				{
+				  curVertOffsetY = vertOffsetY[i];
+				}
+				if (i < vertOffsetZ.length)
+				{
+				  curVertOffsetZ = vertOffsetZ[i];
+				}
+		
+				point3D.x += curVertOffsetX;
+				point3D.y += curVertOffsetY;
+				point3D.z += curVertOffsetZ;
 
 				// scale
-				var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
 				point3D.x += (newWidth) * w;
-				newWidth = (scaleY - 1) * (yPercent - 0.5);
-				point3D.y += (newWidth) * h;
+				point3D.y += (newHeight) * h;
+
+				point3D = applyRotation(point3D, xPercent, yPercent);
+
+				point3D.x += moveX;
+				point3D.y += moveY;
+				point3D.z += moveZ;
+
+				point3D = applySkew(point3D, xPercent, yPercent, w, h);
+
+				// Apply offset here before it gets affected by z projection!
+				point3D.x -= offset.x;
+				point3D.y -= offset.y;
 
 				point2D = applyPerspective(point3D, xPercent, yPercent);
 
@@ -211,24 +474,10 @@ class NewModchartArrow extends FlxSprite
 
 		// if (debugTrace) trace("\nverts: \n" + vertices + "\n");
 
-		// temp fix for now I guess lol?
-		// return; // TEMP TEMP TEMP TEMP TEMP TEMP OVER HER DUMBASS GET RID OF ME RID OF ME YOU HEAR ME?!!!!
-
-		culled = false;
-
-		// temp fix for now I guess lol?
-		// if (spriteGraphic != null)
-		// {
-		//  spriteGraphic.flipX = false;
-		//  spriteGraphic.flipY = false;
-		// }
-
-		// flipX = wasAlreadyFlipped_X;
-		// flipY = wasAlreadyFlipped_Y;
 		flipX = false;
 		flipY = false;
 
-		// TODO -> culMode this so that it instead just breaks out of the function if it detects a difference between two points as being negative!
+		// TODO -> change this so that it instead just breaks out of the function if it detects a difference between two points as being negative!
 		switch (cullMode)
 		{
 			case "always_positive" | "always_negative":
@@ -270,11 +519,9 @@ class NewModchartArrow extends FlxSprite
 					flipY = !flipY;
 				}
 			}
-			default:
-				culled = false;
 		}
+		updateOldVars();
 	}
-	
 	
 	public var cullMode:String = "none";
 	
@@ -292,7 +539,7 @@ class NewModchartArrow extends FlxSprite
 			if (spriteGraphic == null)
 			{
 				doDraw = false;
-				trace("no sprite graphic! PERRO");
+				// trace("no sprite graphic! PERRO");
 				return;
 			}
 			else
@@ -320,13 +567,17 @@ class NewModchartArrow extends FlxSprite
 			return; // do nothing lmfao, moved to drawManual just to be safe cuz idk if it will double draw or not (I doubt but, you never know with Flixel)
 		}
 	}
+	
+	public var textureRepeat:Bool = true;
 
 	public var debugTesting:Bool = false;
 
 	// public var graphicAnimMap:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 	public var graphicCache3D:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 
-	public function drawManual(graphicToUse:FlxGraphic = null, noteStyleName:String = ""):Void
+	public var graphicCacheSuffix:String = "";
+
+	public function drawManual(graphicToUse:FlxGraphic = null):Void
 	{
 		var c = TriangleCulling.NONE;
 		switch (cullMode)
@@ -338,7 +589,8 @@ class NewModchartArrow extends FlxSprite
 		case "always":
 			culled = true;
 		}
-		if (culled ||alpha < 0 || vertices == null || indices == null || graphicToUse == null || uvtData == null || _point == null || offset == null)
+
+		if (culled || alpha < 0 || vertices == null || indices == null || graphicToUse == null || uvtData == null || _point == null || offset == null)
 		{
 			return;
 		}
@@ -352,7 +604,7 @@ class NewModchartArrow extends FlxSprite
 			// var animFrameName:String = spriteGraphic.animation.frameName + " - " + noteStyleName + (spriteGraphic.flipX ? " - flipX" : "")
 			//  + (spriteGraphic.flipY ? " - flipY" : "");
 
-			var animFrameName:String = spriteGraphic.animation.frameName + " - " + noteStyleName;
+			var animFrameName:String = spriteGraphic.animation.frameName + " - " + graphicCacheSuffix;
 
 			// check to see if we have this frame of animation saved
 			if (graphicCache3D.exists(animFrameName)) graphicToUse = graphicCache3D.get(animFrameName);
@@ -409,8 +661,8 @@ class NewModchartArrow extends FlxSprite
 
 			// getScreenPosition(_point, camera).subtractPoint(offset);
 			getScreenPosition(_point, camera);
-			camera.drawTriangles(graphicToUse, vertices, indices, uvtData, null, _point, blend, true, antialiasing, spriteGraphic.colorTransform != null ? spriteGraphic.colorTransform : colorTransform,
-				spriteGraphic.shader != null ? spriteGraphic.shader : null);
+			camera.drawTriangles(graphicToUse, vertices, indices, uvtData, null, _point, blend, textureRepeat, antialiasing,
+				spriteGraphic.colorTransform != null ? spriteGraphic.colorTransform : colorTransform, spriteGraphic.shader != null ? spriteGraphic.shader : null);
 		}
 
 		#if FLX_DEBUG
@@ -448,17 +700,55 @@ class NewModchartArrow extends FlxSprite
 
 	public var offsetBeforeRotation:FlxPoint = new FlxPoint(0, 0);
 
-	public function applyPerspective(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector2
+	public var preRotationMoveX:Float = 0;
+  	public var preRotationMoveY:Float = 0;
+  	public var preRotationMoveZ:Float = 0;
+
+	public function applySkew(pos:Vector3D, xPercent:Float, yPercent:Float, w:Float, h:Float):Vector3D
 	{
-		var w:Float = spriteGraphic != null ? spriteGraphic.frameWidth : frameWidth;
-		var h:Float = spriteGraphic != null ? spriteGraphic.frameHeight : frameHeight;
+		var point3D:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
+	
+		var skewPosX:Float = this.x + moveX - offset.x;
+		var skewPosY:Float = this.y + moveY - offset.y;
+	
+		skewPosX += (w) / 2;
+		skewPosY += (h) / 2;
+	
+		var rotateModPivotPoint:Vector2 = new Vector2(0.5, 0.5); // to skew from center
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(xPercent, yPercent), angleZ); // to fix incorrect skew when rotated
+	
+		// For some reason, we need a 0.5 offset for this???????????????????
+		var xPercent_SkewOffset:Float = thing.x - skewY_offset - skewOffsetFix;
+		var yPercent_SkewOffset:Float = thing.y - skewX_offset - skewOffsetFix;
+		// Keep math the same as skewedsprite for parity reasons.
+		if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
+		point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h * scaleY;
+		if (skewY != 0) //
+		point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w * scaleX;
+	
+		// z SKEW //hazard did an oppsie (put skewX instead of skewZ)
+	
+		if (skewZ != 0) point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h * scaleY;
+	
+		return point3D;
+	}
+	
+	var whatWasTheZBefore:Float = 0;
+  	// Future idea -> Make it so that you can change the order the rotations are applied in (so can be changed from Z,Y,X to X,Y,Z for example)
+	public function applyRotation(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector3D
+	{
+		var w:Float = spriteGraphic?.frameWidth ?? frameWidth;
+		var h:Float = spriteGraphic?.frameHeight ?? frameHeight;
 
 		var pos_modified:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
 
 		pos_modified.x -= offsetBeforeRotation.x;
     	pos_modified.y -= offsetBeforeRotation.y;
+		pos_modified.x += preRotationMoveX;
+    	pos_modified.y += preRotationMoveY;
+    	pos_modified.z += preRotationMoveZ;
 
-		var whatWasTheZBefore:Float = pos_modified.z;
+		whatWasTheZBefore = pos_modified.z;
 
 		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, h / 2);
 		rotateModPivotPoint.x += pivotOffsetX;
@@ -471,7 +761,7 @@ class NewModchartArrow extends FlxSprite
 		rotateModPivotPoint.x += pivotOffsetX;
 		rotateModPivotPoint.y += pivotOffsetZ;
 		var angleY_withFlip:Float = angleY + (flipX ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.z), -angleY_withFlip);
+		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.z), angleY_withFlip);
 		pos_modified.x = thing.x;
 		pos_modified.z = thing.y;
 
@@ -479,23 +769,32 @@ class NewModchartArrow extends FlxSprite
 		rotateModPivotPoint.x += pivotOffsetZ;
 		rotateModPivotPoint.y += pivotOffsetY;
 		var angleX_withFlip:Float = angleX + (flipY ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.z, pos_modified.y), -angleX_withFlip);
+		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.z, pos_modified.y), angleX_withFlip);
 		pos_modified.z = thing.x;
 		pos_modified.y = thing.y;
 
+		return pos_modified;
+	}
+
+	public function applyPerspective(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector2
+	{
+		var w:Float = spriteGraphic != null ? spriteGraphic.frameWidth : frameWidth;
+		var h:Float = spriteGraphic != null ? spriteGraphic.frameHeight : frameHeight;
 		//Calculate the difference of the rotation and use this as input for the applyPerspective function (idk it just works) 
 		//Feel free to move this calculation around if you wanna account for other facts like offsetZ (if added) or moveZ, idk what you're doing exactly with this code lol
 		// -Hazard24
+		var pos_modified:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
+
 		var zDifference:Float = pos_modified.z - whatWasTheZBefore;
 
 		// Apply offset here before it gets affected by z projection!
-		pos_modified.x -= offset.x;
-		pos_modified.y -= offset.y;
+		// pos_modified.x -= offset.x;
+		// pos_modified.y -= offset.y;
 		// pos_modified.x += daOffsetX; //Moved offsetX here so it's with the other Offsets -Hazard24
 
-		pos_modified.x += moveX;
-		pos_modified.y += moveY;
-		pos_modified.z += moveZ;
+		// pos_modified.x += moveX;
+		// pos_modified.y += moveY;
+		// pos_modified.z += moveZ;
 
 		if (projectionEnabled)
 		{
@@ -519,12 +818,8 @@ class NewModchartArrow extends FlxSprite
 
 			pos_modified.x -= fovOffsetX;
 			pos_modified.y -= fovOffsetY;
-			return new Vector2(pos_modified.x, pos_modified.y);
 		}
-		else
-		{
 			return new Vector2(pos_modified.x, pos_modified.y);
-		}
 	}
 
 	public var zNear:Float = 0.0;
@@ -539,16 +834,21 @@ class NewModchartArrow extends FlxSprite
 
 			_FOV *= (Math.PI / 180.0);
 
-			var newz:Float = pos.z - 1;
-			var zRange:Float = zNear - zFar;
-			var tanHalfFOV:Float = 1;
-			var dividebyzerofix:Float = FlxMath.fastCos(_FOV * 0.5);
-			if (dividebyzerofix != 0)
+			var newz:Float = pos.z;
+			// Too close to camera!
+			/*if (newz > zNear + ModConstants.tooCloseToCameraFix) //variable does not exist
 			{
-				tanHalfFOV = FlxMath.fastSin(_FOV * 0.5) / dividebyzerofix;
+				newz = zNear + ModConstants.tooCloseToCameraFix;
+			}
+			else*/ if (newz < (zFar * -1)) // To far from camera!
+			{
+				culled = true;
 			}
 
-			if (pos.z > 1) newz = 0;
+			newz = newz - 1;
+			var zRange:Float = zNear - zFar;
+			var tanHalfFOV:Float = 1;
+			tanHalfFOV = FlxMath.fastSin(_FOV * 0.5) / FlxMath.fastCos(_FOV * 0.5);
 
 			var xOffsetToCenter:Float = pos.x - (FlxG.width * 0.5);
 			var yOffsetToCenter:Float = pos.y - (FlxG.height * 0.5);
@@ -577,6 +877,7 @@ class NewModchartArrow extends FlxSprite
 		catch (e)
 		{
 			trace("OH GOD OH FUCK IT NEARLY DIED CUZ OF: \n" + e.toString());
+			culled = true;
 			return pos;
 		}
 	}

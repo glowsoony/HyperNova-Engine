@@ -307,13 +307,6 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		return noteData;
 	}
 
-	// private function addDataToPath(noteData:NotePositionData, arrowPath:ArrowPathBitmap)
-	// {
-		// arrowPath.x = noteData.x;
-		// arrowPath.y = noteData.y;
-		// arrowPath.z = noteData.z;
-	// }
-
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ? pf:Int = 0)
 	{
 		#if PSYCH
@@ -332,28 +325,23 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 			noteDist = modifierTable.applyNoteDistMods(noteDist, lane, pf);
 
 			strumTimeOffset += Std.int(Conductor.stepCrochet / getCorrectScrollSpeed());
-			switch (ModchartUtil.getDownscroll(instance))
+
+			final scrollDivition = 1 / getCorrectScrollSpeed();
+			if (ModchartUtil.getDownscroll(instance))
 			{
-				case true:
-					if (noteDist > 0)
-					{
-						strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
-					}
-					else
-					{
-						strumTimeOffset += Std.int(Conductor.stepCrochet / getCorrectScrollSpeed());
-						strumTimeOffset -= Std.int(Conductor.stepCrochet / getCorrectScrollSpeed());
-					}
-				case false:
-					if (noteDist > 0)
-					{
-						strumTimeOffset -= Std.int(Conductor.stepCrochet / getCorrectScrollSpeed()); //down
-						strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
-					}
-					else
-					{			
-						strumTimeOffset -= Std.int(Conductor.stepCrochet / getCorrectScrollSpeed());
-					}
+				if (noteDist > 0) strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
+				else
+				{
+					strumTimeOffset += Std.int(Conductor.stepCrochet * scrollDivition);
+					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
+				}
+			}else{
+				if (noteDist > 0)
+				{
+					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition); //down
+					strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
+				}
+				else strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
 			}
 			// FINALLY OMG I HATE THIS FUCKING MATH LMAO
 		}
@@ -397,12 +385,6 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 
 				var noteDist = getNoteDist(i);
 				var curPos = getNoteCurPos(i, sustainTimeThingy, pf);
-
-				// if (notes.members[i].isSustainNote) //so probably this code is needed for sustain movements on incoming angle, fuck
-				// {
-				// 	notePositions.push(createDataFromNote(i, pf, curPos, noteDist, [0,0,0]));
-				// 	continue;
-				// }
 
 				noteDist = modifierTable.applyNoteDistMods(noteDist, lane, pf);
 
@@ -492,7 +474,7 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		if (noteData.stealthGlow != 0)
 			strumGroup.members[noteData.index].rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
 
-		if (noteData.angleX != 0 || noteData.angleY != 0 || noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0)
+		if (noteData.angleX != 0 || noteData.angleY != 0 /*|| noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0*/)
 		{
 			strumNote.arrowMesh.x = noteData.x;
 			strumNote.arrowMesh.y = noteData.y;
@@ -535,9 +517,9 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		if (strumNote.arrowMesh != null){
 			strumGroup.members[noteData.index].arrowMesh.cameras = this.cameras;
 
-			if (noteData.angleX != 0 || noteData.angleY != 0 || noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0){
+			if (noteData.angleX != 0 || noteData.angleY != 0 /*|| noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0*/){
 				strumGroup.members[noteData.index].arrowMesh.updateTris();
-				strumGroup.members[noteData.index].arrowMesh.drawManual(strumGroup.members[noteData.index].graphic, "");
+				strumGroup.members[noteData.index].arrowMesh.drawManual(strumGroup.members[noteData.index].graphic);
 			}else{
 				strumGroup.members[noteData.index].cameras = this.cameras;
 				strumGroup.members[noteData.index].draw();
@@ -585,7 +567,7 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		if (noteData.orient != 0)
 			noteData.angle = ((angle = Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
-		if (noteData.angleX != 0 || noteData.angleY != 0 || noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0)
+		if (noteData.angleX != 0 || noteData.angleY != 0 /*|| noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0*/)
 		{
 			daNote.arrowMesh.x = noteData.x;
 			daNote.arrowMesh.y = noteData.y;
@@ -633,9 +615,9 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		if (daNote.arrowMesh != null){
 			notes.members[noteData.index].arrowMesh.cameras = this.cameras;
 
-			if (noteData.angleX != 0 || noteData.angleY != 0 || noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0){
+			if (noteData.angleX != 0 || noteData.angleY != 0 /*|| noteData.skewZ != 0 || noteData.skewX != 0 || noteData.skewY != 0*/){
 				notes.members[noteData.index].arrowMesh.updateTris();
-				notes.members[noteData.index].arrowMesh.drawManual(notes.members[noteData.index].graphic, notes.members[noteData.index].noteType);
+				notes.members[noteData.index].arrowMesh.drawManual(notes.members[noteData.index].graphic);
 			}else{
 				notes.members[noteData.index].cameras = this.cameras;
 				notes.members[noteData.index].draw();
@@ -664,11 +646,6 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		daNote.mesh.alpha = daNote.alpha;
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
-
-		// daNote.rgbShader.stealthGlow = noteData.stealthGlow; //make sure at the moment we render sustains they get shader changes? (OMG THIS FIXED SUDDEN HIDDEN AND ETC LMAO)
-		// daNote.rgbShader.stealthGlowRed = noteData.glowRed;
-		// daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
-		// daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
 
 		var songSpeed = getCorrectScrollSpeed();
 		var lane = noteData.lane;
