@@ -45,6 +45,7 @@ import haxe.Json;
 import mobile.psychlua.Functions;
 
 import mikolka.vslice.freeplay.FreeplayState;
+import mikolka.stages.EventLoader;
 
 import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
@@ -108,7 +109,6 @@ class FunkinLua {
 		set('luaDebugMode', false);
 		set('luaDeprecatedWarnings', true);
 		set('version', MainMenuState.psychEngineVersion.trim());
-		set('versionPS', MainMenuState.pSliceVersion.trim());
 		set('modFolder', this.modFolder);
 
 		// Song/Week shit
@@ -456,10 +456,22 @@ class FunkinLua {
 				LuaUtils.loadFrames(spr, image, spriteType);
 			}
 		});
+		Lua_helper.add_callback(lua, "loadMultipleFrames", function(variable:String, images:Array<String>) {
+			var split:Array<String> = variable.split('.');
+			var spr:FlxSprite = LuaUtils.getObjectDirectly(split[0]);
+			if(split.length > 1) {
+				spr = LuaUtils.getVarInArray(LuaUtils.getPropertyLoop(split), split[split.length-1]);
+			}
+
+			if(spr != null && images != null && images.length > 0)
+			{
+				spr.frames = Paths.getMultiAtlas(images);
+			}
+		});
 
 		//shitass stuff for epic coders like me B)  *image of obama giving himself a medal*
 		Lua_helper.add_callback(lua, "getObjectOrder", function(obj:String, ?group:String = null) {
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(obj);
+			var leObj:FlxBasic = LuaUtils.getObjectDirectly(obj);
 			if(leObj != null)
 			{
 				if(group != null)
@@ -481,13 +493,15 @@ class FunkinLua {
 						return -1;
 					}
 				}
-				return LuaUtils.getTargetInstance().members.indexOf(leObj);
+				var groupOrArray:Dynamic = CustomSubstate.instance != null ? CustomSubstate.instance : LuaUtils.getTargetInstance();
+				if(groupOrArray == null) return -1;
+				return groupOrArray.members.indexOf(leObj);
 			}
 			luaTrace('getObjectOrder: Object $obj doesn\'t exist!', false, false, FlxColor.RED);
 			return -1;
 		});
 		Lua_helper.add_callback(lua, "setObjectOrder", function(obj:String, position:Int, ?group:String = null) {
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(obj);
+			var leObj:FlxBasic = LuaUtils.getObjectDirectly(obj);
 			if(leObj != null)
 			{
 				if(group != null)
@@ -509,7 +523,7 @@ class FunkinLua {
 				}
 				else
 				{
-					var groupOrArray:FlxState = LuaUtils.getTargetInstance();
+					var groupOrArray:Dynamic = CustomSubstate.instance != null ? CustomSubstate.instance : LuaUtils.getTargetInstance();
 					groupOrArray.remove(leObj, true);
 					groupOrArray.insert(position, leObj);
 				}
@@ -971,7 +985,10 @@ class FunkinLua {
 			LuaUtils.destroyObject(tag);
 			var leSprite:ModchartSprite = new ModchartSprite(x, y);
 
-			LuaUtils.loadFrames(leSprite, image, spriteType);
+			if(image != null && image.length > 0)
+			{
+				LuaUtils.loadFrames(leSprite, image, spriteType);
+			}
 			MusicBeatState.getVariables().set(tag, leSprite);
 		});
 
@@ -1173,8 +1190,8 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = 'game') {
-			var real = game.getLuaObject(obj);
-			if(real!=null){
+			var real:FlxBasic = game.getLuaObject(obj);
+			if(real != null) {
 				real.cameras = [LuaUtils.cameraFromString(camera)];
 				return true;
 			}
@@ -1193,7 +1210,7 @@ class FunkinLua {
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setBlendMode", function(obj:String, blend:String = '') {
-			var real = game.getLuaObject(obj);
+			var real:FlxSprite = game.getLuaObject(obj);
 			if(real != null) {
 				real.blend = LuaUtils.blendModeFromString(blend);
 				return true;
@@ -1242,22 +1259,16 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "objectsOverlap", function(obj1:String, obj2:String) {
 			var namesArray:Array<String> = [obj1, obj2];
-			var objectsArray:Array<FlxSprite> = [];
+			var objectsArray:Array<FlxBasic> = [];
 			for (i in 0...namesArray.length)
 			{
-				var real = game.getLuaObject(namesArray[i]);
-				if(real!=null) {
+				var real:FlxBasic = game.getLuaObject(namesArray[i]);
+				if(real != null)
 					objectsArray.push(real);
-				} else {
+				else
 					objectsArray.push(Reflect.getProperty(LuaUtils.getTargetInstance(), namesArray[i]));
-				}
 			}
-
-			if(!objectsArray.contains(null) && FlxG.overlap(objectsArray[0], objectsArray[1]))
-			{
-				return true;
-			}
-			return false;
+			return (!objectsArray.contains(null) && FlxG.overlap(objectsArray[0], objectsArray[1]));
 		});
 		Lua_helper.add_callback(lua, "getPixelColor", function(obj:String, x:Int, y:Int) {
 			var split:Array<String> = obj.split('.');
@@ -1309,7 +1320,7 @@ class FunkinLua {
 			}
 			return false;
 		});
-		Lua_helper.add_callback(lua, "startVideo", function(videoFile:String, ?forMidSong:Bool = false, ?canSkip:Bool = true, ?loop:Bool = false) {
+		Lua_helper.add_callback(lua, "startVideo", function(videoFile:String, ?canSkip:Bool = true, ?forMidSong:Bool = false, ?shouldLoop:Bool = false, ?playOnLoad:Bool = true) {
 			#if VIDEOS_ALLOWED
 			if(FileSystem.exists(Paths.video(videoFile)))
 			{
@@ -1318,7 +1329,7 @@ class FunkinLua {
 					game.remove(game.videoCutscene);
 					game.videoCutscene.destroy();
 				}
-				game.videoCutscene = game.startVideo(videoFile, forMidSong, canSkip, loop);
+				game.videoCutscene = game.startVideo(videoFile, forMidSong, canSkip, shouldLoop, playOnLoad);
 				return true;
 			}
 			else
@@ -2005,6 +2016,7 @@ class FunkinLua {
 		CustomSubstate.implement(this);
 		ShaderFunctions.implement(this);
 		DeprecatedFunctions.implement(this);
+		EventLoader.implement(this);
 		#if TOUCH_CONTROLS_ALLOWED
 		MobileFunctions.implement(this);
 		MobileDeprecatedFunctions.implement(this);

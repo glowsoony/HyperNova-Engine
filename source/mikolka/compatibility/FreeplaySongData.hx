@@ -112,8 +112,8 @@ using mikolka.funkin.utils.ArrayTools;
          //if(sngDataPath == null) return;
          
          if(this.songDifficulties.length == 0){
-             if(FileSystem.exists(sngDataPath)){
-                 var chartFiles = FileSystem.readDirectory(sngDataPath)
+             if(NativeFileSystem.exists(sngDataPath)){
+                 var chartFiles = NativeFileSystem.readDirectory(sngDataPath)
                  .filter(s -> s.toLowerCase().startsWith(fileSngName) && s.endsWith(".json"));
  
                  var diffNames = chartFiles.map(s -> s.substring(fileSngName.length+1,s.length-5));
@@ -141,8 +141,11 @@ using mikolka.funkin.utils.ArrayTools;
          // this.songName = songDifficulty.songName;
          // this.difficultyRating = songDifficulty.difficultyRating;
          this.scoringRank = Scoring.calculateRankForSong(Highscore.formatSong(songId, loadAndGetDiffId()));
- 
-         var wasCompleted = false;
+         updateIsNewTag();
+         
+     }
+     public function updateIsNewTag() {
+        var wasCompleted = false;
          var saveSongName = Paths.formatToSongPath(songId);
          for (x in Highscore.songScores.keys()){
             if(x.startsWith(saveSongName) && Highscore.songScores[x] > 0){

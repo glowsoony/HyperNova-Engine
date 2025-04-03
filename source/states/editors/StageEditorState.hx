@@ -137,8 +137,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		var btn = 'F2';
 		#end
 
-		var str:Array<String> = controls.mobileC ? [
-			"X/Y - Camera Zoom In/Out",
+		var str:Array<String> = (controls.mobileC) ? ["X/Y - Camera Zoom In/Out",
 			"G + Arrow Buttons - Move Camera",
 			"Z - Reset Camera Zoom",
 			"Arrow Buttons/Drag - Move Object",
@@ -1052,8 +1051,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		var characterList = Mods.mergeAllTextsNamed('data/characterList.txt');
 		var foldersToCheck:Array<String> = Mods.directoriesWithFile(Paths.getSharedPath(), 'characters/');
 		for (folder in foldersToCheck)
-			for (file in FileSystem.readDirectory(folder))
-				if (file.toLowerCase().endsWith('.json'))
+			for (file in NativeFileSystem.readDirectory(folder))
+				if(file.toLowerCase().endsWith('.json'))
 				{
 					var charToCheck:String = file.substr(0, file.length - 5);
 					if (!characterList.contains(charToCheck))
@@ -1358,7 +1357,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		var stageList:Array<String> = [];
 		var foldersToCheck:Array<String> = Mods.directoriesWithFile(Paths.getSharedPath(), 'stages/');
 		for (folder in foldersToCheck)
-			for (file in FileSystem.readDirectory(folder))
+			for (file in NativeFileSystem.readDirectory(folder))
 				if (file.toLowerCase().endsWith('.json'))
 				{
 					var stageToCheck:String = file.substr(0, file.length - '.json'.length);
@@ -1734,8 +1733,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		@:privateAccess
 		var lineSize:Int = Std.int(Math.max(2, Math.floor(3 / FlxG.camera.zoom)));
 
-		var sprX:Float = spr.x + spr.offset.x;
-		var sprY:Float = spr.y + spr.offset.y;
+		var sprX:Float = spr.x - spr.offset.x;
+		var sprY:Float = spr.y - spr.offset.y;
 		var sprWidth:Int = Std.int(spr.frameWidth * spr.scale.x);
 		var sprHeight:Int = Std.int(spr.frameHeight * spr.scale.y);
 		for (num => sel in selectionSprites.members)
@@ -1845,13 +1844,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		_file.addEventListener(Event.CANCEL, onLoadCancel);
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 
-		final filters = [
-			new FileFilter('PNG (Image)', '*.png'),
-			new FileFilter('XML (Sparrow)', '*.xml'),
-			new FileFilter('JSON (Aseprite)', '*.json'),
-			new FileFilter('TXT (Packer)', '*.txt')
-		];
-		_file.browse(filters);
+		final filters = [new FileFilter('PNG (Image)', '*.png'), new FileFilter('XML (Sparrow)', '*.xml'), new FileFilter('JSON (Aseprite)', '*.json'), new FileFilter('TXT (Packer)', '*.txt')];
+		_file.browse(#if !mac filters #else [] #end);
 	}
 
 	private function onLoadComplete(_):Void
@@ -1896,6 +1890,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 			}
 			_makeNewSprite = null;
 		}
+		_file = null;
 
 		if (fullPath != null)
 		{
@@ -1970,7 +1965,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		}
 		_file = null;
 		#else
-		trace('File couldn' t be loaded!You aren 't on Desktop, are you?');
+		trace('File couldn\' t be loaded!You aren \'t on Desktop, are you?');
 		#end
 	}
 
