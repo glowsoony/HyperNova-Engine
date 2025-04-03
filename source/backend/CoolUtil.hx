@@ -3,6 +3,9 @@ package backend;
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 
+#if cpp
+@:cppFileCode('#include <thread>')
+#end
 class CoolUtil
 {
 	inline public static function quantize(f:Float, snap:Float){
@@ -70,26 +73,19 @@ class CoolUtil
 		var newValue:Float = Math.floor(value * tempMult);
 		return newValue / tempMult;
 	}
-
+	#if linux
 	public static function sortAlphabetically(list:Array<String>):Array<String> {
-		// This moster here fixes order of scrips to match the windows implementation
-		// Why? because some people use this quirk (like me)
+		if (list == null) return [];
 
-		list.sort((a,b) -> { 
-				a = a.toUpperCase();
-				b = b.toUpperCase();
-			  
-				if (a < b) {
-				  return -1;
-				}
-				else if (a > b) {
-				  return 1;
-				} else {
-				  return 0;
-				}
-			  });
+		list.sort((a, b) -> {
+			var upperA = a.toUpperCase();
+			var upperB = b.toUpperCase();
+			
+			return upperA < upperB ? -1 : upperA > upperB ? 1 : 0;
+		});
 		return list;
 	}
+	#end
 	
 	inline public static function dominantColor(sprite:flixel.FlxSprite):Int
 	{
@@ -154,7 +150,7 @@ class CoolUtil
 			Sys.command(command, [folder]);
 			trace('$command $folder');
 		#else
-			FlxG.error("Platform is not supported for CoolUtil.openFolder");
+			FlxG.log.error("Platform is not supported for CoolUtil.openFolder");
 		#end
 	}
 
@@ -198,4 +194,14 @@ class CoolUtil
 		FlxG.stage.window.alert(message, title);
 		#end
 	}
+
+	#if cpp
+    @:functionCode('
+        return std::thread::hardware_concurrency();
+    ')
+	#end
+    public static function getCPUThreadsCount():Int
+    {
+        return 1;
+    }
 }

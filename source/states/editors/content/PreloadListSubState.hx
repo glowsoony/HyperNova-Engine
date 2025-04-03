@@ -111,6 +111,7 @@ class PreloadListSubState extends MusicBeatSubstate implements PsychUIEvent
 
 		function addToList(path:Path, isFolder:Bool)
 		{
+			#if sys
 			var exePath:String = Sys.getCwd().replace('\\', '/');
 			if(path.dir.startsWith(exePath))
 			{
@@ -147,13 +148,16 @@ class PreloadListSubState extends MusicBeatSubstate implements PsychUIEvent
 				}
 			}
 			else showOutput('File is not inside Psych Engine\'s folder!', true);
+			#else
+			showOutput('Not supported!', true);
+			#end
 		}
 
 		var loadFileBtn:PsychUIButton = new PsychUIButton(0, bg.y + bg.height - 40, 'Load File', function()
 		{
 			if(!fileDialog.completed) return;
 			
-			fileDialog.open(null, 'Load a .PNG/.OGG File...', [new FileFilter('Image/Audio', '*.png;*.ogg')], function()
+			fileDialog.open(null, 'Load a .PNG/.OGG File...', [#if !mac new FileFilter('Image/Audio', '*.png;*.ogg') #end], function()
 			{
 				var path:Path = new Path(fileDialog.path.replace('\\', '/'));
 	

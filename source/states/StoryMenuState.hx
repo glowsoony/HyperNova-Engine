@@ -193,6 +193,7 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.play('idle');
 		difficultySelectors.add(rightArrow);
 
+		add(new FlxSprite(0, 0).makeGraphic(FlxG.width, 56, 0xFF000000));
 		add(bgYellow);
 		add(bgSprite);
 		add(grpWeekCharacters);
@@ -394,6 +395,12 @@ class StoryMenuState extends MusicBeatState
 			LoadingState.loadNextDirectory();
 			StageData.forceNextDirectory = directory;
 
+			@:privateAccess
+			if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
+			{
+				trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+				Paths.freeGraphicsFromMemory();
+			}
 			LoadingState.prepareToSong();
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
@@ -496,6 +503,7 @@ class StoryMenuState extends MusicBeatState
 
 	function weekIsLocked(name:String):Bool {
 		var leWeek:WeekData = WeekData.weeksLoaded.get(name);
+		if(leWeek.weekBefore == null) leWeek.weekBefore = "";
 		return (!leWeek.startUnlocked && leWeek.weekBefore.length > 0 && (!weekCompleted.exists(leWeek.weekBefore) || !weekCompleted.get(leWeek.weekBefore)));
 	}
 
