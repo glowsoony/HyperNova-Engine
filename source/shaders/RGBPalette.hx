@@ -8,6 +8,13 @@ class RGBPalette {
 	public var b(default, set):FlxColor;
 	public var mult(default, set):Float;
 
+	public var stealthGlow(default, set):Float;
+	public var stealthGlowRed(default, set):Float;
+	public var stealthGlowGreen(default, set):Float;
+	public var stealthGlowBlue(default, set):Float;
+
+	public var enabled(default, set):Bool;
+
 	public function copyValues(tempShader:RGBPalette)
 		{
 			if (tempShader != null)

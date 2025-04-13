@@ -1468,8 +1468,6 @@ class PlayState extends MusicBeatState
 			return;
 
 		updateScoreText();
-		if (!miss && !cpuControlled && scoreBop)
-			doScoreBop();
 
 		callOnScripts('onUpdateScore', [miss]);
 	}

@@ -1,5 +1,6 @@
 package modcharting;
 
+import modcharting.*;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -18,6 +19,7 @@ import lime.math.Vector2;
 import openfl.geom.Matrix;
 import openfl.display.TriangleCulling;
 import openfl.geom.Vector3D;
+import openfl.Vector;
 import flixel.util.FlxColor;
 
 //A few TODOS im gona leave here:
@@ -310,6 +312,37 @@ class NewModchartArrow extends FlxSprite
 		}
 	}
   
+	public function setPerspective(noteData:NotePositionData):Void
+	{
+		this.x = noteData.x;
+		this.y = noteData.y;
+		this.z = noteData.z;
+		
+		this.scaleX = noteData.scaleX;
+		this.scaleY = noteData.scaleY;
+		this.scaleZ = noteData.scaleZ;
+
+		this.skewX = noteData.skewX;
+		this.skewY = noteData.skewY;
+		this.skewZ = noteData.skewZ;
+		this.skewX_offset = noteData.skewX_offset;
+		this.skewY_offset = noteData.skewY_offset;
+		this.skewZ_offset = noteData.skewZ_offset;
+
+		this.fovOffsetX = noteData.fovOffsetX;
+		this.fovOffsetY = noteData.fovOffsetY;
+
+		this.pivotOffsetX = noteData.pivotOffsetX;
+		this.pivotOffsetY = noteData.pivotOffsetY;
+		this.pivotOffsetZ = noteData.pivotOffsetZ;
+
+		this.cullMode = noteData.cullMode;
+
+		this.angleX = noteData.angleX;
+		this.angleY = noteData.angleY;
+		this.angleZ = noteData.angle;
+	}
+
 	public var alwaysUpdate:Bool = false;
   
 	public function trisNeedUpdate():Bool
@@ -568,7 +601,7 @@ class NewModchartArrow extends FlxSprite
 		}
 	}
 	
-	public var textureRepeat:Bool = true;
+	public var textureRepeat:Bool = false;
 
 	public var debugTesting:Bool = false;
 
@@ -729,9 +762,9 @@ class NewModchartArrow extends FlxSprite
 		var yPercent_SkewOffset:Float = thing.y - skewX_offset - skewOffsetFix;
 		// Keep math the same as skewedsprite for parity reasons.
 		if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
-		point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h * scaleY;
+		point3D.x += (yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h * scaleY);
 		if (skewY != 0) //
-		point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w * scaleX;
+		point3D.y += (xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w * scaleX);
 	
 		// z SKEW //hazard did an oppsie (put skewX instead of skewZ)
 	
@@ -739,9 +772,46 @@ class NewModchartArrow extends FlxSprite
 	
 		return point3D;
 	}
-	
+
+	function applyRotX(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(0, h / 2);
+		rotateModPivotPoint.x += pivotOffsetZ;
+		rotateModPivotPoint.y += pivotOffsetY;
+		var angleX_withFlip:Float = angleX + (includeFlip ? (flipY ? 180 : 0) : 0);
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.z, pos.y), angleX_withFlip);
+		pos.z = thing.x;
+		pos.y = thing.y;
+		return pos;
+	}
+	  
+	function applyRotY(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, 0);
+		rotateModPivotPoint.x += pivotOffsetX;
+		rotateModPivotPoint.y += pivotOffsetZ;
+		var angleY_withFlip:Float = angleY + (flipX ? 180 : 0);
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.x, pos.z), angleY_withFlip);
+		pos.x = thing.x;
+		pos.z = thing.y;
+		return pos;
+	}
+	  
+	function applyRotZ(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, h / 2);
+		rotateModPivotPoint.x += pivotOffsetX;
+		rotateModPivotPoint.y += pivotOffsetY;
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.x, pos.y), angleZ);
+		pos.x = thing.x;
+		pos.y = thing.y;
+		return pos;
+	}
+	  
+	// EDIT THIS ARRAY TO CHANGE HOW ROTATION IS APPLIED!
+	public var rotationOrder:Array<String> = ["z", "y", "x"];
+
 	var whatWasTheZBefore:Float = 0;
-  	// Future idea -> Make it so that you can change the order the rotations are applied in (so can be changed from Z,Y,X to X,Y,Z for example)
 	public function applyRotation(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector3D
 	{
 		var w:Float = spriteGraphic?.frameWidth ?? frameWidth;
@@ -757,28 +827,22 @@ class NewModchartArrow extends FlxSprite
 
 		whatWasTheZBefore = pos_modified.z;
 
-		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, h / 2);
-		rotateModPivotPoint.x += pivotOffsetX;
-		rotateModPivotPoint.y += pivotOffsetY;
-		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.y), angleZ);
-		pos_modified.x = thing.x;
-		pos_modified.y = thing.y;
-
-		rotateModPivotPoint = new Vector2(w / 2, 0);
-		rotateModPivotPoint.x += pivotOffsetX;
-		rotateModPivotPoint.y += pivotOffsetZ;
-		var angleY_withFlip:Float = angleY + (flipX ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.z), angleY_withFlip);
-		pos_modified.x = thing.x;
-		pos_modified.z = thing.y;
-
-		rotateModPivotPoint = new Vector2(0, h / 2);
-		rotateModPivotPoint.x += pivotOffsetZ;
-		rotateModPivotPoint.y += pivotOffsetY;
-		var angleX_withFlip:Float = angleX + (flipY ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.z, pos_modified.y), angleX_withFlip);
-		pos_modified.z = thing.x;
-		pos_modified.y = thing.y;
+		for (i in 0...rotationOrder.length)
+		{
+			switch (rotationOrder[i])
+			{
+				case "x":
+					pos_modified = applyRotX(pos_modified, xPercent, yPercent, w, h);
+				case "y":
+					pos_modified = applyRotY(pos_modified, xPercent, yPercent, w, h);
+				case "z":
+					pos_modified = applyRotZ(pos_modified, xPercent, yPercent, w, h);
+			}
+		}
+	
+		//  pos_modified = applyRotZ(pos_modified, xPercent, yPercent, w, h);
+		// pos_modified = applyRotY(pos_modified, xPercent, yPercent, w, h);
+		// pos_modified = applyRotX(pos_modified, xPercent, yPercent, w, h);
 
 		return pos_modified;
 	}
@@ -794,15 +858,6 @@ class NewModchartArrow extends FlxSprite
 
 		var zDifference:Float = pos_modified.z - whatWasTheZBefore;
 
-		// Apply offset here before it gets affected by z projection!
-		// pos_modified.x -= offset.x;
-		// pos_modified.y -= offset.y;
-		// pos_modified.x += daOffsetX; //Moved offsetX here so it's with the other Offsets -Hazard24
-
-		// pos_modified.x += moveX;
-		// pos_modified.y += moveY;
-		// pos_modified.z += moveZ;
-
 		if (projectionEnabled)
 		{
 			pos_modified.x += this.x;
@@ -813,7 +868,6 @@ class NewModchartArrow extends FlxSprite
 			pos_modified.y += fovOffsetY;
 			pos_modified.z *= 0.001;
 
-			//var thisNotePos = perspectiveMath(new Vector3D(pos_modified.x+(width/2), pos_modified.y+(height/2), zDifference * 0.001), -(width/2), -(height/2));
 			pos_modified.z = zDifference * 0.001;
 			pos_modified = perspectiveMath(pos_modified, 0, 0);
 			//No need for any offsets since the offsets are already a part of pos_modified for each Vert. Plus if you look at the +height/2 part, you'll realise it's just cancelling each other out lmfao

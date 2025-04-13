@@ -1034,8 +1034,8 @@ class Rotate3DModifier extends Modifier
         noteData.y += rotY.y+subValues.get('rotatePointY').value-yPos;
         noteData.z += rotX.z + rotY.z;
 
-        noteData.angleY += subValues.get('x').value;
-        noteData.angleX += subValues.get('y').value;
+        noteData.angleY += -subValues.get('x').value;
+        noteData.angleX += -subValues.get('y').value;
     }
     override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
     {
@@ -4723,31 +4723,6 @@ class ReceptorScrollModifier extends Modifier
     {
         return Conductor.crochet + 8;
     }
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        var moveSpeed = getStaticCrochet() * 4;
-        var diff = 0; //curpos for strums is always 0
-        var songTime = Conductor.songPosition;
-        var vDiff = -(diff - songTime) / moveSpeed;
-        var reversed = Math.floor(vDiff) % 2 == 0;
-
-        var startY = noteData.y;
-        var revPerc = reversed ? 1 - vDiff % 1 : vDiff % 1;
-
-        var ud = false;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                ud = true;
-
-        var scrollSwitch = ModifierMath.Reverse(noteData, lane, ud);
-
-        var offset = 0;
-        var reversedOffset = -scrollSwitch;
-
-        var endY = offset + ((reversedOffset - NoteMovement.arrowSizes[lane]) * revPerc) + NoteMovement.arrowSizes[lane];
-
-        noteData.y = FlxMath.lerp(startY, endY, currentValue);
-    }
 
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
@@ -4775,12 +4750,16 @@ class ReceptorScrollModifier extends Modifier
         noteData.y = FlxMath.lerp(startY, endY, currentValue);
 
         //ALPHA//
+        var a:Float = FlxMath.remapToRange(curPos, (50*-100), (10*-100), 1, 0);
+        a = FlxMath.bound(a, 0, 1);
 
-        var bar = songTime / getStaticCrochet() * 0.25;
-        var hitTime = curPos;
+        noteData.alpha -= a*currentValue;
+        return;
+    }
 
-        noteData.alpha *= FlxMath.bound((700 - hitTime) / 200, 0, 0.3) * currentValue;
-        if ((curPos + songTime) < Math.floor(bar+1)*getStaticCrochet()*4) noteData.alpha *= 1;
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf);
     }
 }
 

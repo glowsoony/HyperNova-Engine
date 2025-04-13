@@ -402,4 +402,86 @@ class ModchartUtil
 
         return totalTime;
     }
+
+    //  // pain (we need this if we want support for sprite sheet packer) (copy paste lol)
+	// @:pure
+	// inline public static function getFrameAngle(spr:FlxSprite):Float {
+	// 	return switch (spr.frame.angle) {
+	// 		case ANGLE_90: 90;
+	// 		case ANGLE_NEG_90: -90;
+	// 		case ANGLE_270: 270; //flixel calls this one as "might be unused" LMAO
+	// 		default: 0; // ANGLE_0
+	// 	}
+	// }
+
+    // inline public static function rotate3DVector(vec:Vector3, angleX:Float, angleY:Float, angleZ:Float):Vector3 {
+	// 	if (angleX == 0 && angleY == 0 && angleZ == 0)
+	// 		return vec;
+
+	// 	final RAD = FlxAngle.TO_RAD;
+	// 	final quatX = Quaternion.fromAxisAngle(Vector3D.X_AXIS, angleX * RAD);
+	// 	final quatY = Quaternion.fromAxisAngle(Vector3D.Y_AXIS, angleY * RAD);
+	// 	final quatZ = Quaternion.fromAxisAngle(Vector3D.Z_AXIS, angleZ * RAD);
+
+	// 	// this is confusing, X_Y_Z is done like this:
+	// 	// OUT = Z;
+	// 	// OUT *= Y
+	// 	// OUT *= X
+	// 	// But it feels wrong, so investigate this
+
+
+    //     //COMMENTED: this is commented since i don't think i need change the rotation order, at least not yet
+
+
+	// 	// switch (Config.ROTATION_ORDER) {
+	// 	// 	case Z_X_Y:
+	// 	// 		quatY.multiplyInPlace(quatX);
+	// 	// 		quatY.multiplyInPlace(quatZ);
+	// 	// 		return quatY.rotateVector(vec);
+	// 	// case X_Y_Z:
+	// 			quatZ.multiplyInPlace(quatY);
+	// 			quatZ.multiplyInPlace(quatX);
+	// 			return quatZ.rotateVector(vec);
+    //     // case X_Z_Y:
+    //     // 	quatY.multiplyInPlace(quatZ);
+    //     // 	quatY.multiplyInPlace(quatX);
+    //     // 	return quatY.rotateVector(vec);
+    //     // case Y_X_Z:
+    //     // 	quatZ.multiplyInPlace(quatX);
+    //     // 	quatZ.multiplyInPlace(quatY);
+    //     // 	return quatZ.rotateVector(vec);
+    //     // case Y_Z_X:
+    //     // 	quatX.multiplyInPlace(quatZ);
+    //     // 	quatX.multiplyInPlace(quatY);
+    //     // 	return quatX.rotateVector(vec);
+    //     // case Z_Y_X:
+    //     // 	quatX.multiplyInPlace(quatY);
+    //     // 	quatX.multiplyInPlace(quatZ);
+    //     // 	return quatX.rotateVector(vec);
+    //     // case X_Y_X:
+    //     // 	quatX.multiplyInPlace(quatY);
+    //     // 	quatX.multiplyInPlace(quatX);
+    //     // 	return quatX.rotateVector(vec);
+    //     // case X_Z_X:
+    //     // 	quatX.multiplyInPlace(quatZ);
+    //     // 	quatX.multiplyInPlace(quatX);
+    //     // 	return quatX.rotateVector(vec);
+    //     // case Y_X_Y:
+    //     // 	quatY.multiplyInPlace(quatX);
+    //     // 	quatY.multiplyInPlace(quatY);
+    //     // 	return quatY.rotateVector(vec);
+    //     // case Y_Z_Y:
+    //     // 	quatY.multiplyInPlace(quatZ);
+    //     // 	quatY.multiplyInPlace(quatY);
+    //     // 	return quatY.rotateVector(vec);
+    //     // case Z_X_Z:
+    //     // 	quatZ.multiplyInPlace(quatX);
+    //     // 	quatZ.multiplyInPlace(quatZ);
+    //     // 	return quatZ.rotateVector(vec);
+    //     // case Z_Y_Z:
+    //     // 	quatZ.multiplyInPlace(quatY);
+    //     // 	quatZ.multiplyInPlace(quatZ);
+    //     // 	return quatZ.rotateVector(vec);
+	// 	//}
+	// }
 }
