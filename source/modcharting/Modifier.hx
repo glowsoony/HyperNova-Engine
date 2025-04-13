@@ -1340,22 +1340,22 @@ class ConfusionXModifier extends Modifier
 {
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
-        noteData.angleX += currentValue;
+        noteData.angleX += -currentValue;
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {
-        noteData.angleX += currentValue;
+        noteData.angleX += -currentValue;
     }
 }
 class ConfusionYModifier extends Modifier
 {
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
-        noteData.angleY += currentValue;
+        noteData.angleY += -currentValue;
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {
-        noteData.angleY += currentValue;
+        noteData.angleY += -currentValue;
     }
 }
 
@@ -3399,8 +3399,8 @@ class TwirlModifier extends Modifier
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
         //noteData.scaleX *=(0+(currentValue*FlxMath.fastCos(((curPos*0.001)*(5*subValues.get('speed').value)))));
-        if (subValues.get('forced').value >= 0.5) noteData.angleX += (Conductor.songPosition*0.001) * currentValue;
-        else noteData.angleY += (curPos / 2.0) * currentValue;
+        if (subValues.get('forced').value >= 0.5) noteData.angleX += (Conductor.songPosition*0.001) * -currentValue;
+        else noteData.angleY += (curPos / 2.0) * -currentValue;
     }
 }
 class RollModifier extends Modifier
@@ -3412,8 +3412,8 @@ class RollModifier extends Modifier
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
         //noteData.scaleY *=(0+(currentValue*FlxMath.fastCos(((curPos*0.001)*(5*subValues.get('speed').value)))));
-        if (subValues.get('forced').value >= 0.5) noteData.angleY += (Conductor.songPosition*0.001) * currentValue;
-        else noteData.angleX += (curPos / 2.0) * currentValue;
+        if (subValues.get('forced').value >= 0.5) noteData.angleY += (Conductor.songPosition*0.001) * -currentValue;
+        else noteData.angleX += (curPos / 2.0) * -currentValue;
     }
 }
 
