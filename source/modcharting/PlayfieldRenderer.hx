@@ -1,5 +1,6 @@
 package modcharting;
 
+import flixel.FlxBasic;
 import flixel.math.FlxAngle;
 /*import flixel.tweens.misc.BezierPathTween;
 import flixel.tweens.misc.BezierPathNumTween;*/
@@ -52,7 +53,7 @@ using StringTools;
 
 typedef StrumNoteType = objects.StrumNote;
 
-class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can edit draw
+class PlayfieldRenderer extends FlxBasic
 {
 	public var strumGroup:FlxTypedGroup<StrumNoteType>;
 	public var notes:FlxTypedGroup<Note>;
@@ -86,7 +87,7 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 
 	public function new(strumGroup:FlxTypedGroup<StrumNoteType>, notes:FlxTypedGroup<Note>, instance:ModchartMusicBeatState)
 	{
-		super(0, 0);
+		super();
 		this.strumGroup = strumGroup;
 		this.notes = notes;
 		this.instance = instance;
@@ -125,22 +126,15 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 
 	override function update(elapsed:Float)
 	{
-		try
-		{
-			eventManager.update(elapsed);
-			tweenManager.update(elapsed); // should be automatically paused when you pause in game
-			timerManager.update(elapsed);
-		}
-		catch (e)
-		{
-			trace(e);
-		}
+		eventManager.update(elapsed);
+		tweenManager.update(elapsed); // should be automatically paused when you pause in game
+		timerManager.update(elapsed);
 		super.update(elapsed);
 	}
 
 	override public function draw()
 	{
-		if (alpha == 0 || !visible)
+		if (!visible)
 			return;
 
 		strumGroup.cameras = this.cameras;
@@ -436,7 +430,7 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 			strumGroup.members[noteData.index].rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
 
 		strumNote.arrowMesh.setPerspective(noteData);
-		strumNote.arrowMesh.offset = strumNote.offset;
+		strumNote.arrowMesh.offset.copyFrom(strumNote.offset);
 
 		addDataToStrum(noteData, strumGroup.members[noteData.index]); // set position and stuff before drawing
 
@@ -486,10 +480,10 @@ class PlayfieldRenderer extends FlxSprite // extending flxsprite just so i can e
 		var getNextNote = getNotePoss(noteData,1);
 
 		if (noteData.orient != 0)
-			noteData.angle = ((angle = Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
+			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
 		daNote.arrowMesh.setPerspective(noteData);
-		daNote.arrowMesh.offset = daNote.offset;
+		daNote.arrowMesh.offset.copyFrom(daNote.offset);
 
 		addDataToNote(noteData, notes.members[noteData.index]);
 
