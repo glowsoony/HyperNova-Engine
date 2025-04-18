@@ -16,7 +16,8 @@ import sys.io.File;
  *
  * To access the shader's uniform variables, use `shader.variable`
  */
-class CustomCodeShader extends FunkinShader {
+class CustomCodeShader extends FunkinShader
+{
 	public var path:String = "";
 
 	/**
@@ -24,13 +25,14 @@ class CustomCodeShader extends FunkinShader {
 	 * @param name Name of the frag and vert files.
 	 * @param glslVersion GLSL version to use. Defaults to `120`.
 	 */
-	public function new(name:String, glslVersion:String = "120") {
+	public function new(name:String, glslVersion:String = "120")
+	{
 		var fragShaderPath = Paths.shaderFragment(name);
 		var vertShaderPath = Paths.shaderVertex(name);
 		var fragCode = #if MODS_ALLOWED FileSystem.exists(fragShaderPath) ? File.getContent(fragShaderPath) : null #else Assets.exists(fragShaderPath) ? Assets.getText(fragShaderPath) : null #end;
 		var vertCode = #if MODS_ALLOWED FileSystem.exists(vertShaderPath) ? File.getContent(vertShaderPath) : null #else Assets.exists(vertShaderPath) ? Assets.getText(vertShaderPath) : null #end;
 
-		path = fragShaderPath+vertShaderPath;
+		path = fragShaderPath + vertShaderPath;
 
 		if (fragCode == null && vertCode == null)
 			trace('Shader "$name" couldn\'t be found.');

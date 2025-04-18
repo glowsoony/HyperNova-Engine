@@ -5,6 +5,7 @@ class OutdatedState extends MusicBeatState
 	public static var leftState:Bool = false;
 
 	var warnText:FlxText;
+
 	override function create()
 	{
 		super.create();
@@ -16,10 +17,18 @@ class OutdatedState extends MusicBeatState
 		final bro:String = #if mobile 'kiddo' #else 'bro' #end;
 		final escape:String = (controls.mobileC) ? 'B' : 'ESCAPE';
 
-		guh = "Sup "+bro+", looks like you're running an   \n
-		outdated version of P-Slice Engine (" + MainMenuState.pSliceVersion + "),\n
-		please update to " + TitleState.updateVersion + "!\n
-		Press "+escape+" to proceed anyway.\n
+		guh = "Sup "
+			+ bro
+			+ ", looks like you're running an   \n
+		outdated version of P-Slice Engine ("
+			+ MainMenuState.pSliceVersion
+			+ "),\n
+		please update to "
+			+ TitleState.updateVersion
+			+ "!\n
+		Press "
+			+ escape
+			+ " to proceed anyway.\n
 		\n
 		Thank you for using the Engine!";
 
@@ -34,20 +43,24 @@ class OutdatedState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if(!leftState) {
-			if (controls.ACCEPT) {
+		if (!leftState)
+		{
+			if (controls.ACCEPT)
+			{
 				leftState = true;
 				CoolUtil.browserLoad("https://github.com/Psych-Slice/P-Slice/releases");
 			}
-			else if(controls.BACK) {
+			else if (controls.BACK)
+			{
 				leftState = true;
 			}
 
-			if(leftState)
+			if (leftState)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				FlxTween.tween(warnText, {alpha: 0}, 1, {
-					onComplete: function (twn:FlxTween) {
+					onComplete: function(twn:FlxTween)
+					{
 						MusicBeatState.switchState(new MainMenuState());
 					}
 				});

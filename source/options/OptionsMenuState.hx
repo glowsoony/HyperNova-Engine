@@ -1,10 +1,10 @@
 package options;
 
+import backend.MusicBeatState;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
-import backend.MusicBeatState;
+import flixel.util.FlxColor;
 
 class OptionsMenuState extends MusicBeatState
 {

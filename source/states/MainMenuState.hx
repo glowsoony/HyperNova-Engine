@@ -1,20 +1,20 @@
 package states;
 
-import mikolka.compatibility.ModsHelper;
-import mikolka.vslice.freeplay.FreeplayState;
 import flixel.FlxObject;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
-import states.editors.MasterEditorMenu;
+import mikolka.compatibility.ModsHelper;
+import mikolka.vslice.freeplay.FreeplayState;
 import options.OptionsState;
+import states.editors.MasterEditorMenu;
 
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '1.0.3'; // This is also used for Discord RPC
-	public static var pSliceVersion:String = '2.3.1'; 
+	public static var pSliceVersion:String = '2.3.1';
 	public static var funkinVersion:String = '0.5.3'; // Version of funkin' we are emulationg
-	public static var hypernovaVersion:String = '0.0.0'; 
+	public static var hypernovaVersion:String = '0.0.0';
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -31,16 +31,18 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
-	public function new(isDisplayingRank:Bool = false) {
 
-		//TODO
+	public function new(isDisplayingRank:Bool = false)
+	{
+		// TODO
 		super();
 	}
+
 	override function create()
 	{
 		Paths.clearUnusedMemory();
 		ModsHelper.clearStoredWithoutStickers();
-		
+
 		#if MODS_ALLOWED
 		Mods.pushGlobalMods();
 		#end
@@ -50,7 +52,6 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
-
 
 		persistentUpdate = persistentDraw = true;
 
@@ -103,13 +104,13 @@ class MainMenuState extends MusicBeatState
 
 		psychVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		
+
 		psychVer.scrollFactor.set();
 		fnfVer.scrollFactor.set();
 		add(psychVer);
 		add(fnfVer);
-		//var fnfVer:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' ", 12);
-	
+		// var fnfVer:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' ", 12);
+
 		changeItem();
 
 		#if ACHIEVEMENTS_ALLOWED
@@ -139,8 +140,8 @@ class MainMenuState extends MusicBeatState
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * elapsed;
-			//if (FreeplayState.vocals != null)
-				//FreeplayState.vocals.volume += 0.5 * elapsed;
+			// if (FreeplayState.vocals != null)
+			// FreeplayState.vocals.volume += 0.5 * elapsed;
 		}
 
 		if (!selectedSomethin)
@@ -180,25 +181,27 @@ class MainMenuState extends MusicBeatState
 						{
 							case 'story_mode':
 								MusicBeatState.switchState(new StoryMenuState());
-							case 'freeplay':{
-								persistentDraw = true;
-								persistentUpdate = false;
-								// Freeplay has its own custom transition
-								FlxTransitionableState.skipNextTransIn = true;
-								FlxTransitionableState.skipNextTransOut = true;
+							case 'freeplay':
+								{
+									persistentDraw = true;
+									persistentUpdate = false;
+									// Freeplay has its own custom transition
+									FlxTransitionableState.skipNextTransIn = true;
+									FlxTransitionableState.skipNextTransOut = true;
 
-								openSubState(new FreeplayState());
-								subStateOpened.addOnce(state -> {
-									for (i in 0...menuItems.members.length) {
-										menuItems.members[i].revive();
-										menuItems.members[i].alpha = 1;
-										menuItems.members[i].visible = true;
-										selectedSomethin = false;
-									}
-									changeItem(0);
-								});
-								
-							}
+									openSubState(new FreeplayState());
+									subStateOpened.addOnce(state ->
+									{
+										for (i in 0...menuItems.members.length)
+										{
+											menuItems.members[i].revive();
+											menuItems.members[i].alpha = 1;
+											menuItems.members[i].visible = true;
+											selectedSomethin = false;
+										}
+										changeItem(0);
+									});
+								}
 
 							#if MODS_ALLOWED
 							case 'mods':
@@ -214,7 +217,7 @@ class MainMenuState extends MusicBeatState
 								MusicBeatState.switchState(new CreditsState());
 							case 'options':
 								MusicBeatState.switchState(new options.OptionsState());
-								persistentUpdate = false; //disabled until i find a crash fix
+								persistentUpdate = false; // disabled until i find a crash fix
 								// openSubState(new options.OptionsMenu());
 								if (PlayState.SONG != null)
 								{

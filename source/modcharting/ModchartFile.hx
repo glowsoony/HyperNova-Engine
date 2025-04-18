@@ -4,22 +4,23 @@ import flixel.math.FlxMath;
 import haxe.Exception;
 import haxe.Json;
 import haxe.format.JsonParser;
+import hscript.*;
 import lime.utils.Assets;
+
+using StringTools;
+
 #if LEATHER
-import states.PlayState;
-import game.Note;
 import game.Conductor;
+import game.Note;
+import states.PlayState;
 #if polymod
 import polymod.backends.PolymodAssets;
 #end
 #end
 #if sys
-import sys.io.File;
 import sys.FileSystem;
+import sys.io.File;
 #end
-import hscript.*;
-
-using StringTools;
 
 typedef ModchartJson =
 {
@@ -63,8 +64,9 @@ class ModchartFile
 
 	public function new(renderer:PlayfieldRenderer)
 	{
-        final possibleDiff = Difficulty.list[PlayState.storyDifficulty];
-		data = loadFromJson(Paths.formatToSongPath(PlayState.SONG.song), possibleDiff == null ? Difficulty.defaultList[PlayState.storyDifficulty] : possibleDiff);
+		final possibleDiff = Difficulty.list[PlayState.storyDifficulty];
+		data = loadFromJson(Paths.formatToSongPath(PlayState.SONG.song),
+			possibleDiff == null ? Difficulty.defaultList[PlayState.storyDifficulty] : possibleDiff);
 		this.renderer = renderer;
 		renderer.modchart = this;
 		// if (!ClientPrefs.getGameplaySetting('chaosmode')){
@@ -80,28 +82,25 @@ class ModchartFile
 		var rawJson = null;
 		var folderShit:String = "";
 
-        var files = [
-            'data/$folder/modchart-$difficulty.json',
-            'data/$folder/modchart.json'
-        ];
+		var files = ['data/$folder/modchart-$difficulty.json', 'data/$folder/modchart.json'];
 
-        // find modchart file
-        for (f in files)
-        {
-            final fileContent = Paths.getTextFromFile(f).trim();
+		// find modchart file
+		for (f in files)
+		{
+			final fileContent = Paths.getTextFromFile(f).trim();
 
-            if (fileContent != null)
-            {
-                rawJson = fileContent;
-                break;
+			if (fileContent != null)
+			{
+				rawJson = fileContent;
+				break;
 
-                trace('found file: $f');
-            }
-            trace('tried with: $f');
-        }
+				trace('found file: $f');
+			}
+			trace('tried with: $f');
+		}
 
-        folderShit = Paths.getPath('data/$folder/customMods/');
-        
+		folderShit = Paths.getPath('data/$folder/customMods/');
+
 		var json:ModchartJson = null;
 		if (rawJson != null)
 		{

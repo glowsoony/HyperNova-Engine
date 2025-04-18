@@ -17,6 +17,7 @@ class ErrorState extends MusicBeatState
 
 	public var errorSine:Float = 0;
 	public var errorText:FlxText;
+
 	override function create()
 	{
 		var bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -32,7 +33,7 @@ class ErrorState extends MusicBeatState
 		errorText.screenCenter();
 		add(errorText);
 		super.create();
-		
+
 		#if TOUCH_CONTROLS_ALLOWED
 		addTouchPad('NONE', 'A_B');
 		addTouchPadCamera();
@@ -44,9 +45,9 @@ class ErrorState extends MusicBeatState
 		errorSine += 180 * elapsed;
 		errorText.alpha = 1 - Math.sin((Math.PI * errorSine) / 180);
 
-		if(controls.ACCEPT && acceptCallback != null)
+		if (controls.ACCEPT && acceptCallback != null)
 			acceptCallback();
-		else if(controls.BACK && backCallback != null)
+		else if (controls.BACK && backCallback != null)
 			backCallback();
 
 		super.update(elapsed);

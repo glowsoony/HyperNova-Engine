@@ -27,13 +27,14 @@ class ModchartEventManager
 	{
 		if (eventsLength > 1)
 		{
-            events.nullSort(function(a, b){
-                if (a.time < b.time)
-                    return -1;
-                else if (a.time > b.time)
-                    return 1;
-                return 0;
-            });
+			events.nullSort(function(a, b)
+			{
+				if (a.time < b.time)
+					return -1;
+				else if (a.time > b.time)
+					return 1;
+				return 0;
+			});
 		}
 
 		var i = 0;
@@ -55,7 +56,7 @@ class ModchartEventManager
 	public function addEvent(beat:Float, func:Array<String>->Void, args:Array<String>)
 	{
 		var time = ModchartUtil.getTimeFromBeat(beat);
-        events = OptimizationUtil.ensureVectorCapacity(events, eventsLength, EXPAND_SIZE);
+		events = OptimizationUtil.ensureVectorCapacity(events, eventsLength, EXPAND_SIZE);
 		events[eventsLength++] = new ModchartEvent(time, func, args);
 	}
 

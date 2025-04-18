@@ -1,37 +1,36 @@
 package modcharting;
 
+// import HazardAFT_Capture.HazardAFT_CaptureMultiCam as MultiCamCapture;
 import flixel.FlxBasic;
-import flixel.math.FlxAngle;
-/*import flixel.tweens.misc.BezierPathTween;
-import flixel.tweens.misc.BezierPathNumTween;*/
-import flixel.util.FlxTimer.FlxTimerManager;
-import flixel.math.FlxMath;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flixel.graphics.FlxGraphic;
-import flixel.util.FlxColor;
-import flixel.FlxStrip;
-import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
-import openfl.geom.Vector3D;
-import flixel.util.FlxSpriteUtil;
-import flixel.graphics.frames.FlxFrame;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.FlxSprite;
 import flixel.FlxG;
-import modcharting.Modifier;
-import managers.*;
+import flixel.FlxSprite;
+import flixel.FlxStrip;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import flixel.system.FlxAssets.FlxShader;
-import states.PlayState;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxTimer.FlxTimerManager;
+import managers.*;
+// import modcharting.ArrowPathBitmap;
+import modcharting.Modifier;
+import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
 import objects.StrumNote;
-//import HazardAFT_Capture.HazardAFT_CaptureMultiCam as MultiCamCapture;
-import modcharting.Proxiefield.Proxie as Proxy;
 import objects.SustainTrail;
-
-// import modcharting.ArrowPathBitmap;
+import openfl.geom.Vector3D;
+import states.PlayState;
 
 using StringTools;
 
+/*import flixel.tweens.misc.BezierPathTween;
+	import flixel.tweens.misc.BezierPathNumTween; */
 // a few todos im gonna leave here:
 //--ZORO--
 // setup quaternions for everything else (incoming angles and the rotate mod)
@@ -39,7 +38,6 @@ using StringTools;
 // fix switching event type in editor so you can actually do set events (as well as adding "add and value" events - Edwhak)
 // finish setting up tooltips in editor (as 4.0 should go, this will be made)
 // start documenting more stuff idk (same as 4.0)
-
 //--EDWHAK--
 // finish editor itself and fix some errors zoro didn't (mostly on editors)
 // Optimize arrowPath and add the other variant (we have "ArrowPathFill" but not "ArrowPath")
@@ -47,7 +45,6 @@ using StringTools;
 // Grain shit for sustains (the higger value the most and most soft sustain looks) -- possible, i just don't know how
 // Optimize the tool for better performance, would be cool see this thing run on low end PC's
 // Editor 4.0 (psych has no windows tabs so i need create my own)
-
 // Fix "Stealth" mods when using playfields (for some reason playfields ask a general change instead of individual even if they are their own note copy??)
 // ^^^ this also happens in "McMadness mod" in combo-meal song when notes goes timeStop (added playfields and got same result!!) interesting.
 
@@ -59,7 +56,7 @@ class PlayfieldRenderer extends FlxBasic
 	public var notes:FlxTypedGroup<Note>;
 	public var instance:ModchartMusicBeatState;
 	public var playStateInstance:PlayState;
-	//public var editorPlayStateInstance:editors.content.EditorPlayState;
+	// public var editorPlayStateInstance:editors.content.EditorPlayState;
 	public var playfields:Array<Playfield> = []; // adding an extra playfield will add 1 for each player
 	public var proxiefields:Array<Proxiefield> = [];
 
@@ -78,7 +75,7 @@ class PlayfieldRenderer extends FlxBasic
 
 	public var isEditor:Bool = false;
 
-	//public var aftCapture:MultiCamCapture = null;
+	// public var aftCapture:MultiCamCapture = null;
 
 	private function get_modifiers():Map<String, Modifier>
 	{
@@ -94,9 +91,9 @@ class PlayfieldRenderer extends FlxBasic
 		if (Std.isOfType(instance, PlayState))
 			playStateInstance = cast instance; // so it just casts once
 		/*if (Std.isOfType(instance, editors.content.EditorPlayState))
-		{
-			editorPlayStateInstance = cast instance; // so it just casts once
-			isEditor = true;
+			{
+				editorPlayStateInstance = cast instance; // so it just casts once
+				isEditor = true;
 		}*/
 
 		strumGroup.visible = false; // drawing with renderer instead
@@ -140,23 +137,25 @@ class PlayfieldRenderer extends FlxBasic
 		strumGroup.cameras = this.cameras;
 		notes.cameras = this.cameras;
 
-
-		if(disableTryCatchDraw){
-			drawStuff(getNotePositions());
-			return;
-		}
-
-		try
-		{
-			drawStuff(getNotePositions());
-		}
-		catch (e)
-		{
-			trace(e);
-		}
 		// draw notes to screen
+		if (!debuggingMode)
+		{
+			drawStuff(getNotePositions());
+		}
+		else
+		{
+			try
+			{
+				drawStuff(getNotePositions());
+			}
+			catch (e)
+			{
+				trace(e);
+			}
+		}
 	}
-	private var disableTryCatchDraw:Bool = true; //to make tracing errors easier instead of a vague "null object reference"
+
+	private var debuggingMode:Bool = true; // to make tracing errors easier instead of a vague "null object reference"
 
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
@@ -230,7 +229,7 @@ class PlayfieldRenderer extends FlxBasic
 		{
 			noteAlpha = notes.members[noteIndex].multAlpha;
 			if (notes.members[noteIndex].hurtNote)
-			 	noteAlpha = 0.55;
+				noteAlpha = 0.55;
 			if (notes.members[noteIndex].mimicNote)
 				noteAlpha = ClientPrefs.data.mimicNoteAlpha;
 		}
@@ -259,7 +258,7 @@ class PlayfieldRenderer extends FlxBasic
 		return noteData;
 	}
 
-	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ? pf:Int = 0)
+	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ?pf:Int = 0)
 	{
 		#if PSYCH
 		if (notes.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(instance))
@@ -281,19 +280,23 @@ class PlayfieldRenderer extends FlxBasic
 			final scrollDivition = 1 / getCorrectScrollSpeed();
 			if (ModchartUtil.getDownscroll(instance))
 			{
-				if (noteDist > 0) strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
+				if (noteDist > 0)
+					strumTimeOffset -= Std.int(Conductor.stepCrochet); // down
 				else
 				{
 					strumTimeOffset += Std.int(Conductor.stepCrochet * scrollDivition);
 					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
 				}
-			}else{
+			}
+			else
+			{
 				if (noteDist > 0)
 				{
-					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition); //down
-					strumTimeOffset -= Std.int(Conductor.stepCrochet); //down
+					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition); // down
+					strumTimeOffset -= Std.int(Conductor.stepCrochet); // down
 				}
-				else strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
+				else
+					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
 			}
 			// FINALLY OMG I HATE THIS FUCKING MATH LMAO
 		}
@@ -307,17 +310,16 @@ class PlayfieldRenderer extends FlxBasic
 		return (notes.members[noteIndex].mustPress ? notes.members[noteIndex].noteData + NoteMovement.keyCount : notes.members[noteIndex].noteData);
 	}
 
-	//lol XD
+	// lol XD
 	public function getNoteDist(noteIndex:Int)
 	{
 		var noteDist = -0.55;
 		if (ModchartUtil.getDownscroll(instance))
 			noteDist *= -1;
 		return noteDist;
-    }
+	}
 
-
-	//Todo: Find how to create arrow paths using strum notes and notes using this function to make both work (I.E Create NoteDataPositions for ArrowPath)
+	// Todo: Find how to create arrow paths using strum notes and notes using this function to make both work (I.E Create NoteDataPositions for ArrowPath)
 	private function getNotePositions()
 	{
 		var notePositions:Array<NotePositionData> = [];
@@ -340,8 +342,7 @@ class PlayfieldRenderer extends FlxBasic
 
 				noteDist = modifierTable.applyNoteDistMods(noteDist, lane, pf);
 
-
-				//this code was to make sustains end match their ACTUAL size on spritesheed, but as it tells you, it doesn't work (yet) lmao
+				// this code was to make sustains end match their ACTUAL size on spritesheed, but as it tells you, it doesn't work (yet) lmao
 
 				// just causes too many issues lol, might fix it at some point
 				// if (notes.members[i].animation.curAnim.name.endsWith('end') && ClientPrefs.data.downScroll) //checking rn LMAO
@@ -396,7 +397,8 @@ class PlayfieldRenderer extends FlxBasic
 		var changeX:Bool = noteData.z != 0;
 		var strumNote = strumGroup.members[noteData.index];
 
-		if (strumNote.arrowMesh == null){
+		if (strumNote.arrowMesh == null)
+		{
 			strumNote.setupMesh();
 		}
 
@@ -422,7 +424,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		// var getNextNote = getNotePoss(noteData,1);
 
-		//Orient can be fixed, just need make it on strums too
+		// Orient can be fixed, just need make it on strums too
 		// if (noteData.orient != 0)
 		// 	noteData.angle = (-90 + (angle = Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG)) * noteData.orient;
 
@@ -434,12 +436,15 @@ class PlayfieldRenderer extends FlxBasic
 
 		addDataToStrum(noteData, strumGroup.members[noteData.index]); // set position and stuff before drawing
 
-		//This shouldn't even happen but just in case
-		if (strumNote.arrowMesh != null){
+		// This shouldn't even happen but just in case
+		if (strumNote.arrowMesh != null)
+		{
 			strumGroup.members[noteData.index].arrowMesh.cameras = this.cameras;
 			strumGroup.members[noteData.index].arrowMesh.updateTris();
 			strumGroup.members[noteData.index].arrowMesh.drawManual(strumGroup.members[noteData.index].graphic);
-		}else{
+		}
+		else
+		{
 			// draw it
 			strumGroup.members[noteData.index].cameras = this.cameras;
 			strumGroup.members[noteData.index].draw();
@@ -453,7 +458,8 @@ class PlayfieldRenderer extends FlxBasic
 		var changeX:Bool = noteData.z != 0;
 		var daNote = notes.members[noteData.index];
 
-		if (daNote.arrowMesh == null){
+		if (daNote.arrowMesh == null)
+		{
 			daNote.setupMesh();
 		}
 
@@ -477,23 +483,26 @@ class PlayfieldRenderer extends FlxBasic
 			noteData.scaleY *= (1 / -thisNotePos.z);
 		}
 
-		var getNextNote = getNotePoss(noteData,1);
+		var getNextNote = getNotePoss(noteData, 1);
 
 		if (noteData.orient != 0)
-			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
+			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
 		daNote.arrowMesh.setPerspective(noteData);
 		daNote.arrowMesh.offset.copyFrom(daNote.offset);
 
 		addDataToNote(noteData, notes.members[noteData.index]);
 
-		//Same as strums case
-		if (daNote.arrowMesh != null){
+		// Same as strums case
+		if (daNote.arrowMesh != null)
+		{
 			notes.members[noteData.index].arrowMesh.cameras = this.cameras;
 
 			notes.members[noteData.index].arrowMesh.updateTris();
 			notes.members[noteData.index].arrowMesh.drawManual(notes.members[noteData.index].graphic);
-		}else{
+		}
+		else
+		{
 			// draw it
 			notes.members[noteData.index].cameras = this.cameras;
 			notes.members[noteData.index].draw();
@@ -529,13 +538,21 @@ class PlayfieldRenderer extends FlxBasic
 		var top = [];
 		var mid = [];
 		var bot = [];
-		
+
 		if (spiral)
 		{
 			top = [getSustainPoint(noteData, 0), getSustainPoint(noteData, 1)];
-			mid = [getSustainPoint(noteData, timeToNextSustain * .5), getSustainPoint(noteData, timeToNextSustain * .5 + 1)];
-			bot = [getSustainPoint(noteData, timeToNextSustain), getSustainPoint(noteData, timeToNextSustain + 1)];
-		} else {
+			mid = [
+				getSustainPoint(noteData, timeToNextSustain * .5),
+				getSustainPoint(noteData, timeToNextSustain * .5 + 1)
+			];
+			bot = [
+				getSustainPoint(noteData, timeToNextSustain),
+				getSustainPoint(noteData, timeToNextSustain + 1)
+			];
+		}
+		else
+		{
 			top = [getSustainPoint(noteData, 0)];
 			mid = [getSustainPoint(noteData, timeToNextSustain * .5)];
 			bot = [getSustainPoint(noteData, timeToNextSustain)];
@@ -565,21 +582,22 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.mesh.draw();
 	}
 
-	private function drawArrowPathNew(noteData:NotePositionData){ //this one is unused since i have no clue what to do.
+	private function drawArrowPathNew(noteData:NotePositionData)
+	{ // this one is unused since i have no clue what to do.
 		if (noteData.arrowPathAlpha <= 0)
 			return;
 
-		//TODO:
+		// TODO:
 		/*
 			- make this draw similar to VSLICE sustain draw (so i can make sustain mesh correctly, maybe just copy paste sustain code and change info to MT?)
 			- make sure this shit doesn't lag the engine out unlike the old one
 			- make sure that if no graphic exist, we create one (such as a FlxGraphic with the size the strip needs and stuff like that)
 			- optimize the code to make it easier to understand
-		*/
+		 */
 
 		var strumNote = strumGroup.members[noteData.index];
 
-		var arrowPathLength:Float= noteData.arrowPathLength * 100;
+		var arrowPathLength:Float = noteData.arrowPathLength * 100;
 		var arrowPathBackLength:Float = noteData.arrowPathBackwardsLength * 100;
 
 		if (strumNote.arrowPath == null)
@@ -593,7 +611,6 @@ class PlayfieldRenderer extends FlxBasic
 		strumNote.arrowPath.x = 0;
 		strumNote.arrowPath.y = 0;
 
-
 		strumNote.arrowPath.shader = strumNote.rgbShader.parent.shader; // idfk if this works.
 
 		strumNote.arrowPath.updateClipping_mods(noteData);
@@ -606,7 +623,7 @@ class PlayfieldRenderer extends FlxBasic
 	{
 		for (noteData in notePositions)
 		{
-			if(noteData.isStrum) //make sure we draw the path for each before we even draw each?
+			if (noteData.isStrum) // make sure we draw the path for each before we even draw each?
 				drawArrowPathNew(noteData);
 
 			if (noteData.isStrum) // draw strum
@@ -615,7 +632,6 @@ class PlayfieldRenderer extends FlxBasic
 				drawNote(noteData);
 			else // draw Sustain
 				drawSustainNote(noteData);
-
 		}
 	}
 
@@ -650,9 +666,7 @@ class PlayfieldRenderer extends FlxBasic
 			+ ModchartUtil.getNoteOffsetX(daNote, instance),
 			noteData.y
 			+ (NoteMovement.arrowSizes[noteData.lane] / 2), noteData.z * 0.001),
-			ModchartUtil.defaultFOV * (Math.PI / 180),
-			0, 0
-		);
+			ModchartUtil.defaultFOV * (Math.PI / 180), 0, 0);
 
 		noteData.x = finalNotePos.x;
 		noteData.y = finalNotePos.y;
@@ -685,10 +699,10 @@ class PlayfieldRenderer extends FlxBasic
 		modifierTable.applyNoteMods(noteData, lane, curPos, pf);
 
 		var finalNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
-				noteData.y + (daNote.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180),
-				-(daNote.width / 2),
-				-(daNote.height / 2));
+			noteData.y + (daNote.height / 2), noteData.z * 0.001),
+			ModchartUtil.defaultFOV * (Math.PI / 180),
+			-(daNote.width / 2),
+			-(daNote.height / 2));
 
 		noteData.x = finalNotePos.x;
 		noteData.y = finalNotePos.y;

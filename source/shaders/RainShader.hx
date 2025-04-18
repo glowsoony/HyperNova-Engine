@@ -105,7 +105,6 @@ class RainShader extends FlxShader
 		return sampleBitmapScreen(worldToScreen(worldCoord));
 	}
 	  ', true)
-
 	@:glFragmentSource("
 	#pragma header
 
@@ -401,15 +400,14 @@ class RainShader extends FlxShader
 	}
 	
 		")
-
 	static final MAX_LIGHTS:Int = 8;
 
 	public var lights:Array<
-	{
-		position:ShaderParameter<Float>,
-		color:ShaderParameter<Float>,
-		radius:ShaderParameter<Float>,
-	}>;
+		{
+			position:ShaderParameter<Float>,
+			color:ShaderParameter<Float>,
+			radius:ShaderParameter<Float>,
+		}>;
 
 	public var time(default, set):Float = 1;
 
@@ -508,7 +506,7 @@ class RainShader extends FlxShader
 		this.uPuddleScaleY.value = [0.0];
 		this.numLights.value = [0];
 		uCameraBounds.value = [0, 0, FlxG.width, FlxG.height];
-	    uFrameBounds.value = [0, 0, FlxG.width, FlxG.height];
+		uFrameBounds.value = [0, 0, FlxG.width, FlxG.height];
 		this.uScreenResolution.value = [FlxG.width, FlxG.height];
 	}
 
@@ -518,21 +516,20 @@ class RainShader extends FlxShader
 	}
 
 	/*override function __processGLData(source:String, storageType:String):Void
-	{
-		super.__processGLData(source, storageType);
-		if (storageType == 'uniform')
 		{
-			lights = [
-				for (i in 0...MAX_LIGHTS)
-				{
-					position: addFloatUniform('lights[$i].position', 2),
-					color: addFloatUniform('lights[$i].color', 3),
-					radius: addFloatUniform('lights[$i].radius', 1),
-				}
-			];
-		}
+			super.__processGLData(source, storageType);
+			if (storageType == 'uniform')
+			{
+				lights = [
+					for (i in 0...MAX_LIGHTS)
+					{
+						position: addFloatUniform('lights[$i].position', 2),
+						color: addFloatUniform('lights[$i].color', 3),
+						radius: addFloatUniform('lights[$i].radius', 1),
+					}
+				];
+			}
 	}*/
-
 	public function updateViewInfo(screenWidth:Float, screenHeight:Float, camera:FlxCamera):Void
 	{
 		uScreenResolution.value = [screenWidth, screenHeight];
@@ -544,21 +541,20 @@ class RainShader extends FlxShader
 		// NOTE: uv.width is actually the right pos and uv.height is the bottom pos
 		uFrameBounds.value = [frame.uv.x, frame.uv.y, frame.uv.width, frame.uv.height];
 	}
-  
-	/*override function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
-	{
-	  try
-	  {
-		final res = super.__createGLProgram(vertexSource, fragmentSource);
-		return res;
-	  }
-	  catch (error)
-	  {
-		Log.warn(error); // prevent the app from dying immediately
-		return null;
-	  }
-	}*/
 
+	/*override function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
+		{
+		  try
+		  {
+			final res = super.__createGLProgram(vertexSource, fragmentSource);
+			return res;
+		  }
+		  catch (error)
+		  {
+			Log.warn(error); // prevent the app from dying immediately
+			return null;
+		  }
+	}*/
 	@:access(openfl.display.ShaderParameter)
 	function addFloatUniform(name:String, length:Int):ShaderParameter<Float>
 	{

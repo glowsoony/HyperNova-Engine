@@ -2,5 +2,11 @@
     "workbench.colorCustomizations": {
         "minimap.background": "#00000000",
         "scrollbar.shadow": "#00000000"
+    },
+    "[haxe]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
     }
 }

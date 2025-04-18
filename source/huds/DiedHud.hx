@@ -1,12 +1,12 @@
 package huds;
 
-import flixel.group.FlxGroup;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
@@ -15,8 +15,8 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
-import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -26,50 +26,48 @@ using StringTools;
  *	the way it currently is, while also transferring some PlayState stuff to here aside from the
  *	actual hud -BeastlyGhost
 **/
-
 /*
 	so this is going to be OPT ig?
 	i don't like how it currently looks so i'll try to improve it
 	so if you want to add something to it, feel free to make this easier ed
 	-Edwhak
-*/
+ */
 class DiedHud extends FlxGroup
 {
-
-    var crtFilter:FlxSprite;
+	var crtFilter:FlxSprite;
 	var whiteAnimeshoun:FlxSprite;
 	var camAnimeshoun:FlxSprite;
 	var staticAnimeshoun:FlxSprite;
 	var constantstaticAnimeshoun:FlxSprite;
 
-    public static var diedTo:String = "notes";
-    public static var killedBy:String = "character";
-    public static var lastedTo:Float = 0;
-    var time:FlxText;
+	public static var diedTo:String = "notes";
+	public static var killedBy:String = "character";
+	public static var lastedTo:Float = 0;
 
+	var time:FlxText;
 
 	public function new(noteWhoKilled:String = "notes")
 	{
 		super();
 
-		diedTo = noteWhoKilled; //so i make sure that the noteWhoKilled is set in the function ig?
+		diedTo = noteWhoKilled; // so i make sure that the noteWhoKilled is set in the function ig?
 
-        Paths.image("overlays/ctr","image");
+		Paths.image("overlays/ctr", "image");
 		if (ClientPrefs.data.downScroll)
-			{
-				Paths.image("overlays/white_scanline-ds","image");
-			}
-			else if (!ClientPrefs.data.downScroll)
-			{
-				Paths.image("overlays/white_scanline","image");
-			}
-		Paths.image("overlays/cam_fuck","image");
-		Paths.image("static/static","image");
+		{
+			Paths.image("overlays/white_scanline-ds", "image");
+		}
+		else if (!ClientPrefs.data.downScroll)
+		{
+			Paths.image("overlays/white_scanline", "image");
+		}
+		Paths.image("overlays/cam_fuck", "image");
+		Paths.image("static/static", "image");
 		crtFilter = new FlxSprite().loadGraphic(Paths.image('overlays/crt'));
 		crtFilter.scrollFactor.set();
 		crtFilter.antialiasing = true;
 		crtFilter.screenCenter();
-        crtFilter.alpha = 0.2;
+		crtFilter.alpha = 0.2;
 
 		whiteAnimeshoun = new FlxSprite();
 		if (ClientPrefs.data.downScroll)
@@ -85,7 +83,7 @@ class DiedHud extends FlxGroup
 		whiteAnimeshoun.scrollFactor.set();
 		whiteAnimeshoun.antialiasing = true;
 		whiteAnimeshoun.animation.play('idle');
-        whiteAnimeshoun.alpha = 0.1;
+		whiteAnimeshoun.alpha = 0.1;
 
 		camAnimeshoun = new FlxSprite();
 		camAnimeshoun.frames = Paths.getSparrowAtlas('overlays/safeMode');
@@ -94,7 +92,7 @@ class DiedHud extends FlxGroup
 		camAnimeshoun.scrollFactor.set();
 		camAnimeshoun.antialiasing = false;
 		camAnimeshoun.animation.play('idle', true);
-        camAnimeshoun.alpha = 1;
+		camAnimeshoun.alpha = 1;
 
 		staticAnimeshoun = new FlxSprite();
 		staticAnimeshoun.frames = Paths.getSparrowAtlas('static/static');
@@ -103,22 +101,24 @@ class DiedHud extends FlxGroup
 		staticAnimeshoun.scrollFactor.set();
 		staticAnimeshoun.animation.play('idle');
 		staticAnimeshoun.visible = false;
-        staticAnimeshoun.alpha = 1;
+		staticAnimeshoun.alpha = 1;
 
 		create();
 
-        addCameraOverlay();
-        hideCameraOverlay(false);
+		addCameraOverlay();
+		hideCameraOverlay(false);
 	}
 
 	function create():Void
 	{
-        time = new FlxText(925, FlxG.height - 80, Std.int(FlxG.width * 0.6), "0:00", 25);
-        time.setFormat(Paths.font("vcr.ttf"), 25, 0xffffffff);
+		time = new FlxText(925, FlxG.height - 80, Std.int(FlxG.width * 0.6), "0:00", 25);
+		time.setFormat(Paths.font("vcr.ttf"), 25, 0xffffffff);
 		time.alpha = 1;
 		add(time);
 
-        var showTime:String = FlxStringUtil.formatTime(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2), false) + ' / ' + FlxStringUtil.formatTime(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2), false);
+		var showTime:String = FlxStringUtil.formatTime(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2), false)
+			+ ' / '
+			+ FlxStringUtil.formatTime(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2), false);
 
 		var deathtext:FlxText = new FlxText(30, FlxG.height - 80, 0, "Killed By: ", 32);
 		deathtext.text += diedTo;
@@ -133,31 +133,34 @@ class DiedHud extends FlxGroup
 		lastedMax.setFormat(Paths.font('vcr.ttf'), 32);
 		lastedMax.updateHitbox();
 		add(lastedMax);
-    }
+	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-        time.text = DateTools.format(Date.now(), "%Y-%m-%d | %H:%M:%S");
+		time.text = DateTools.format(Date.now(), "%Y-%m-%d | %H:%M:%S");
 	}
 
-    public function addCameraOverlay(){
-        add(staticAnimeshoun);
+	public function addCameraOverlay()
+	{
+		add(staticAnimeshoun);
 		add(whiteAnimeshoun);
 		add(camAnimeshoun);
 		add(crtFilter);
-        FlxTween.tween(staticAnimeshoun, {alpha:0.025}, 1, {ease:FlxEase.circOut});
+		FlxTween.tween(staticAnimeshoun, {alpha: 0.025}, 1, {ease: FlxEase.circOut});
 	}
 
-	public function removeCameraOverlay(){
-        remove(staticAnimeshoun);
+	public function removeCameraOverlay()
+	{
+		remove(staticAnimeshoun);
 		remove(whiteAnimeshoun);
 		remove(camAnimeshoun);
 		remove(crtFilter);
 	}
 
-	public function hideCameraOverlay(hide:Bool = false){
-        staticAnimeshoun.visible = !hide;
+	public function hideCameraOverlay(hide:Bool = false)
+	{
+		staticAnimeshoun.visible = !hide;
 		camAnimeshoun.visible = !hide;
 		crtFilter.visible = !hide;
 		whiteAnimeshoun.visible = !hide;
