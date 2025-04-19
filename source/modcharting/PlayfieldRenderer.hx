@@ -673,11 +673,16 @@ class PlayfieldRenderer extends FlxBasic
 		// add offsets to data with modifiers
 		modifierTable.applyNoteMods(noteData, lane, curPos, pf);
 
-		var finalNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
+		var changeX:Bool = noteData.z != 0;
+
+		var finalNotePos;
+		if (changeX){
+			finalNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
 			noteData.y + (daNote.height / 2), noteData.z * 0.001),
-			ModchartUtil.defaultFOV * (Math.PI / 180),
-			-(daNote.width / 2),
-			-(daNote.height / 2));
+			ModchartUtil.defaultFOV * (Math.PI / 180));
+		}else{
+			finalNotePos = new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance), noteData.y + (daNote.height / 2), 0);
+		}
 
 		noteData.x = finalNotePos.x;
 		noteData.y = finalNotePos.y;

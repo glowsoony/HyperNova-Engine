@@ -783,9 +783,11 @@ class PlayState extends MusicBeatState
 			{
 				modchartRenderer = new Manager();
 				add(modchartRenderer);
+				add(grpNoteSplashes);
+				add(grpHoldSplashes);
 			}
 			else
-			{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes!
+			{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes for vanilla!
 				add(grpNoteSplashes);
 				add(grpHoldSplashes);
 			}
