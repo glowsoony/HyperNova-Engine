@@ -7,7 +7,7 @@ import shaders.RGBPalette;
 
 class StrumNote extends FlxSkewedSprite
 {
-	public var arrowMesh:modcharting.NewModchartArrow;
+	public var arrowMesh:ModchartArrowMesh;
 	public var z:Float = 0;
 	public var arrowPath:SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
@@ -38,12 +38,8 @@ class StrumNote extends FlxSkewedSprite
 	{
 		if (arrowMesh == null)
 		{
-			arrowMesh = new modcharting.NewModchartArrow();
-			arrowMesh.spriteGraphic = this;
-			arrowMesh.doDraw = false;
-			arrowMesh.copySpriteGraphic = false;
+			arrowMesh = new ModchartArrowMesh(this);
 		}
-		arrowMesh.setUp();
 	}
 
 	public var useRGBShader:Bool = true;
@@ -182,8 +178,6 @@ class StrumNote extends FlxSkewedSprite
 		{
 			playAnim(lastAnim, true);
 		}
-		if (arrowMesh != null)
-			arrowMesh.updateCol();
 	}
 
 	public function playerPosition()
@@ -227,8 +221,6 @@ class StrumNote extends FlxSkewedSprite
 	public override function revive():Void
 	{
 		super.revive();
-		if (arrowMesh != null)
-			arrowMesh.updateCol();
 	}
 
 	override public function destroy():Void
@@ -236,7 +228,6 @@ class StrumNote extends FlxSkewedSprite
 		super.destroy();
 		if (arrowMesh != null)
 		{
-			arrowMesh.clearOutCache();
 			arrowMesh.destroy();
 		}
 	}

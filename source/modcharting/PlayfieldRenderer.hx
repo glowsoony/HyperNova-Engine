@@ -2,22 +2,10 @@ package modcharting;
 
 // import HazardAFT_Capture.HazardAFT_CaptureMultiCam as MultiCamCapture;
 import flixel.FlxBasic;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.FlxStrip;
-import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxFrame;
-import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxAngle;
-import flixel.math.FlxMath;
-import flixel.system.FlxAssets.FlxShader;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer.FlxTimerManager;
-import managers.*;
 // import modcharting.ArrowPathBitmap;
 import modcharting.Modifier;
 import modcharting.Proxiefield.Proxie as Proxy;
@@ -107,7 +95,9 @@ class PlayfieldRenderer extends FlxBasic
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
 		addNewPlayfield(0, 0, 0);
-		addNewProxiefield(new Proxy());
+
+		// why ??
+		// addNewProxiefield(new Proxy());
 		modchart = new ModchartFile(this);
 	}
 
@@ -159,13 +149,17 @@ class PlayfieldRenderer extends FlxBasic
 
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
-		strum.x = strumData.x;
-		strum.y = strumData.y;
-		// strum.z = strumData.z;
-		strum.angle = strumData.angle;
-		strum.alpha = strumData.alpha;
-		strum.scale.x = strumData.scaleX;
-		strum.scale.y = strumData.scaleY;
+		// not really needed since we draw the shit manually now
+		/*
+			strum.x = strumData.x;
+			strum.y = strumData.y;
+			strum.angle = strumData.angle;
+			strum.alpha = strumData.alpha;
+
+			/*
+				strum.scale.x = strumData.scaleX;
+				strum.scale.y = strumData.scaleY;
+		 */
 
 		strum.rgbShader.stealthGlow = strumData.stealthGlow;
 		strum.rgbShader.stealthGlowRed = strumData.glowRed;
@@ -406,11 +400,9 @@ class PlayfieldRenderer extends FlxBasic
 		if (changeX)
 			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (strumNote.width / 2), noteData.y + (strumNote.height / 2),
 				noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180),
-				-(strumNote.width / 2),
-				-(strumNote.height / 2));
+				ModchartUtil.defaultFOV * (Math.PI / 180));
 		else
-			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+			thisNotePos = new Vector3D(noteData.x + (strumNote.width / 2), noteData.y + (strumNote.height / 2), 0);
 
 		var skewX = ModchartUtil.getStrumSkew(strumNote, false);
 		var skewY = ModchartUtil.getStrumSkew(strumNote, true);
@@ -429,26 +421,19 @@ class PlayfieldRenderer extends FlxBasic
 		// 	noteData.angle = (-90 + (angle = Math.atan2(getNextNote.y - noteData.y , getNextNote.x - noteData.x) * FlxAngle.TO_DEG)) * noteData.orient;
 
 		if (noteData.stealthGlow != 0)
-			strumGroup.members[noteData.index].rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
+			strumNote.rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
 
-		strumNote.arrowMesh.setPerspective(noteData);
-		strumNote.arrowMesh.offset.copyFrom(strumNote.offset);
+		addDataToStrum(noteData, strumNote); // set position and stuff before drawing
 
-		addDataToStrum(noteData, strumGroup.members[noteData.index]); // set position and stuff before drawing
-
-		// This shouldn't even happen but just in case
+		strumNote.cameras = this.cameras;
+		// Same as strums case
 		if (strumNote.arrowMesh != null)
 		{
-			strumGroup.members[noteData.index].arrowMesh.cameras = this.cameras;
-			strumGroup.members[noteData.index].arrowMesh.updateTris();
-			strumGroup.members[noteData.index].arrowMesh.drawManual(strumGroup.members[noteData.index].graphic);
+			strumNote.arrowMesh.setupMesh(noteData);
+			strumNote.arrowMesh.draw();
 		}
 		else
-		{
-			// draw it
-			strumGroup.members[noteData.index].cameras = this.cameras;
-			strumGroup.members[noteData.index].draw();
-		}
+			strumNote.draw();
 	}
 
 	private function drawNote(noteData:NotePositionData)
@@ -467,11 +452,9 @@ class PlayfieldRenderer extends FlxBasic
 		if (changeX)
 			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
 				noteData.y + (daNote.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180),
-				-(daNote.width / 2),
-				-(daNote.height / 2));
+				ModchartUtil.defaultFOV * (Math.PI / 180));
 		else
-			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+			thisNotePos = new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance), noteData.y + (daNote.height / 2), 0);
 
 		var skewX = ModchartUtil.getNoteSkew(daNote, false);
 		var skewY = ModchartUtil.getNoteSkew(daNote, true);
@@ -488,25 +471,17 @@ class PlayfieldRenderer extends FlxBasic
 		if (noteData.orient != 0)
 			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
-		daNote.arrowMesh.setPerspective(noteData);
-		daNote.arrowMesh.offset.copyFrom(daNote.offset);
+		addDataToNote(noteData, daNote);
 
-		addDataToNote(noteData, notes.members[noteData.index]);
-
+		daNote.cameras = this.cameras;
 		// Same as strums case
 		if (daNote.arrowMesh != null)
 		{
-			notes.members[noteData.index].arrowMesh.cameras = this.cameras;
-
-			notes.members[noteData.index].arrowMesh.updateTris();
-			notes.members[noteData.index].arrowMesh.drawManual(notes.members[noteData.index].graphic);
+			daNote.arrowMesh.setupMesh(noteData);
+			daNote.arrowMesh.draw();
 		}
 		else
-		{
-			// draw it
-			notes.members[noteData.index].cameras = this.cameras;
-			notes.members[noteData.index].draw();
-		}
+			daNote.draw();
 	}
 
 	private function drawSustainNote(noteData:NotePositionData)

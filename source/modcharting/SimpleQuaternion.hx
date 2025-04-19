@@ -5,15 +5,19 @@ import flixel.math.FlxMath;
 import modcharting.ModchartUtil;
 import openfl.geom.Vector3D;
 
-@:structInit
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 @:publicFields
 class Quaternion
-{ // new class (used for 3D perspective rotation stuff)
+{
 	var x:Float;
 	var y:Float;
 	var z:Float;
 	var w:Float;
 
+	// This could be inline, to make local quaternions abstracted away
 	function new(x:Float, y:Float, z:Float, w:Float)
 	{
 		this.x = x;
@@ -22,7 +26,8 @@ class Quaternion
 		this.w = w;
 	}
 
-	function multiply(q:Quaternion):Quaternion
+	@:pure @:noDebug
+	inline function multiply(q:Quaternion):Quaternion
 	{
 		return new Quaternion(w * q.x
 			+ x * q.w
@@ -40,12 +45,55 @@ class Quaternion
 			- z * q.z);
 	}
 
-	function rotateVector(v:Vector3D):Vector3D
+	@:pure @:noDebug
+	inline function multiplyInPlace(q:Quaternion):Void
 	{
-		var qVec = new Quaternion(v.x, v.y, v.z, 0);
-		var qConj = new Quaternion(-x, -y, -z, w);
-		var result = this.multiply(qVec).multiply(qConj);
-		return new Vector3D(result.x, result.y, result.z);
+		var x = this.x;
+		var y = this.y;
+		var z = this.z;
+		var w = this.w;
+
+		this.x = w * q.x + x * q.w + y * q.z - z * q.y;
+		this.y = w * q.y - x * q.z + y * q.w + z * q.x;
+		this.z = w * q.z + x * q.y - y * q.x + z * q.w;
+		this.w = w * q.w - x * q.x - y * q.y - z * q.z;
+	}
+
+	@:pure @:noDebug
+	inline function multiplyInVector(v:Vector3D):Quaternion
+	{
+		final vx = v.x, vy = v.y, vz = v.z, w = this.w;
+
+		// @formatter:off
+		return new Quaternion(
+			w * vx + y * vz - z * vy,
+			w * vy - x * vz + z * vx,
+			w * vz + x * vy - y * vx,
+			-x * vx - y * vy - z * vz
+		);
+		// @formatter:on
+	}
+
+	@:pure @:noDebug
+	inline function multiplyInv(q:Quaternion):Vector3D
+	{
+		final qw = q.w, qx = q.x, qy = q.y, qz = q.z;
+		final nx = -x, ny = -y, nz = -z, w = this.w;
+
+		// @formatter:off
+		return new Vector3D(
+			qw * nx + qx * w + qy * nz - qz * ny,
+			qw * ny - qx * nz + qy * w + qz * nx,
+			qw * nz + qx * ny - qy * nx + qz * w
+		);
+		// @formatter:on
+	}
+
+	@:pure @:noDebug
+	inline function rotateVector(v:Vector3D):Vector3D
+	{
+		var qVec = multiplyInVector(v);
+		return multiplyInv(qVec);
 	}
 
 	static function fromAxisAngle(axis:Vector3D, angleRad:Float):Quaternion

@@ -78,7 +78,7 @@ class Note extends FlxSkewedSprite
 	public var sustainRGB:Bool = true; // so if it have only 1 sustain and colored it loads this LOL
 
 	public var mesh:modcharting.SustainStrip = null;
-	public var arrowMesh:modcharting.NewModchartArrow;
+	public var arrowMesh:ModchartArrowMesh;
 	public var z:Float = 0;
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
@@ -196,12 +196,8 @@ class Note extends FlxSkewedSprite
 	{
 		if (arrowMesh == null)
 		{
-			arrowMesh = new modcharting.NewModchartArrow();
-			arrowMesh.spriteGraphic = this;
-			arrowMesh.doDraw = false;
-			arrowMesh.copySpriteGraphic = false;
+			arrowMesh = new ModchartArrowMesh(this);
 		}
-		arrowMesh.setUp();
 	}
 
 	private function set_multSpeed(value:Float):Float
@@ -802,8 +798,6 @@ class Note extends FlxSkewedSprite
 			animation.play(animName, true);
 
 		updateHitbox();
-		if (arrowMesh != null)
-			arrowMesh.updateCol();
 	}
 
 	public static function getNoteSkinPostfix()
@@ -902,7 +896,6 @@ class Note extends FlxSkewedSprite
 		_lastValidChecked = '';
 		if (arrowMesh != null)
 		{
-			arrowMesh.clearOutCache();
 			arrowMesh.destroy();
 		}
 	}
@@ -1087,8 +1080,5 @@ class Note extends FlxSkewedSprite
 	public override function revive():Void
 	{
 		super.revive();
-
-		if (arrowMesh != null)
-			arrowMesh.updateCol();
 	}
 }

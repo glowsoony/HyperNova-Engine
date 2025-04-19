@@ -16,10 +16,14 @@ class NotePositionData implements IFlxDestroyable
 	public var alpha:Float;
 	public var scaleX:Float;
 	public var scaleY:Float;
-	public var scaleZ:Float;
+	// ??? this is a 2d texture, doesnt have depth so doesnt need scale z
+	// public var scaleZ:Float;
 	public var skewX:Float;
 	public var skewY:Float;
+
+	// SKEW Z DOENST EXISTS !!!!!!!!!!!!!
 	public var skewZ:Float;
+
 	public var curPos:Float;
 	public var noteDist:Float;
 	public var offset:Float;
@@ -89,7 +93,6 @@ class NotePositionData implements IFlxDestroyable
 		this.alpha = 1;
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
-		this.scaleZ = 1;
 		this.skewX = skewX;
 		this.skewY = skewY;
 		this.skewZ = 0;
@@ -147,7 +150,6 @@ class NotePositionData implements IFlxDestroyable
 		this.alpha = alpha;
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
-		this.scaleZ = 1;
 		this.skewX = skewX;
 		this.skewY = skewY;
 		this.skewZ = 0;

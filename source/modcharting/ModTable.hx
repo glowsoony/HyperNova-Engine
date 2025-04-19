@@ -3,6 +3,7 @@ package modcharting;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
+import haxe.ds.Vector;
 import modcharting.Modifier;
 #if LEATHER
 import game.Conductor;
@@ -20,7 +21,7 @@ class ModTable
 	// The table is used to precalculate all the playfield and lane checks on each modifier,
 	// so it should end up with a lot less loops and if checks each frame
 	// index table by playfield, then lane, and then loop through each modifier
-	private var table:Array<Array<Array<Modifier>>> = [];
+	private var table:Vector<Vector<Vector<Modifier>>>;
 
 	public function new(instance:ModchartMusicBeatState, renderer:PlayfieldRenderer)
 	{
@@ -88,23 +89,33 @@ class ModTable
 
 	public function reconstructTable():Void
 	{
-		table = [];
+		if (table != null)
+			table.fill(null);
+
+		if (table == null || table.length < renderer.playfields.length)
+			table = new Vector<Vector<Vector<Modifier>>>(renderer.playfields.length);
 
 		for (pf in 0...renderer.playfields.length)
 		{
 			if (table[pf] == null)
-				table[pf] = [];
+				table[pf] = new Vector<Vector<Modifier>>(NoteMovement.totalKeyCount);
 
 			for (lane in 0...NoteMovement.totalKeyCount)
 			{
-				table[pf].push([]);
+				var len:Int = 0;
+				for (mod in modifiers)
+				{
+					if (mod.checkLane(lane) && mod.checkPlayField(pf))
+						++len;
+				}
+				table[pf][lane] = new Vector<Modifier>(len);
+
+				var index:Int = 0;
 
 				for (mod in modifiers)
 				{
 					if (mod.checkLane(lane) && mod.checkPlayField(pf))
-					{
-						table[pf][lane].push(mod); // add mod to table
-					}
+						table[pf][lane][index++] = mod; // add mod to table
 				}
 			}
 		}
@@ -114,7 +125,7 @@ class ModTable
 	{
 		if (table[pf] != null && table[pf][lane] != null)
 		{
-			var modList:Array<Modifier> = table[pf][lane];
+			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
 				mod.getStrumPath(noteData, lane, pf);
 		}
@@ -124,7 +135,7 @@ class ModTable
 	{
 		if (table[pf] != null && table[pf][lane] != null)
 		{
-			var modList:Array<Modifier> = table[pf][lane];
+			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
 				mod.getNotePath(noteData, lane, curPos, pf);
 		}
@@ -134,7 +145,7 @@ class ModTable
 	{
 		if (table[pf] != null && table[pf][lane] != null)
 		{
-			var modList:Array<Modifier> = table[pf][lane];
+			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
 				noteDist = mod.getNoteDist(noteDist, lane, 0, pf);
 		}
@@ -145,7 +156,7 @@ class ModTable
 	{
 		if (table[pf] != null && table[pf][lane] != null)
 		{
-			var modList:Array<Modifier> = table[pf][lane];
+			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
 				curPos = mod.getNoteCurPos(lane, curPos, pf);
 		}
@@ -157,7 +168,7 @@ class ModTable
 		var incomingAngle:Array<Float> = [0, 0];
 		if (table[pf] != null && table[pf][lane] != null)
 		{
-			var modList:Array<Modifier> = table[pf][lane];
+			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
 			{
 				var ang = mod.getIncomingAngle(lane, curPos, pf); // need to get incoming angle before
