@@ -150,7 +150,7 @@ class PlayfieldRenderer extends FlxBasic
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
 		// not really needed since we draw the shit manually now
-		/*
+		
 			strum.x = strumData.x;
 			strum.y = strumData.y;
 			strum.angle = strumData.angle;
@@ -159,7 +159,7 @@ class PlayfieldRenderer extends FlxBasic
 			/*
 				strum.scale.x = strumData.scaleX;
 				strum.scale.y = strumData.scaleY;
-		 */
+		 	*/
 
 		strum.rgbShader.stealthGlow = strumData.stealthGlow;
 		strum.rgbShader.stealthGlowRed = strumData.glowRed;

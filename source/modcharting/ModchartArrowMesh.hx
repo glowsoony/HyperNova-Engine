@@ -100,6 +100,8 @@ class ModchartArrowMesh extends FlxBasic
 		}
 		while (vertPointer < planeVertices.length);
 
+		parent.alpha = data.alpha;
+		
 		final uvRectangle = parent.frame.uv;
 
 		// top left
@@ -166,9 +168,10 @@ class ModchartArrowMesh extends FlxBasic
 
 	override function destroy()
 	{
-		_vertices.splice(0, _vertices.length);
-		_uv.splice(0, _uv.length);
-		_indices.splice(0, _indices.length);
+		//Make sure it doesn't do shit if the fucking sprite already died?
+		if (_vertices != null) _vertices.splice(0, _vertices.length);
+		if (_uv != null) _uv.splice(0, _uv.length);
+		if (_indices != null) _indices.splice(0, _indices.length);
 
 		_vertices = null;
 		_uv = null;

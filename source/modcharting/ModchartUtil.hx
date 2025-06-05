@@ -20,6 +20,22 @@ import objects.StrumNote;
 import states.PlayState;
 #end
 
+enum abstract RotationOrder(String) from String to String {
+	final X_Y_Z = "x_y_z";
+	final X_Z_Y = "x_z_y";
+	final Y_X_Z = "y_x_z";
+	final Y_Z_X = "y_z_x";
+	final Z_X_Y = "z_x_y";
+	final Z_Y_X = "z_y_x";
+
+	final X_Y_X = "x_y_x";
+	final X_Z_X = "x_z_x";
+	final Y_X_Y = "y_x_y";
+	final Y_Z_Y = "y_z_y";
+	final Z_X_Z = "z_x_z";
+	final Z_Y_Z = "z_y_z";
+}
+
 class ModchartUtil
 {
 	public static function getDownscroll(instance:ModchartMusicBeatState)
@@ -257,8 +273,26 @@ class ModchartUtil
 		// return qx, qy;
 	}
 
+	public static function easeFlip(ease:Float->Float):Float->Float
+	{
+		return function(t:Float)
+		{
+			return 1.0 - ease(t);
+		}
+	}
+	
 	public static function getFlxEaseByString(?ease:String = '')
 	{
+		if (StringTools.contains(ease, "flip(")){
+			var subModArr = ease.split("flip(");
+			ease = subModArr[1];
+			subModArr = ease.split(")");
+			ease = subModArr[0];
+			var easeFinal = getFlxEaseByString(ease);
+			
+			return easeFlip(easeFinal);
+		}
+
 		switch (ease.toLowerCase().trim())
 		{
 			case 'backin':
@@ -377,6 +411,8 @@ class ModchartUtil
 				return ImprovedEases.tapElastic;
 			case 'tri':
 				return ImprovedEases.tri;
+			default:
+				return ImprovedEases.linear;
 		}
 		return ImprovedEases.linear;
 	}
@@ -406,6 +442,7 @@ class ModchartUtil
 		return totalTime;
 	}
 
+	public static var ROTATION_ORDER:RotationOrder = Z_Y_X;
 	@:pure @:noDebug
 	inline public static function rotate3DVector(vec:Vector3D, angleX:Float, angleY:Float, angleZ:Float):Vector3D
 	{
@@ -417,8 +454,60 @@ class ModchartUtil
 		final quatY = Quaternion.fromAxisAngle(Vector3D.Y_AXIS, angleY * RAD);
 		final quatZ = Quaternion.fromAxisAngle(Vector3D.Z_AXIS, angleZ * RAD);
 
-		quatY.multiplyInPlace(quatX);
-		quatY.multiplyInPlace(quatZ);
-		return quatY.rotateVector(vec);
+		// this is confusing, X_Y_Z is done like this:
+		// OUT = Z;
+		// OUT *= Y
+		// OUT *= X
+		// But it feels wrong, so investigate this
+		switch (ROTATION_ORDER) {
+			case Z_X_Y:
+				quatY.multiplyInPlace(quatX);
+				quatY.multiplyInPlace(quatZ);
+				return quatY.rotateVector(vec);
+			case X_Y_Z:
+				quatZ.multiplyInPlace(quatY);
+				quatZ.multiplyInPlace(quatX);
+				return quatZ.rotateVector(vec);
+			case X_Z_Y:
+				quatY.multiplyInPlace(quatZ);
+				quatY.multiplyInPlace(quatX);
+				return quatY.rotateVector(vec);
+			case Y_X_Z:
+				quatZ.multiplyInPlace(quatX);
+				quatZ.multiplyInPlace(quatY);
+				return quatZ.rotateVector(vec);
+			case Y_Z_X:
+				quatX.multiplyInPlace(quatZ);
+				quatX.multiplyInPlace(quatY);
+				return quatX.rotateVector(vec);
+			case Z_Y_X:
+				quatX.multiplyInPlace(quatY);
+				quatX.multiplyInPlace(quatZ);
+				return quatX.rotateVector(vec);
+			case X_Y_X:
+				quatX.multiplyInPlace(quatY);
+				quatX.multiplyInPlace(quatX);
+				return quatX.rotateVector(vec);
+			case X_Z_X:
+				quatX.multiplyInPlace(quatZ);
+				quatX.multiplyInPlace(quatX);
+				return quatX.rotateVector(vec);
+			case Y_X_Y:
+				quatY.multiplyInPlace(quatX);
+				quatY.multiplyInPlace(quatY);
+				return quatY.rotateVector(vec);
+			case Y_Z_Y:
+				quatY.multiplyInPlace(quatZ);
+				quatY.multiplyInPlace(quatY);
+				return quatY.rotateVector(vec);
+			case Z_X_Z:
+				quatZ.multiplyInPlace(quatX);
+				quatZ.multiplyInPlace(quatZ);
+				return quatZ.rotateVector(vec);
+			case Z_Y_Z:
+				quatZ.multiplyInPlace(quatY);
+				quatZ.multiplyInPlace(quatZ);
+				return quatZ.rotateVector(vec);
+		}
 	}
 }

@@ -1350,6 +1350,7 @@ class PlayState extends MusicBeatState
 				playfieldRenderer.modifierTable.clear();
 				playfieldRenderer.modchart.loadModifiers();
 				playfieldRenderer.tweenManager.completeAll();
+				playfieldRenderer.tweenManager.clear();
 				playfieldRenderer.eventManager.clearEvents();
 				playfieldRenderer.modifierTable.resetMods();
 				playfieldRenderer.modchart.loadEvents();
@@ -1754,6 +1755,7 @@ class PlayState extends MusicBeatState
 				playfieldRenderer.modifierTable.clear();
 				playfieldRenderer.modchart.loadModifiers();
 				playfieldRenderer.tweenManager.completeAll();
+				playfieldRenderer.tweenManager.clear();
 				playfieldRenderer.eventManager.clearEvents();
 				playfieldRenderer.modifierTable.resetMods();
 				playfieldRenderer.modchart.loadEvents();
@@ -2492,13 +2494,13 @@ class PlayState extends MusicBeatState
 				openCharacterEditor();
 			else if (controls.justPressed('debug_3'))
 			{
-				if (blockedHitmansSongs.contains(Paths.formatToSongPath(SONG.song))
-					&& !ClientPrefs.data.edwhakMode
-					&& !ClientPrefs.data.developerMode)
-				{
-					antiCheat();
-				}
-				else
+				// if (blockedHitmansSongs.contains(Paths.formatToSongPath(SONG.song))
+				// 	&& !ClientPrefs.data.edwhakMode
+				// 	&& !ClientPrefs.data.developerMode)
+				// {
+				// 	antiCheat();
+				// }
+				// else
 					openModchartEditor();
 			}
 		}

@@ -619,7 +619,7 @@ class ModchartEditorState extends MusicBeatState
 		}
 		if (dirtyUpdateEvents)
 		{
-			// playfieldRenderer.tweenManager.completeAll();
+			playfieldRenderer.tweenManager.completeAll();
 			playfieldRenderer.tweenManager.clear(); // Clear instead of completeall so tweens appear paused when pausing the song -Hazard
 			playfieldRenderer.eventManager.clearEvents();
 			playfieldRenderer.modifierTable.resetMods();

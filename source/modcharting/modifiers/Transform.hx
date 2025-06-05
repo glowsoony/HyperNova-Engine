@@ -9,7 +9,289 @@ import modcharting.Modifier;
 import objects.Note;
 import modcharting.Modifier.ModifierSubValue;
 
-//BASE MODS //doesn't use anything else than "currentValue"
+//BASE MODS //doesn't use anything else than 1 single value
+
+//Transform: New method to apply basic visuals to notes (Such as X,Y,Z,ANGLE,ALPHA,SCALE,SKEW)
+
+//About ANGLE and ALPHA
+
+//i know "ConfusionModifier" & "stealthModifier" exist, but with the new MT rework i preffer make basic movement mods (most common things) on transform
+//As confusion will be reworked to work like notITG (constant) and confusion offset will use radians (angle uses well degrees ofc)
+
+//while for alpha
+//alpha and stealth does same thing, stealth uses white fade tho which makes it separated as "Stealth, Dark, Flash" mods exist
+
+//CHANGE LOG (the changes to modifiers)
+
+//[REWORK] = totally overhaul of a modifier
+//[UPDATE] = changed something on the modifier
+//[RENAME] = rename of a modifier
+//[REMOVAL] = a removed modifier
+//[NEW] = a new modifier
+//[EXTRA] = has nothing to do with modifiers but MT's enviroment.
+
+//HERE CHANGE LIST
+/*
+    [NEW] MoveModifier: (X,Y,YD,Z)
+    -   Modifier ported from notITG, uses percent to move notes instead of value (so 1, would mean a WHOLE note move, not 1 pixel).
+
+    [EXTRA] Backwards Support:
+    -   X,Y,YD,Z,ANGLE(X,Y Included),SCALE(X,Y Included),SKEW(X,Y Included),ALPHA modifiers are now on the Backwards Support list.
+
+    [REWORK & RENAME] TransformModifier: (Previously known as StrumsModifier)
+    -   Replaces StrumModifier (for better syntaxis) with the removal of "Invert and Flip" since it made those modifiers useless.
+    -   Uses all basic mods (X,Y,YD,Z,ANGLE,ANGLED,SCALE,SKEW) as subValues.
+
+    [REWORK & RENAME] NoteOffsetModifier: (Previously known as NotesModifier)
+    -   Replaces NotesModifier (for better syntaxis) with the removal of "Invert and Flip" since it made those modifiers useless.
+    -   Uses all basic mods (X,Y,YD,Z,ANGLE,ANGLED,SCALE,SKEW) as subValues.
+
+    [REWORK & RENAME] StrumOffsetModifier: (Previously known as LanesModifier)
+    -   Replaces LanesModifier (for better syntaxis) with the removal of "Invert and Flip" since it made those modifiers useless.
+    -   Uses all basic mods (X,Y,YD,Z,ANGLE,ANGLED,SCALE,SKEW) as subValues.
+
+    [NEW] SkewFieldModifier:
+    -   New modifier ported from notITG. (Includes X,Y variants ONLY).
+    -   Has 1 subValue:
+        + CenterOffset (This one changes the offset of where the skew should take it's base of)
+
+    [REMOVAL] MISC MODS:
+    -   MISC MODS were all those mods that were helpers from others (skewOffsetX) as new 3D render does not use them.
+*/
+
+
+class TransformModifier extends Modifier
+{
+    var daswitch = 1;
+    override function setupSubValues()
+    {
+        baseValue = 0.0;
+        currentValue = 1.0; //By default enabled (can be turned off but won't work until turned back on)
+        subValues.set('x', new ModifierSubValue(0.0));
+        subValues.set('y', new ModifierSubValue(0.0));
+        subValues.set('yD', new ModifierSubValue(0.0)); //Controls scroll movement (if downscroll, goes up, otherwise it goes down like normal Y)
+        subValues.set('z', new ModifierSubValue(0.0));
+
+        subValues.set('angle', new ModifierSubValue(0.0));
+        subValues.set('angleD', new ModifierSubValue(0.0)); //similar to yD, this one changes angle bettwen scrolls for more proper visuals (intros and etc)
+        subValues.set('anglex', new ModifierSubValue(0.0));
+        subValues.set('angley', new ModifierSubValue(0.0));
+
+        subValues.set('alpha', new ModifierSubValue(0.0));
+
+        subValues.set('scale', new ModifierSubValue(1.0)); //scale is set to 1 by default (so notes does not start fucking invisible)
+        subValues.set('scalex', new ModifierSubValue(1.0));
+        subValues.set('scaley', new ModifierSubValue(1.0));
+
+        subValues.set('skew', new ModifierSubValue(0.0));
+        subValues.set('skewx', new ModifierSubValue(0.0));
+        subValues.set('skewy', new ModifierSubValue(0.0));
+    }
+
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        if (instance != null) if (ModchartUtil.getDownscroll(instance)) daswitch = -1;
+
+        noteData.x += subValues.get('x').value;
+        noteData.y += subValues.get('y').value + (subValues.get('yD').value * daswitch);
+        noteData.z += subValues.get('z').value;
+
+        noteData.angle += subValues.get('angle').value + (subValues.get('angleD').value * daswitch);
+        noteData.angleX += subValues.get('anglex').value;
+        noteData.angleY += subValues.get('angley').value;
+
+        noteData.alpha *= 1 - subValues.get('alpha').value; //alpha to 1 means it's invisible, otherwise it's visible
+
+        noteData.scaleX += (subValues.get('scalex').value-1) + (subValues.get('scale').value-1);
+        noteData.scaleY += (subValues.get('scaley').value-1) + (subValues.get('scale').value-1);
+        
+        noteData.skewX += subValues.get('skewx').value + subValues.get('skew').value;
+        noteData.skewY += subValues.get('skewy').value + subValues.get('skew').value;
+    }
+
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf);
+    }
+
+    override function reset()
+    {
+        super.reset();
+        baseValue = 0.0;
+        currentValue = 1.0;
+    }
+}
+
+//Same as Transform but exclusive for notes
+class NoteOffsetModifier extends Modifier
+{
+    var daswitch = 1;
+    override function setupSubValues()
+    {
+        baseValue = 0.0;
+        currentValue = 1.0; //By default enabled (can be turned off but won't work until turned back on)
+        subValues.set('x', new ModifierSubValue(0.0));
+        subValues.set('y', new ModifierSubValue(0.0));
+        subValues.set('yD', new ModifierSubValue(0.0)); //Controls scroll movement (if downscroll, goes up, otherwise it goes down like normal Y)
+        subValues.set('z', new ModifierSubValue(0.0));
+
+        subValues.set('angle', new ModifierSubValue(0.0));
+        subValues.set('angleD', new ModifierSubValue(0.0)); //similar to yD, this one changes angle bettwen scrolls for more proper visuals (intros and etc)
+        subValues.set('anglex', new ModifierSubValue(0.0));
+        subValues.set('angley', new ModifierSubValue(0.0));
+
+        subValues.set('alpha', new ModifierSubValue(0.0));
+
+        subValues.set('scale', new ModifierSubValue(1.0)); //scale is set to 1 by default (so notes does not start fucking invisible)
+        subValues.set('scalex', new ModifierSubValue(1.0));
+        subValues.set('scaley', new ModifierSubValue(1.0));
+
+        subValues.set('skew', new ModifierSubValue(0.0));
+        subValues.set('skewx', new ModifierSubValue(0.0));
+        subValues.set('skewy', new ModifierSubValue(0.0));
+    }
+
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        if (instance != null) if (ModchartUtil.getDownscroll(instance)) daswitch = -1;
+
+        noteData.x += subValues.get('x').value;
+        noteData.y += subValues.get('y').value + (subValues.get('yD').value * daswitch);
+        noteData.z += subValues.get('z').value;
+
+        noteData.angle += subValues.get('angle').value + (subValues.get('angleD').value * daswitch);
+        noteData.angleX += subValues.get('anglex').value;
+        noteData.angleY += subValues.get('angley').value;
+
+        noteData.alpha *= 1 - subValues.get('alpha').value; //alpha to 1 means it's invisible, otherwise it's visible
+
+        noteData.scaleX += (subValues.get('scalex').value-1) + (subValues.get('scale').value-1);
+        noteData.scaleY += (subValues.get('scaley').value-1) + (subValues.get('scale').value-1);
+        
+        noteData.skewX += subValues.get('skewx').value + subValues.get('skew').value;
+        noteData.skewY += subValues.get('skewy').value + subValues.get('skew').value;
+    }
+
+    override function reset()
+    {
+        super.reset();
+        baseValue = 0.0;
+        currentValue = 1.0;
+    }
+}
+
+//Same as Transform but exclusive for strums
+class StrumOffsetModifier extends Modifier
+{
+    var daswitch = 1;
+    override function setupSubValues()
+    {
+        baseValue = 0.0;
+        currentValue = 1.0; //By default enabled (can be turned off but won't work until turned back on)
+        subValues.set('x', new ModifierSubValue(0.0));
+        subValues.set('y', new ModifierSubValue(0.0));
+        subValues.set('yD', new ModifierSubValue(0.0)); //Controls scroll movement (if downscroll, goes up, otherwise it goes down like normal Y)
+        subValues.set('z', new ModifierSubValue(0.0));
+
+        subValues.set('angle', new ModifierSubValue(0.0));
+        subValues.set('angleD', new ModifierSubValue(0.0)); //similar to yD, this one changes angle bettwen scrolls for more proper visuals (intros and etc)
+        subValues.set('anglex', new ModifierSubValue(0.0));
+        subValues.set('angley', new ModifierSubValue(0.0));
+
+        subValues.set('alpha', new ModifierSubValue(0.0));
+
+        subValues.set('scale', new ModifierSubValue(1.0)); //scale is set to 1 by default (so notes does not start fucking invisible)
+        subValues.set('scalex', new ModifierSubValue(1.0));
+        subValues.set('scaley', new ModifierSubValue(1.0));
+
+        subValues.set('skew', new ModifierSubValue(0.0));
+        subValues.set('skewx', new ModifierSubValue(0.0));
+        subValues.set('skewy', new ModifierSubValue(0.0));
+    }
+
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        if (instance != null) if (ModchartUtil.getDownscroll(instance)) daswitch = -1;
+
+        noteData.x += subValues.get('x').value;
+        noteData.y += subValues.get('y').value + (subValues.get('yD').value * daswitch);
+        noteData.z += subValues.get('z').value;
+
+        noteData.angle += subValues.get('angle').value + (subValues.get('angleD').value * daswitch);
+        noteData.angleX += subValues.get('anglex').value;
+        noteData.angleY += subValues.get('angley').value;
+
+        noteData.alpha *= 1 - subValues.get('alpha').value; //alpha to 1 means it's invisible, otherwise it's visible
+
+        noteData.scaleX += (subValues.get('scalex').value-1) + (subValues.get('scale').value-1);
+        noteData.scaleY += (subValues.get('scaley').value-1) + (subValues.get('scale').value-1);
+        
+        noteData.skewX += subValues.get('skewx').value + subValues.get('skew').value;
+        noteData.skewY += subValues.get('skewy').value + subValues.get('skew').value;
+    }
+
+    override function reset()
+    {
+        super.reset();
+        baseValue = 0.0;
+        currentValue = 1.0;
+    }
+}
+
+class MoveXModifier extends Modifier 
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.x += NoteMovement.arrowSizes[lane] * currentValue;
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class MoveYModifier extends Modifier 
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.y += NoteMovement.arrowSizes[lane] * currentValue;
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class MoveYDModifier extends Modifier //similar to Y but this one changes on default scroll (down/up)
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        var daswitch = 1;
+        if (instance != null)
+            if (ModchartUtil.getDownscroll(instance))
+                daswitch = -1;
+        noteData.y += NoteMovement.arrowSizes[lane] * currentValue * daswitch;
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class MoveZModifier extends Modifier 
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.z += NoteMovement.arrowSizes[lane] * currentValue;
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+
+//STORAGE OF OLDER MODS (as i said, MT rework won't add these on modchart editor's list, but they will be kept for backwards support.)
+
+//If any modchart breaks due a modifier removal or change (Confusion's case), just fix it, change the modifier and thats it.
+
+
 class XModifier extends Modifier 
 {
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -59,56 +341,6 @@ class ZModifier extends Modifier
     }
 }
 
-class ScaleModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 1.0;
-        currentValue = 1.0;
-    }
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        noteData.scaleX *= currentValue;
-        noteData.scaleY *= currentValue;
-    }
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        noteMath(noteData, lane, 0, pf); //just reuse same thing
-    }
-}
-class ScaleXModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 1.0;
-        currentValue = 1.0;
-    }
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        noteData.scaleX *= currentValue;
-    }
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        noteMath(noteData, lane, 0, pf); //just reuse same thing
-    }
-}
-class ScaleYModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 1.0;
-        currentValue = 1.0;
-    }
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        noteData.scaleY *= currentValue;
-    }
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        noteMath(noteData, lane, 0, pf); //just reuse same thing
-    }
-}
-
 class SkewModifier extends Modifier
 {
     override function setupSubValues()
@@ -126,8 +358,8 @@ class SkewModifier extends Modifier
             if (ModchartUtil.getDownscroll(instance))
                 daswitch = 1;
 
-        noteData.skewX += subValues.get('x').value * daswitch;
-        noteData.skewY += subValues.get('y').value * daswitch;
+        noteData.skewX += subValues.get('x').value;
+        noteData.skewY += subValues.get('y').value;
 
         noteData.skewX += subValues.get('xDmod').value * daswitch;
         noteData.skewY += subValues.get('yDmod').value * daswitch;
@@ -150,11 +382,7 @@ class SkewXModifier extends Modifier
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
-        var daswitch = -1;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                daswitch = 1;
-        noteData.skewX += currentValue * daswitch;
+        noteData.skewX += currentValue;
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {
@@ -169,17 +397,22 @@ class SkewYModifier extends Modifier
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
-        var daswitch = -1;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                daswitch = 1;
-        noteData.skewY += currentValue * daswitch;
+        noteData.skewY += currentValue;
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {
         noteMath(noteData, lane, 0, pf);
     }
 }
+
+
+//NEW MODIFIERS
+
+//SkewField: skews the whole field, looking like you just skewed the camera, silly.
+
+//(fun fact: skewfield recreates "IncomingAngle" math on noteMath, ik i can just use incoming angle, but its silly :b)
+
+//SkewFieldModifier itself doesn't exist as it breaks the whole lane
 class SkewFieldXModifier extends Modifier
 {
     override function setupSubValues()
@@ -225,142 +458,7 @@ class SkewFieldYModifier extends Modifier
     }
 }
 
-//HELPERS //these mods are just made to make "laneSpecific" mods way easier than making each mod for every note.
-
-class NotesModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 0.0;
-        currentValue = 1.0;
-        subValues.set('x', new ModifierSubValue(0.0));
-        subValues.set('y', new ModifierSubValue(0.0));
-        subValues.set('yD', new ModifierSubValue(0.0));
-        subValues.set('angle', new ModifierSubValue(0.0));
-        subValues.set('z', new ModifierSubValue(0.0));
-        subValues.set('skewx', new ModifierSubValue(0.0));
-        subValues.set('skewy', new ModifierSubValue(0.0));
-        subValues.set('invert', new ModifierSubValue(0.0));
-        subValues.set('flip', new ModifierSubValue(0.0));
-    }
-
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        var daswitch = 1;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                daswitch = -1;
-
-        noteData.x += subValues.get('x').value;
-        noteData.y += subValues.get('y').value;
-        noteData.y += subValues.get('yD').value * daswitch;
-        noteData.angle += subValues.get('angle').value;
-        noteData.z += subValues.get('z').value;
-        noteData.skewX += subValues.get('skewx').value * -daswitch;
-        noteData.skewY += subValues.get('skewy').value * -daswitch;
-
-        noteData.x += Modifier.ModifierMath.Invert(lane) * subValues.get('invert').value;
-
-        noteData.x += NoteMovement.arrowSizes[lane] * Modifier.ModifierMath.Flip(lane) * subValues.get('flip').value;
-        noteData.x -= NoteMovement.arrowSizes[lane] * subValues.get('flip').value;
-    }
-
-    override function reset()
-    {
-        super.reset();
-        baseValue = 0.0;
-        currentValue = 1.0;
-    }
-}
-class LanesModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 0.0;
-        currentValue = 1.0;
-        subValues.set('x', new ModifierSubValue(0.0));
-        subValues.set('y', new ModifierSubValue(0.0));
-        subValues.set('yD', new ModifierSubValue(0.0));
-        subValues.set('angle', new ModifierSubValue(0.0));
-        subValues.set('z', new ModifierSubValue(0.0));
-        subValues.set('skewx', new ModifierSubValue(0.0));
-        subValues.set('skewy', new ModifierSubValue(0.0));
-    }
-
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        var daswitch = 1;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                daswitch = -1;
-
-        noteData.x += subValues.get('x').value;
-        noteData.y += subValues.get('y').value;
-        noteData.y += subValues.get('yD').value * daswitch;
-        noteData.angle += subValues.get('angle').value;
-        noteData.z += subValues.get('z').value;
-        noteData.skewX += subValues.get('skewx').value * -daswitch;
-        noteData.skewY += subValues.get('skewy').value * -daswitch;
-    }
-
-    override function reset()
-    {
-        super.reset();
-        baseValue = 0.0;
-        currentValue = 1.0;
-    }
-}
-class StrumsModifier extends Modifier
-{
-    override function setupSubValues()
-    {
-        baseValue = 0.0;
-        currentValue = 1.0;
-        subValues.set('x', new ModifierSubValue(0.0));
-        subValues.set('y', new ModifierSubValue(0.0));
-        subValues.set('yD', new ModifierSubValue(0.0));
-        subValues.set('angle', new ModifierSubValue(0.0));
-        subValues.set('z', new ModifierSubValue(0.0));
-        subValues.set('skewx', new ModifierSubValue(0.0));
-        subValues.set('skewy', new ModifierSubValue(0.0));
-        subValues.set('invert', new ModifierSubValue(0.0));
-        subValues.set('flip', new ModifierSubValue(0.0));
-    }
-
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        var daswitch = 1;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                daswitch = -1;
-
-        noteData.x += subValues.get('x').value;
-        noteData.y += subValues.get('y').value;
-        noteData.y += subValues.get('yD').value * daswitch;
-        noteData.angle += subValues.get('angle').value;
-        noteData.z += subValues.get('z').value;
-        noteData.skewX += subValues.get('skewx').value * -daswitch;
-        noteData.skewY += subValues.get('skewy').value * -daswitch;
-
-        noteData.x += Modifier.ModifierMath.Invert(lane) * subValues.get('invert').value;
-
-        noteData.x += NoteMovement.arrowSizes[lane] * Modifier.ModifierMath.Flip(lane) * subValues.get('flip').value;
-        noteData.x -= NoteMovement.arrowSizes[lane] * subValues.get('flip').value;
-    }
-
-    override function reset()
-    {
-        super.reset();
-        baseValue = 0.0;
-        currentValue = 1.0;
-    }
-    
-    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-    {
-        noteMath(noteData, lane, 0, pf);
-    }
-}
-
+/*
 
 //MISC MODS //mods that don't change anything by themselves, but helps other mods to change their visuals
 
@@ -512,3 +610,4 @@ class CullTargetsModifier extends Modifier
         }
     }
 }
+*/

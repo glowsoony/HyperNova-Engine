@@ -9,6 +9,39 @@ import modcharting.Modifier;
 import objects.Note;
 import modcharting.Modifier.ModifierSubValue;
 
+//CHANGE LOG (the changes to modifiers)
+
+//[REWORK] = totally overhaul of a modifier
+//[UPDATE] = changed something on the modifier
+//[RENAME] = rename of a modifier
+//[REMOVAL] = a removed modifier
+//[NEW] = a new modifier
+//[EXTRA] = has nothing to do with modifiers but MT's enviroment.
+
+//HERE CHANGE LIST
+/*
+    [EXTRA] Drunk Improvements:
+    -   Now instead of copy paste the math over and over, drunk has a main helper class with all math, making it easier to use drunk with its sin(cos)/tan(cot) variants.
+
+    [EXTRA & REWORK] Drunk Helper class:
+    -   Drunk helper class has the basics of Drunk with lot of new subValues (for both Drunk and TanDrunk).
+    -   Added 5 subValues:
+        +   Period (changes drunk's period)
+        +   Offset (changes drunk's offset)
+        +   Size (changes how big/small drunk goes)
+        +   UseAlt (changes it's math, if drunk (uses sin) it will now use cos, if tanDrunk (uses tangent) it will now use cotangent).
+        +   timerType (changes the way drunk works, if value is 0.5 or more it will use beat as its math, else uses default behaviour).
+    -   Drunk helper class can be called via custom mods (so you can create any custom drunkMod, such as idk, drunkDadX. yet you are the one who defines how to use it).
+        + Methods (2):
+            1. Use ModifiersMath.Drunk(values) and set it to whatever you want to modify.
+            2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Drunk)
+                then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+                check how to make a customMod (both hx and lua) for better information.
+
+    [REMOVAL] cosecModifier:
+    -   cosecModifier was supposed to be "cosecantDrunk" as the addition of Drunk helper class, this modifier became useless (you can just use tan + useAlt).
+*/
+
 class Drunk extends Modifier //My idea is clever, make this more simple to use
 {
     override function setupSubValues()
