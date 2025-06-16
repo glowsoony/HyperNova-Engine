@@ -9,7 +9,7 @@ import modcharting.Modifier;
 import objects.Note;
 import modcharting.Modifier.ModifierSubValue;
 
-class ReverseModifier extends Modifier 
+class ReverseModifier extends Modifier
 {
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {  

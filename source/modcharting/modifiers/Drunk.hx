@@ -40,6 +40,9 @@ import modcharting.Modifier.ModifierSubValue;
 
     [REMOVAL] cosecModifier:
     -   cosecModifier was supposed to be "cosecantDrunk" as the addition of Drunk helper class, this modifier became useless (you can just use tan + useAlt).
+
+    [NEW] 
+    - DrunkAngleX, DrunkAngleY, TanDrunkAngleX, TanDrunkAngleY. Prespective Angles added!
 */
 
 class Drunk extends Modifier //My idea is clever, make this more simple to use
@@ -138,6 +141,28 @@ class DrunkAngleModifier extends Drunk
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
         noteData.angle += drunkMath(lane, curPos);
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class DrunkAngleXModifier extends Drunk 
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.angleX += drunkMath(lane, curPos);
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class DrunkAngleYModifier extends Drunk 
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.angleY += drunkMath(lane, curPos);
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {
@@ -251,6 +276,28 @@ class TanDrunkAngleModifier extends Drunk
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
         noteData.angle += tanDrunkMath(lane, curPos);
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class TanDrunkAngleXModifier extends Drunk
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.angleX += tanDrunkMath(lane, curPos);
+    }
+    override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+    {
+        noteMath(noteData, lane, 0, pf); //just reuse same thing
+    }
+}
+class TanDrunkAngleYModifier extends Drunk
+{
+    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+    {
+        noteData.angleY += tanDrunkMath(lane, curPos);
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {

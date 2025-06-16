@@ -238,7 +238,7 @@ class DizzyModifier extends Modifier
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
         if (subValues.get('forced').value >= 0.5) noteData.angle += currentValue*(Conductor.songPosition*0.001);
-        else noteData.angle += currentValue*curPos;
+        else noteData.angle += currentValue*(curPos/2.0);
     }
 }
 class TwirlModifier extends Modifier

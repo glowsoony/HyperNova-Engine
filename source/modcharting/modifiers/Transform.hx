@@ -345,11 +345,12 @@ class SkewModifier extends Modifier
 {
     override function setupSubValues()
     {
+        baseValue = 0.0;
+        currentValue = 1.0;
         subValues.set('x', new ModifierSubValue(0.0));
         subValues.set('y', new ModifierSubValue(0.0));
         subValues.set('xDmod', new ModifierSubValue(0.0));
         subValues.set('yDmod', new ModifierSubValue(0.0));
-        currentValue = 1.0;
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
@@ -371,6 +372,7 @@ class SkewModifier extends Modifier
     override function reset()
     {
         super.reset();
+        baseValue = 0.0;
         currentValue = 1.0;
     }
 }

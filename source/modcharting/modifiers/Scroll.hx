@@ -26,52 +26,6 @@ import modcharting.Modifier.ModifierSubValue;
     [RENAME] JumpStrumsModifier: (Previously known as JumpTargetModifier)
     -   Renamed to keep order with other mods (as other uses strum and not target)
 */
-
-class LinearXModifier extends Modifier
-{
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    { 
-        noteData.x += curPos * currentValue; //don't mind me i just figured it out
-    }
-}
-class LinearYModifier extends Modifier
-{
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    {
-        var ud = false;
-        if (instance != null)
-            if (ModchartUtil.getDownscroll(instance))
-                ud = true;
-        noteData.y += (curPos * currentValue) * (ud ? -1 : 1);
-    }
-}
-class LinearZModifier extends Modifier
-{
-    override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-    { 
-        noteData.z += curPos * currentValue; //don't mind me i just figured it out
-    }
-}
-
-class IncomingAngleModifier extends Modifier 
-{
-    override function setupSubValues()
-    {
-        subValues.set('x', new ModifierSubValue(0.0));
-        subValues.set('y', new ModifierSubValue(0.0));
-        currentValue = 1.0;
-    }
-    override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
-    {
-        return [subValues.get('x').value, subValues.get('y').value];
-    }
-    override function reset()
-    {
-        super.reset();
-        currentValue = 1.0; //the code that stop the mod from running gets confused when it resets in the editor i guess??
-    }
-}
-
 class SpeedModifier extends Modifier
 {
     override function setupSubValues()
