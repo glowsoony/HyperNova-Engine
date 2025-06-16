@@ -3,22 +3,112 @@ package modcharting.modifiers;
 import modcharting.Modifier;
 import modcharting.Modifier.ModifierSubValue;
 
-/*
-	[NEW]	
-	- BeatAngleX, BeatAngleY. Prespective Angle Mods.
-*/
+//CHANGE LOG (the changes to modifiers)
 
-class BeatXModifier extends Modifier
+//[REWORK] = totally overhaul of a modifier
+//[UPDATE] = changed something on the modifier
+//[RENAME] = rename of a modifier
+//[REMOVAL] = a removed modifier
+//[NEW] = a new modifier
+//[EXTRA] = has nothing to do with modifiers but MT's enviroment.
+
+//HERE CHANGE LIST
+/*
+    [EXTRA] Beat Improvements:
+    -   Now instead of copy paste the math over and over, Beat has a main helper class with all math, making it easier to use Beat.
+
+	[NEW] BeatAngleX:
+	-	Modifier added to allow modifying AngleX with beat without needing a custom mod.
+	
+	[NEW] BeatAngleY:
+	-	Modifier added to allow modifying AngleY with beat without needing a custom mod.
+
+    [EXTRA & REWORK] Beat Helper class:
+    -   Beat helper class has the basics of Beat with lot of new subValues.
+    -   Has 3 subValues:
+        +   speed (changes Beat's speed)
+		+   mult (changes Beat's intensity (value on 0 makes beat do nothing))
+		+ 	useAlt (changes Beat's math method (from sin to cos))
+    -   Beat helper class can be called via custom mods (so you can create any custom BeatMod, such as idk, BeatDadX. yet you are the one who defines how to use it).
+        + Methods (2):
+            1. Use ModifiersMath.Beat(values) and set it to whatever you want to modify.
+            2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Beat)
+                then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+                check how to make a customMod (both hx and lua) for better information.
+*/
+class Beat extends Modifier
 {
 	override function setupSubValues()
+    {
+        subValues.set('speed', new ModifierSubValue(1.0));
+        subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('useAlt', new ModifierSubValue(1.0));
+    }
+	function beatMath(curPos:Float):Float
 	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
+		var speed:Float = subValues.get("speed").value;
+		var mult:Float = subValues.get("mult").value;
+		var usesAlt:Boolean = (subValues.get("useAlt") >= 0.5);
 
+		var mathToUse:Float = 0.0;
+
+		var fAccelTime = 0.2;
+		var fTotalTime = 0.5;
+
+		/* If the song is really fast, slow down the rate, but speed up the
+		 * acceleration to compensate or it'll look weird. */
+		// var fBPM = Conductor.bpm * 60;
+		// var fDiv = Math.max(1.0, Math.floor( fBPM / 150.0 ));
+		// fAccelTime /= fDiv;
+		// fTotalTime /= fDiv;
+
+		var time = Modifier.beat * speed;
+		var posMult = mult;
+		/* offset by VisualDelayEffect seconds */
+		var fBeat = time + fAccelTime;
+		// fBeat /= fDiv;
+
+		var bEvenBeat = (Math.floor(fBeat) % 2) != 0;
+
+		/* -100.2 -> -0.2 -> 0.2 */
+		if (fBeat < 0)
+			return 0;
+
+		fBeat -= Math.floor(fBeat);
+		fBeat += 1;
+		fBeat -= Math.floor(fBeat);
+
+		if (fBeat >= fTotalTime)
+			return 0;
+
+		var fAmount:Float;
+		if (fBeat < fAccelTime)
+		{
+			fAmount = FlxMath.remapToRange(fBeat, 0.0, fAccelTime, 0.0, 1.0);
+			fAmount *= fAmount;
+		}
+		else
+			/* fBeat < fTotalTime */ {
+			fAmount = FlxMath.remapToRange(fBeat, fAccelTime, fTotalTime, 1.0, 0.0);
+			fAmount = 1 - (1 - fAmount) * (1 - fAmount);
+		}
+
+		if (bEvenBeat)
+			fAmount *= -1;
+
+		if (usesAlt) mathToUse = FlxMath.fastCos((curPos * 0.01 * posMult) + (Math.PI / 2.0))
+		else mathToUse = FlxMath.fastSin((curPos * 0.01 * posMult) + (Math.PI / 2.0))
+
+		var fShift = 20.0 * fAmount * mathToUse;
+		return fShift;
+	}
+}
+
+class BeatXModifier extends Beat
+{
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.x += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -26,18 +116,11 @@ class BeatXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatYModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.y += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -45,18 +128,11 @@ class BeatYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatZModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.z += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -64,18 +140,11 @@ class BeatZModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatAngleModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.angle += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -83,18 +152,11 @@ class BeatAngleModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatAngleXModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleX += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.angleX += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -102,18 +164,11 @@ class BeatAngleXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatAngleYModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleY += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.angleY += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -121,19 +176,12 @@ class BeatAngleYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatScaleModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (1 + ((currentValue * 0.01) * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value)));
-		noteData.scaleY *= (1 + ((currentValue * 0.01) * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value)));
+		noteData.scaleX += (((currentValue * 0.01) * beatMath(curPos))-1);
+		noteData.scaleY += (((currentValue * 0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -141,18 +189,11 @@ class BeatScaleModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatScaleXModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (1 + ((currentValue * 0.01) * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value)));
+		noteData.scaleX += (((currentValue * 0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -160,18 +201,11 @@ class BeatScaleXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatScaleYModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= (1 + ((currentValue * 0.01) * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value)));
+		noteData.scaleY += (((currentValue * 0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -179,19 +213,12 @@ class BeatScaleYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatSkewModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
-		noteData.skewY += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.skewX += currentValue * beatMath(curPos);
+		noteData.skewY += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -199,18 +226,11 @@ class BeatSkewModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatSkewXModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.skewX += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -218,18 +238,11 @@ class BeatSkewXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-
 class BeatSkewYModifier extends Modifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += currentValue * ModifierMath.Beat(curPos, subValues.get('speed').value, subValues.get('mult').value);
+		noteData.skewY += currentValue * beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
