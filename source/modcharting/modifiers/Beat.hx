@@ -1,7 +1,14 @@
 package modcharting.modifiers;
 
-import modcharting.Modifier;
+import flixel.FlxG;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
 import modcharting.Modifier.ModifierSubValue;
+import modcharting.Modifier;
+import modcharting.PlayfieldRenderer.StrumNoteType;
+import modcharting.*;
+import objects.Note;
 
 //CHANGE LOG (the changes to modifiers)
 
@@ -25,10 +32,11 @@ import modcharting.Modifier.ModifierSubValue;
 
     [EXTRA & REWORK] Beat Helper class:
     -   Beat helper class has the basics of Beat with lot of new subValues.
-    -   Has 3 subValues:
+    -   Has 4 subValues:
         +   speed (changes Beat's speed)
 		+   mult (changes Beat's intensity (value on 0 makes beat do nothing))
-		+ 	useAlt (changes Beat's math method (from sin to cos))
+		+ 	offset (changes Beat's movement offset)
+		+	alternate (changes Beat's method, if value is less than 0.5 it will only move at one direction (default value = 1))
     -   Beat helper class can be called via custom mods (so you can create any custom BeatMod, such as idk, BeatDadX. yet you are the one who defines how to use it).
         + Methods (2):
             1. Use ModifiersMath.Beat(values) and set it to whatever you want to modify.
@@ -42,13 +50,15 @@ class Beat extends Modifier
     {
         subValues.set('speed', new ModifierSubValue(1.0));
         subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('useAlt', new ModifierSubValue(1.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
+		subValues.set('alternate', new ModifierSubValue(1.0));
     }
 	function beatMath(curPos:Float):Float
 	{
 		var speed:Float = subValues.get("speed").value;
 		var mult:Float = subValues.get("mult").value;
-		var usesAlt:Boolean = (subValues.get("useAlt") >= 0.5);
+		var offset:Float = subValues.get("offset").value;
+		var alternate:Bool = (subValues.get("alternate") >= 0.5);
 
 		var mathToUse:Float = 0.0;
 
@@ -62,8 +72,8 @@ class Beat extends Modifier
 		// fAccelTime /= fDiv;
 		// fTotalTime /= fDiv;
 
-		var time = Modifier.beat * speed;
-		var posMult = mult;
+		var time = (Modifier.beat + offset) * speed;
+		var posMult = mult*2; // Multiplied by 2 to make the effect more pronounced instead of being like drunk-lite lmao
 		/* offset by VisualDelayEffect seconds */
 		var fBeat = time + fAccelTime;
 		// fBeat /= fDiv;
@@ -93,14 +103,12 @@ class Beat extends Modifier
 			fAmount = 1 - (1 - fAmount) * (1 - fAmount);
 		}
 
-		if (bEvenBeat)
-			fAmount *= -1;
+		if (bEvenBeat && alternate) fAmount *= -1;
 
-		if (usesAlt) mathToUse = FlxMath.fastCos((curPos * 0.01 * posMult) + (Math.PI / 2.0))
-		else mathToUse = FlxMath.fastSin((curPos * 0.01 * posMult) + (Math.PI / 2.0))
+		mathToUse = FlxMath.fastSin((curPos * 0.01 * posMult) + (Math.PI / 2.0));
 
 		var fShift = 20.0 * fAmount * mathToUse;
-		return fShift;
+		return fShift * currentValue;
 	}
 }
 
@@ -108,7 +116,7 @@ class BeatXModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += currentValue * beatMath(curPos);
+		noteData.x += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -116,11 +124,11 @@ class BeatXModifier extends Beat
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatYModifier extends Modifier
+class BeatYModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += currentValue * beatMath(curPos);
+		noteData.y += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -128,11 +136,11 @@ class BeatYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatZModifier extends Modifier
+class BeatZModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += currentValue * beatMath(curPos);
+		noteData.z += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -140,11 +148,11 @@ class BeatZModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatAngleModifier extends Modifier
+class BeatAngleModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += currentValue * beatMath(curPos);
+		noteData.angle += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -152,11 +160,11 @@ class BeatAngleModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatAngleXModifier extends Modifier
+class BeatAngleXModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleX += currentValue * beatMath(curPos);
+		noteData.angleX += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -164,11 +172,11 @@ class BeatAngleXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatAngleYModifier extends Modifier
+class BeatAngleYModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleY += currentValue * beatMath(curPos);
+		noteData.angleY += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -176,12 +184,12 @@ class BeatAngleYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatScaleModifier extends Modifier
+class BeatScaleModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (((currentValue * 0.01) * beatMath(curPos))-1);
-		noteData.scaleY += (((currentValue * 0.01) * beatMath(curPos))-1);
+		noteData.scaleX += (((0.01) * beatMath(curPos))-1);
+		noteData.scaleY += (((0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -189,11 +197,11 @@ class BeatScaleModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatScaleXModifier extends Modifier
+class BeatScaleXModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (((currentValue * 0.01) * beatMath(curPos))-1);
+		noteData.scaleX += (((0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -201,11 +209,11 @@ class BeatScaleXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatScaleYModifier extends Modifier
+class BeatScaleYModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY += (((currentValue * 0.01) * beatMath(curPos))-1);
+		noteData.scaleY += (((0.01) * beatMath(curPos))-1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -213,12 +221,12 @@ class BeatScaleYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatSkewModifier extends Modifier
+class BeatSkewModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * beatMath(curPos);
-		noteData.skewY += currentValue * beatMath(curPos);
+		noteData.skewX += beatMath(curPos);
+		noteData.skewY += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -226,11 +234,11 @@ class BeatSkewModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatSkewXModifier extends Modifier
+class BeatSkewXModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * beatMath(curPos);
+		noteData.skewX += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -238,11 +246,11 @@ class BeatSkewXModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 }
-class BeatSkewYModifier extends Modifier
+class BeatSkewYModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += currentValue * beatMath(curPos);
+		noteData.skewY += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

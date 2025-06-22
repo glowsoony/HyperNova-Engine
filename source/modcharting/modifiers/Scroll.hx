@@ -1,13 +1,14 @@
 package modcharting.modifiers;
 
-import modcharting.PlayfieldRenderer.StrumNoteType;
-import flixel.tweens.FlxEase;
-import flixel.math.FlxMath;
-import flixel.math.FlxAngle;
 import flixel.FlxG;
-import modcharting.Modifier;
-import objects.Note;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
 import modcharting.Modifier.ModifierSubValue;
+import modcharting.Modifier;
+import modcharting.PlayfieldRenderer.StrumNoteType;
+import modcharting.*;
+import objects.Note;
 
 //CHANGE LOG (the changes to modifiers)
 

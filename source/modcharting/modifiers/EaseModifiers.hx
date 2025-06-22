@@ -1,8 +1,14 @@
 package modcharting.modifiers;
 
-import modcharting.Modifier;
-import modcharting.Modifier.ModifierSubValue;
+import flixel.FlxG;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import modcharting.Modifier.ModifierSubValue;
+import modcharting.Modifier;
+import modcharting.PlayfieldRenderer.StrumNoteType;
+import modcharting.*;
+import objects.Note;
 
 class EaseXModifier extends Modifier
 {
@@ -85,7 +91,7 @@ class EaseScaleModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
+		noteData.scaleX += (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
 		noteData.scaleY *= (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
 	}
 
