@@ -71,142 +71,277 @@ class Bounce extends Modifier
 		return currentValue * mathToUse;
 	}
 }
-class BounceXModifier extends Modifier
-{
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
 
+class BounceXModifier extends Bounce
+{
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.x += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.x += bounce(curPos); // Make sure this only happens if using cos
+	}
+}
+class BounceYModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.y += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.y += bounce(curPos);
+	}
+}
+class BounceZModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.z += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.z += bounce(curPos);
+	}
+}
+class BounceAngleModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angle += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angle += bounce(curPos);
+	}
+}
+class BounceAngleXModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleX += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angleX += bounce(curPos);
+	}
+}
+class BounceAngleYModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleY += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angleY += bounce(curPos);
+	}
+}
+class BounceScaleModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleX += bounce(curPos) * 0.01;
+		noteData.scaleY += bounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleX += bounce(curPos) * 0.01;
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleY += bounce(curPos) * 0.01;
+	}
+}
+class BounceScaleXModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleX += bounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleX += bounce(curPos) * 0.01;
+	}
+}
+class BounceScaleYModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleY += bounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleY += bounce(curPos) * 0.01;
+	}
+}
+class BounceSkewModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += bounce(curPos);
+		noteData.skewY += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewX += bounce(curPos);
+		if (subValues.get("useAlt") >= 0.5) noteData.skewY += bounce(curPos);
+	}
+}
+class BounceSkewXModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewX += bounce(curPos);
+	}
+}
+class BounceSkewYModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewY += bounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewY += bounce(curPos);
 	}
 }
 
-class BounceYModifier extends Modifier
+class TanBounceXModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var daswitch = 1;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				daswitch = -1;
-		noteData.y += (currentValue * daswitch) * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.x += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.x += tanBounce(curPos); // Make sure this only happens if using cosec
 	}
 }
-
-class BounceZModifier extends Modifier
+class TanBounceYModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.y += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.y += tanBounce(curPos);
 	}
 }
-
-class BounceAngleModifier extends Modifier
+class TanBounceZModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.z += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.z += tanBounce(curPos);
 	}
 }
-
-class BounceScaleModifier extends Modifier
+class TanBounceAngleModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (1
-			+ ((currentValue * 0.01) * NoteMovement.arrowSizes[lane] * Math.abs(FlxMath.fastSin(curPos * 0.005 * subValues.get('speed').value))));
-		noteData.scaleY += (1
-			+ ((currentValue * 0.01) * NoteMovement.arrowSizes[lane] * Math.abs(FlxMath.fastSin(curPos * 0.005 * subValues.get('speed').value))));
+		noteData.angle += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angle += tanBounce(curPos);
 	}
 }
-
-class BounceScaleXModifier extends Modifier
+class TanBounceAngleXModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (1
-			+ ((currentValue * 0.01) * NoteMovement.arrowSizes[lane] * Math.abs(FlxMath.fastSin(curPos * 0.005 * subValues.get('speed').value))));
+		noteData.angleX += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angleX += tanBounce(curPos);
 	}
 }
-
-class BounceScaleYModifier extends Modifier
+class TanBounceAngleYModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= (1
-			+ ((currentValue * 0.01) * NoteMovement.arrowSizes[lane] * Math.abs(FlxMath.fastSin(curPos * 0.005 * subValues.get('speed').value))));
+		noteData.angleY += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.angleY += tanBounce(curPos);
 	}
 }
-
-class BounceSkewModifier extends Modifier
+class TanBounceScaleModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
-		noteData.skewY += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.scaleX += tanBounce(curPos) * 0.01;
+		noteData.scaleY += tanBounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleX += tanBounce(curPos) * 0.01;
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleY += tanBounce(curPos) * 0.01;
 	}
 }
-
-class BounceSkewXModifier extends Modifier
+class TanBounceScaleXModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.scaleX += tanBounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleX += tanBounce(curPos) * 0.01;
 	}
 }
-
-class BounceSkewYModifier extends Modifier
+class TanBounceScaleYModifier extends Bounce
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += currentValue * ModifierMath.Bounce(lane, curPos, subValues.get('speed').value);
+		noteData.scaleY += tanBounce(curPos) * 0.01;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.scaleY += tanBounce(curPos) * 0.01;
+	}
+}
+class TanBounceSkewModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += tanBounce(curPos);
+		noteData.skewY += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewX += tanBounce(curPos);
+		if (subValues.get("useAlt") >= 0.5) noteData.skewY += tanBounce(curPos);
+	}
+}
+class TanBounceSkewXModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewX += tanBounce(curPos);
+	}
+}
+class TanBounceSkewYModifier extends Bounce
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewY += tanBounce(curPos);
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		if (subValues.get("useAlt") >= 0.5) noteData.skewY += tanBounce(curPos);
 	}
 }
