@@ -1,33 +1,32 @@
 package modcharting.modifiers;
 
-import modcharting.PlayfieldRenderer.StrumNoteType;
-import flixel.tweens.FlxEase;
-import flixel.math.FlxMath;
-import flixel.math.FlxAngle;
 import flixel.FlxG;
-import modcharting.Modifier;
-import objects.Note;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
 import modcharting.Modifier.ModifierSubValue;
+import modcharting.Modifier;
+import modcharting.PlayfieldRenderer.StrumNoteType;
+import modcharting.*;
+import objects.Note;
 
-class IncomingAngleModifier extends Modifier 
-{
-    override function setupSubValues()
-    {
-        subValues.set('x', new ModifierSubValue(0.0));
-        subValues.set('y', new ModifierSubValue(0.0));
-        currentValue = 1.0;
-    }
-    override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
-    {
-        return [subValues.get('x').value, subValues.get('y').value];
-    }
-    override function reset()
-    {
-        super.reset();
-        currentValue = 1.0; //the code that stop the mod from running gets confused when it resets in the editor i guess??
-    }
-}
+//CHANGE LOG (the changes to modifiers)
 
+//[REWORK] = totally overhaul of a modifier
+//[UPDATE] = changed something on the modifier
+//[RENAME] = rename of a modifier
+//[REMOVAL] = a removed modifier
+//[NEW] = a new modifier
+//[EXTRA] = has nothing to do with modifiers but MT's enviroment.
+
+//HERE CHANGE LIST
+/*
+    [RENAME] WaveModifier: (Previously known as WaveingModifier)
+    -   Renamed to make a cleaner look bettwen notITG and MT.
+
+    [RENAME] JumpStrumsModifier: (Previously known as JumpTargetModifier)
+    -   Renamed to keep order with other mods (as other uses strum and not target)
+*/
 class SpeedModifier extends Modifier
 {
     override function setupSubValues()
@@ -106,7 +105,7 @@ class BoomerangModifier extends Modifier
         return curPos * 0.75;
     }
 }
-class WaveingModifier extends Modifier
+class WaveModifier extends Modifier
 {
     override function setupSubValues()
     {
@@ -149,7 +148,7 @@ class JumpModifier extends Modifier //custom thingy i made //ended just being dr
         noteData.y += (beatVal*(Conductor.stepCrochet*currentValue))*renderer.getCorrectScrollSpeed()*0.45*scrollSwitch;
     }
 }
-class JumpTargetModifier extends Modifier
+class JumpStrumsModifier extends Modifier
 {
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {

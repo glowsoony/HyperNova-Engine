@@ -79,7 +79,8 @@ class SustainSplash extends FlxSprite
 					animation.curAnim.looped = false;
 					animation.curAnim.frameRate = 24;
 					clipRect = null;
-					animation.finishCallback = (idkEither:Dynamic) -> {
+					animation.finishCallback = (idkEither:Dynamic) ->
+					{
 						kill();
 					}
 					return;

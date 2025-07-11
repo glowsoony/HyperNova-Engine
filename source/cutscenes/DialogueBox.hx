@@ -1,8 +1,8 @@
 package cutscenes;
 
-import substates.PauseSubState;
-import flixel.addons.text.FlxTypeText;
 import backend.Song;
+import flixel.addons.text.FlxTypeText;
+import substates.PauseSubState;
 
 class DialogueBox extends FlxSpriteGroup
 {
@@ -158,7 +158,7 @@ class DialogueBox extends FlxSpriteGroup
 			FlxG.state.persistentDraw = true;
 			FlxG.sound.music.pause();
 
-			var pauseState = new PauseSubState(true,DIALOGUE);
+			var pauseState = new PauseSubState(true, DIALOGUE);
 			pauseState.cutscene_allowSkipping = dialogueStarted;
 			pauseState.cutscene_hardReset = false;
 			game.openSubState(pauseState);
@@ -175,17 +175,18 @@ class DialogueBox extends FlxSpriteGroup
 							FlxG.sound.play(Paths.sound('clickText'), 0.8);
 						}
 					case RESUME: {
-						FlxG.sound.music.resume();
-					}
+							FlxG.sound.music.resume();
+						}
 					case NOTHING: {}
 					case RESTART: {
-						dialogueList = staticDialList.copy();
-						startDialogue();
-						if(songName != 'roses'){
-							FlxG.sound.music.play(true);
-							FlxG.sound.music.fadeIn(1, 0, 0.8);
+							dialogueList = staticDialList.copy();
+							startDialogue();
+							if (songName != 'roses')
+							{
+								FlxG.sound.music.play(true);
+								FlxG.sound.music.fadeIn(1, 0, 0.8);
+							}
 						}
-					}
 				}
 			});
 		}

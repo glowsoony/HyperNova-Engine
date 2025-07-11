@@ -1,21 +1,23 @@
 package;
+
 #if HSCRIPT_ALLOWED
 import crowplexus.iris.Iris;
 import psychlua.HScript.HScriptInfos;
 #end
-import openfl.display.FPS;
-import mikolka.vslice.components.MemoryCounter;
-import mikolka.GameBorder;
-import flixel.graphics.FlxGraphic;
+import backend.crashHandler.*;
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.graphics.FlxGraphic;
 import haxe.io.Path;
+import lime.app.Application;
+import mikolka.GameBorder;
+import mikolka.vslice.components.MemoryCounter;
 import openfl.Assets;
 import openfl.Lib;
+import openfl.display.FPS;
 import openfl.display.Sprite;
-import openfl.events.Event;
 import openfl.display.StageScaleMode;
-import lime.app.Application;
+import openfl.events.Event;
 import states.TitleState;
 #if COPYSTATE_ALLOWED
 import states.CopyState;
@@ -23,14 +25,12 @@ import states.CopyState;
 #if mobile
 import mobile.backend.MobileScaleMode;
 #end
-import backend.crashHandler.*;
-
 #if (linux && !debug)
 import lime.graphics.Image;
+
 @:cppInclude('./external/gamemode_client.h')
 @:cppFileCode('#define GAMEMODE_AUTO')
 #end
-
 #if windows
 @:buildXml('
 <target id="haxe">
@@ -46,7 +46,6 @@ import lime.graphics.Image;
 extern "C" HRESULT WINAPI SetCurrentProcessExplicitAppUserModelID(PCWSTR AppID);
 ')
 #end
-
 class Main extends Sprite
 {
 	var game = {
@@ -82,7 +81,7 @@ class Main extends Sprite
 		CrashHandler.initCrashHandler();
 
 		#if windows
-		// DPI Scaling fix for windows 
+		// DPI Scaling fix for windows
 		// this shouldn't be needed for other systems
 		// Credit to YoshiCrafter29 for finding this function
 		untyped __cpp__("SetProcessDPIAware();");
@@ -139,54 +138,66 @@ class Main extends Sprite
 		Highscore.load();
 
 		#if HSCRIPT_ALLOWED
-		Iris.warn = function(x, ?pos:haxe.PosInfos) {
+		Iris.warn = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(WARN, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
 			if (PlayState.instance != null)
 				PlayState.instance.addTextToDebug('WARNING: $msgInfo', FlxColor.YELLOW);
 		}
-		Iris.error = function(x, ?pos:haxe.PosInfos) {
+		Iris.error = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(ERROR, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
 			if (PlayState.instance != null)
 				PlayState.instance.addTextToDebug('ERROR: $msgInfo', FlxColor.RED);
 		}
-		Iris.fatal = function(x, ?pos:haxe.PosInfos) {
+		Iris.fatal = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(FATAL, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
@@ -199,26 +210,28 @@ class Main extends Sprite
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
-		
+
 		#if mobile
-		FlxG.signals.postGameStart.addOnce(() -> {
+		FlxG.signals.postGameStart.addOnce(() ->
+		{
 			FlxG.scaleMode = new MobileScaleMode();
 		});
 		#end
 
-		var gameObject = new FlxGame(game.width, game.height, #if COPYSTATE_ALLOWED !CopyState.checkExistingFiles() ? CopyState : #end game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen);
+		var gameObject = new FlxGame(game.width, game.height, #if COPYSTATE_ALLOWED !CopyState.checkExistingFiles() ? CopyState : #end game.initialState,
+			#if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen);
 		// FlxG.game._customSoundTray wants just the class, it calls new from
-    	// create() in there, which gets called when it's added to stage
-    	// which is why it needs to be added before addChild(game) here
-    	@:privateAccess
-    	gameObject._customSoundTray = mikolka.vslice.components.FunkinSoundTray;
+		// create() in there, which gets called when it's added to stage
+		// which is why it needs to be added before addChild(game) here
+		@:privateAccess
+		gameObject._customSoundTray = mikolka.vslice.components.FunkinSoundTray;
 
 		addChild(gameObject);
 
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
 		#if mobile
 		FlxG.game.addChild(fpsVar);
-	  	#else
+		#else
 		var border = new GameBorder();
 		addChild(border);
 		Lib.current.stage.window.onResize.add(border.updateGameSize);
@@ -236,7 +249,7 @@ class Main extends Sprite
 		memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
 		#if mobile
 		FlxG.game.addChild(memoryCounter);
-	  	#else
+		#else
 		addChild(memoryCounter);
 		#end
 		if (memoryCounter != null)
@@ -244,8 +257,6 @@ class Main extends Sprite
 			memoryCounter.visible = ClientPrefs.data.showFPS;
 		}
 		#end
-
-		
 
 		#if debug
 		flixel.addons.studio.FlxStudio.create();

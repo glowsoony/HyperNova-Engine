@@ -6,24 +6,24 @@ import flixel.tweens.FlxTween;
 
 class BlueFade extends FlxShader
 {
-  public var fadeVal(default, set):Float;
+	public var fadeVal(default, set):Float;
 
-  function set_fadeVal(val:Float):Float
-  {
-    fadeAmt.value = [val];
-    fadeVal = val;
-    // trace(fadeVal);
+	function set_fadeVal(val:Float):Float
+	{
+		fadeAmt.value = [val];
+		fadeVal = val;
+		// trace(fadeVal);
 
-    return val;
-  }
+		return val;
+	}
 
-  public function fade(startAmt:Float = 0, targetAmt:Float = 1, duration:Float, _options:TweenOptions):Void
-  {
-    fadeVal = startAmt;
-    FlxTween.tween(this, {fadeVal: targetAmt}, duration, _options);
-  }
+	public function fade(startAmt:Float = 0, targetAmt:Float = 1, duration:Float, _options:TweenOptions):Void
+	{
+		fadeVal = startAmt;
+		FlxTween.tween(this, {fadeVal: targetAmt}, duration, _options);
+	}
 
-  @:glFragmentSource('
+	@:glFragmentSource('
        #pragma header
 
         // Value from (0, 1)
@@ -42,10 +42,10 @@ class BlueFade extends FlxShader
         }
 
     ')
-  public function new()
-  {
-    super();
+	public function new()
+	{
+		super();
 
-    this.fadeVal = 1;
-  }
+		this.fadeVal = 1;
+	}
 }

@@ -10,24 +10,26 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxDirectionFlags;
 // import funkin.graphics.ZSprite;
 // import funkin.play.modchartSystem.ModchartUtil;
 import lime.math.Vector2;
-import openfl.geom.Matrix;
+import modcharting.*;
+import openfl.Vector;
 import openfl.display.TriangleCulling;
+import openfl.geom.Matrix;
 import openfl.geom.Vector3D;
-import flixel.util.FlxColor;
 
-//A few TODOS im gona leave here:
+// A few TODOS im gona leave here:
 /*
 	- Make this optimized (gives lags spikes at some songs which means its not perfect)
 	- Make SKEW poss correct as if it was a normal skew (similation of skew adds a few more numbers which means skew for this draw its a bit bigger than it should be)
 	- Find a way to make sure we don't need extend this class on notes to make 3D (so people won't get confused once installing the 3D update)
 	- Make sure the class extend of skew sprite but don't use it (only when draw manual it's false)
 	- And finally, find at some point once we get 3D basics, how to make this class have the main balance (meaning it draws 3D stuff and 2D, while notes won't need anymore extend class)
-*/
+ */
 class NewModchartArrow extends FlxSprite
 {
 	// Makes the mesh all wobbly!
@@ -37,7 +39,7 @@ class NewModchartArrow extends FlxSprite
 	public var vertOffsetY:Array<Float> = [];
 	public var vertOffsetZ:Array<Float> = [];
 
-  	public var z:Float = 0.0;
+	public var z:Float = 0.0;
 
 	// If set, will reference this sprites graphic! Very useful for animations!
 	public var spriteGraphic(default, set):FlxSprite;
@@ -46,8 +48,8 @@ class NewModchartArrow extends FlxSprite
 
 	function set_spriteGraphic(value:FlxSprite):FlxSprite
 	{
-	  	spriteGraphic = value;
-	  	if (value != null)
+		spriteGraphic = value;
+		if (value != null)
 		{
 			this.antialiasing = spriteGraphic.antialiasing;
 			// SCAN THROUGH ALL THE ANIMATIONS OF THIS GRAPHIC AND CACHE EVERY ANIMATION FRAME!
@@ -56,7 +58,7 @@ class NewModchartArrow extends FlxSprite
 				precacheSpriteAnims(spriteGraphic, graphicCacheSuffix);
 			}
 		}
-	  	return spriteGraphic;
+		return spriteGraphic;
 	}
 
 	public function precacheSpriteAnims(s:FlxSprite, suffix:String)
@@ -66,9 +68,9 @@ class NewModchartArrow extends FlxSprite
 		{
 			var frame = allFrames.frames[i];
 			var animFrameName:String = frame.name + " - " + suffix;
-		
+
 			// trace(animFrameName);
-		
+
 			// check to see if we have this frame of animation saved
 			if (graphicCache3D.exists(animFrameName))
 			{
@@ -78,7 +80,7 @@ class NewModchartArrow extends FlxSprite
 			{
 				// trace("PRECACHE -> New frame for: " + animFrameName);
 				var graphicToUse:FlxGraphic;
-		
+
 				// grab the bitmap
 				// grab only
 				graphicToUse = FlxGraphic.fromFrame(frame, true, animFrameName);
@@ -86,7 +88,7 @@ class NewModchartArrow extends FlxSprite
 			}
 		}
 	}
-  
+
 	public var projectionEnabled:Bool = true;
 	public var autoOffset:Bool = false;
 
@@ -123,28 +125,30 @@ class NewModchartArrow extends FlxSprite
 	public var fov:Float = 90;
 
 	/**
-	* A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
-	*/
+	 * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
+	 */
 	public var vertices:DrawData<Float> = new DrawData<Float>();
 
 	/**
-	* A `Vector` of integers or indexes, where every three indexes define a triangle.
-	*/
+	 * A `Vector` of integers or indexes, where every three indexes define a triangle.
+	 */
 	public var indices:DrawData<Int> = new DrawData<Int>();
 
 	/**
-	* A `Vector` of normalized coordinates used to apply texture mapping.
-	*/
+	 * A `Vector` of normalized coordinates used to apply texture mapping.
+	 */
 	public var uvtData:DrawData<Float> = new DrawData<Float>();
-	
+
 	// custom setter to prevent values below 0, cuz otherwise we'll devide by 0!
 	public var subdivisions(default, set):Int = 3;
 
 	function set_subdivisions(value:Int):Int
 	{
-		if (subdivisions == value) return subdivisions;
+		if (subdivisions == value)
+			return subdivisions;
 
-		if (value < 0) value = 0;
+		if (value < 0)
+			value = 0;
 		subdivisions = value;
 		return subdivisions;
 	}
@@ -152,7 +156,8 @@ class NewModchartArrow extends FlxSprite
 	public function new(?x:Float = 0, ?y:Float = 0, ?simpleGraphic:FlxGraphicAsset)
 	{
 		super(x, y, simpleGraphic);
-		if (simpleGraphic != null) setUp();
+		if (simpleGraphic != null)
+			setUp();
 	}
 
 	public function setUp(moveSprGraph:Bool = true):Void
@@ -160,7 +165,7 @@ class NewModchartArrow extends FlxSprite
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
-	
+
 		if (spriteGraphic != null && moveSprGraph)
 		{
 			spriteGraphic.x = 0;
@@ -193,61 +198,61 @@ class NewModchartArrow extends FlxSprite
 		{
 			for (y in 0...subdivisions + 2) // y
 			{
-			vertOffsetX.push(0);
-			vertOffsetY.push(0);
-			vertOffsetZ.push(0);
+				vertOffsetX.push(0);
+				vertOffsetY.push(0);
+				vertOffsetZ.push(0);
 			}
 		}
 		updateUV();
 		updateTris(true);
 	}
-	
-  	// V0.8.0a -> Can now modify UV's!
+
+	// V0.8.0a -> Can now modify UV's!
 	public function updateUV():Void
 	{
 		// UV coordinates are normalized, so they range from 0 to 1.
 		var i:Int = 0;
 		for (x in 0...subdivisions + 2) // x
 		{
-		  for (y in 0...subdivisions + 2) // y
-		  {
-			// the %
-			var xPercent:Float = x / (subdivisions + 1);
-			var yPercent:Float = y / (subdivisions + 1);
+			for (y in 0...subdivisions + 2) // y
+			{
+				// the %
+				var xPercent:Float = x / (subdivisions + 1);
+				var yPercent:Float = y / (subdivisions + 1);
 
-			var uvX:Float = xPercent;
-			var uvY:Float = yPercent;
-	
-			// uv scale
-			uvX -= uvScaleOffset.x;
-			uvY -= uvScaleOffset.y;
-	
-			uvX *= uvScale.x;
-			uvY *= uvScale.y;
-	
-			uvX += uvScaleOffset.x;
-			uvY += uvScaleOffset.y;
-	
-			// uv offset
-			uvX += uvOffset.x;
-			uvY += uvOffset.y;
-	
-			// map it
-			uvtData[i * 2] = uvX;
-			uvtData[i * 2 + 1] = uvY;
-			i++;
-		  }
+				var uvX:Float = xPercent;
+				var uvY:Float = yPercent;
+
+				// uv scale
+				uvX -= uvScaleOffset.x;
+				uvY -= uvScaleOffset.y;
+
+				uvX *= uvScale.x;
+				uvY *= uvScale.y;
+
+				uvX += uvScaleOffset.x;
+				uvY += uvScaleOffset.y;
+
+				// uv offset
+				uvX += uvOffset.x;
+				uvY += uvOffset.y;
+
+				// map it
+				uvtData[i * 2] = uvX;
+				uvtData[i * 2 + 1] = uvY;
+				i++;
+			}
 		}
 	}
 
 	public var uvScale:Vector2 = new Vector2(1.0, 1.0);
 	public var uvScaleOffset:Vector2 = new Vector2(0.5, 0.5); // scale from center
 	public var uvOffset:Vector2 = new Vector2(0.0, 0.0);
-	
+
 	private var old_vertOffsetX:Array<Float> = [];
 	private var old_vertOffsetY:Array<Float> = [];
 	private var old_vertOffsetZ:Array<Float> = [];
-  
+
 	private var oldX:Float = 0;
 	private var oldY:Float = 0;
 	private var oldZ:Float = 0;
@@ -273,13 +278,13 @@ class NewModchartArrow extends FlxSprite
 	private var oldPivotOffsetZ:Float = 0;
 	private var oldOffset:FlxPoint;
 	private var oldFrameName:String = "";
-  
+
 	public function updateOldVars()
 	{
 		old_vertOffsetX = this.vertOffsetX.copy();
 		old_vertOffsetY = this.vertOffsetY.copy();
 		old_vertOffsetZ = this.vertOffsetZ.copy();
-	
+
 		oldOffset = this.offset;
 		oldX = this.x;
 		oldY = this.y;
@@ -309,9 +314,40 @@ class NewModchartArrow extends FlxSprite
 			oldFrameName = spriteGraphic.animation.frameName;
 		}
 	}
-  
+
+	public function setPerspective(noteData:NotePositionData):Void
+	{
+		this.x = noteData.x;
+		this.y = noteData.y;
+		this.z = noteData.z;
+
+		this.scaleX = noteData.scaleX;
+		this.scaleY = noteData.scaleY;
+		this.scaleZ = noteData.scaleZ;
+
+		this.skewX = noteData.skewX;
+		this.skewY = noteData.skewY;
+		this.skewZ = noteData.skewZ;
+		this.skewX_offset = noteData.skewX_offset;
+		this.skewY_offset = noteData.skewY_offset;
+		this.skewZ_offset = noteData.skewZ_offset;
+
+		this.fovOffsetX = noteData.fovOffsetX;
+		this.fovOffsetY = noteData.fovOffsetY;
+
+		this.pivotOffsetX = noteData.pivotOffsetX;
+		this.pivotOffsetY = noteData.pivotOffsetY;
+		this.pivotOffsetZ = noteData.pivotOffsetZ;
+
+		this.cullMode = noteData.cullMode;
+
+		this.angleX = noteData.angleX;
+		this.angleY = noteData.angleY;
+		this.angleZ = noteData.angle;
+	}
+
 	public var alwaysUpdate:Bool = false;
-  
+
 	public function trisNeedUpdate():Bool
 	{
 		if (PlayState.instance != null)
@@ -322,60 +358,88 @@ class NewModchartArrow extends FlxSprite
 			// return false; // Never update if paused!
 			// }
 		}
-	
+
 		if (vibrateEffect != 0 || alwaysUpdate)
 		{
 			return true; // Since this effect needs to be updated constantly!
 		}
-	
+
 		// animation changed?
 		if (spriteGraphic != null)
 		{
-			if (spriteGraphic.animation.frameName != oldFrameName) return true;
+			if (spriteGraphic.animation.frameName != oldFrameName)
+				return true;
 		}
-	
-		if (oldOffset != this.offset) return true;
-	
-		if (oldX != this.x) return true;
-		if (oldY != this.y) return true;
-		if (oldZ != this.z) return true;
-	
-		if (oldAngleX != this.angleX) return true;
-		if (oldAngleY != this.angleY) return true;
-		if (oldAngleZ != this.angleZ) return true;
-	
-		if (oldScaleX != this.scaleX) return true;
-		if (oldScaleY != this.scaleY) return true;
-		if (oldScaleZ != this.scaleZ) return true;
-	
-		if (oldSkewX != this.skewX) return true;
-		if (oldSkewY != this.skewY) return true;
-		if (oldSkewZ != this.skewZ) return true;
-	
-		if (oldSkewX_offset != this.skewX_offset) return true;
-		if (oldSkewY_offset != this.skewY_offset) return true;
-		if (oldSkewZ_offset != this.skewZ_offset) return true;
-	
-		if (oldFovOffsetX != this.fovOffsetX) return true;
-		if (oldFovOffsetY != this.fovOffsetY) return true;
-	
-		if (oldPivotOffsetX != this.pivotOffsetX) return true;
-		if (oldPivotOffsetY != this.pivotOffsetY) return true;
-		if (oldPivotOffsetZ != this.pivotOffsetZ) return true;
-	
-		if (oldMoveX != this.moveX) return true;
-		if (oldMoveY != this.moveY) return true;
-		if (oldMoveZ != this.moveZ) return true;
-	
-		if (old_vertOffsetX != vertOffsetX) return true;
-		if (old_vertOffsetY != vertOffsetY) return true;
-		if (old_vertOffsetZ != vertOffsetZ) return true;
-	
+
+		if (oldOffset != this.offset)
+			return true;
+
+		if (oldX != this.x)
+			return true;
+		if (oldY != this.y)
+			return true;
+		if (oldZ != this.z)
+			return true;
+
+		if (oldAngleX != this.angleX)
+			return true;
+		if (oldAngleY != this.angleY)
+			return true;
+		if (oldAngleZ != this.angleZ)
+			return true;
+
+		if (oldScaleX != this.scaleX)
+			return true;
+		if (oldScaleY != this.scaleY)
+			return true;
+		if (oldScaleZ != this.scaleZ)
+			return true;
+
+		if (oldSkewX != this.skewX)
+			return true;
+		if (oldSkewY != this.skewY)
+			return true;
+		if (oldSkewZ != this.skewZ)
+			return true;
+
+		if (oldSkewX_offset != this.skewX_offset)
+			return true;
+		if (oldSkewY_offset != this.skewY_offset)
+			return true;
+		if (oldSkewZ_offset != this.skewZ_offset)
+			return true;
+
+		if (oldFovOffsetX != this.fovOffsetX)
+			return true;
+		if (oldFovOffsetY != this.fovOffsetY)
+			return true;
+
+		if (oldPivotOffsetX != this.pivotOffsetX)
+			return true;
+		if (oldPivotOffsetY != this.pivotOffsetY)
+			return true;
+		if (oldPivotOffsetZ != this.pivotOffsetZ)
+			return true;
+
+		if (oldMoveX != this.moveX)
+			return true;
+		if (oldMoveY != this.moveY)
+			return true;
+		if (oldMoveZ != this.moveZ)
+			return true;
+
+		if (old_vertOffsetX != vertOffsetX)
+			return true;
+		if (old_vertOffsetY != vertOffsetY)
+			return true;
+		if (old_vertOffsetZ != vertOffsetZ)
+			return true;
+
 		// All the variables are the same, return false as we don't need to update!
 		return false;
 	}
-  
-	public var skewOffsetFix:Float = 0; //???
+
+	public var skewOffsetFix:Float = 0; // ???
 	public var skew3D:Bool = false; // Doesn't work with angle :(
 
 	public function updateTris(forceUpdate:Bool = false, debugTrace:Bool = false):Void
@@ -385,14 +449,14 @@ class NewModchartArrow extends FlxSprite
 			return;
 		}
 		var wasAlreadyFlipped_X:Bool = flipX;
-    	var wasAlreadyFlipped_Y:Bool = flipY;
+		var wasAlreadyFlipped_Y:Bool = flipY;
 
 		var w:Float = spriteGraphic != null ? spriteGraphic.frameWidth : frameWidth;
 		var h:Float = spriteGraphic != null ? spriteGraphic.frameHeight : frameHeight;
 
 		culled = false;
-    	// var cullCheckX:Float = 0;
-    	// var cullCheckY:Float = 0;
+		// var cullCheckX:Float = 0;
+		// var cullCheckY:Float = 0;
 
 		var i:Int = 0;
 		for (x in 0...subdivisions + 2) // x
@@ -408,7 +472,7 @@ class NewModchartArrow extends FlxSprite
 				// skew funny
 				var xPercent:Float = x / (subdivisions + 1);
 				var yPercent:Float = y / (subdivisions + 1);
-				
+
 				var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
 				var newHeight:Float = (scaleY - 1) * (yPercent - 0.5);
 
@@ -424,20 +488,20 @@ class NewModchartArrow extends FlxSprite
 				var curVertOffsetX:Float = 0;
 				var curVertOffsetY:Float = 0;
 				var curVertOffsetZ:Float = 0;
-		
+
 				if (i < vertOffsetX.length)
 				{
-				  curVertOffsetX = vertOffsetX[i];
+					curVertOffsetX = vertOffsetX[i];
 				}
 				if (i < vertOffsetY.length)
 				{
-				  curVertOffsetY = vertOffsetY[i];
+					curVertOffsetY = vertOffsetY[i];
 				}
 				if (i < vertOffsetZ.length)
 				{
-				  curVertOffsetZ = vertOffsetZ[i];
+					curVertOffsetZ = vertOffsetZ[i];
 				}
-		
+
 				point3D.x += curVertOffsetX;
 				point3D.y += curVertOffsetY;
 				point3D.z += curVertOffsetZ;
@@ -465,7 +529,7 @@ class NewModchartArrow extends FlxSprite
 					point2D.x += (originalWidthHeight.x - spriteGraphic.frameWidth) / 2;
 					point2D.y += (originalWidthHeight.y - spriteGraphic.frameHeight) / 2;
 				}
-				
+
 				vertices[i * 2] = point2D.x;
 				vertices[i * 2 + 1] = point2D.y;
 				i++;
@@ -481,50 +545,50 @@ class NewModchartArrow extends FlxSprite
 		switch (cullMode)
 		{
 			case "always_positive" | "always_negative":
-			flipX = cullMode == "always_positive" ? true : false;
-			flipY = cullMode == "always_positive" ? true : false;
-	
-			var xFlipCheck_vertTopLeftX = vertices[0];
-			var xFlipCheck_vertBottomRightX = vertices[vertices.length - 1 - 1];
-			if (!wasAlreadyFlipped_X)
-			{
-				if (xFlipCheck_vertTopLeftX >= xFlipCheck_vertBottomRightX)
+				flipX = cullMode == "always_positive" ? true : false;
+				flipY = cullMode == "always_positive" ? true : false;
+
+				var xFlipCheck_vertTopLeftX = vertices[0];
+				var xFlipCheck_vertBottomRightX = vertices[vertices.length - 1 - 1];
+				if (!wasAlreadyFlipped_X)
 				{
-					flipX = !flipX;
+					if (xFlipCheck_vertTopLeftX >= xFlipCheck_vertBottomRightX)
+					{
+						flipX = !flipX;
+					}
 				}
-			}
-			else
-			{
-				if (xFlipCheck_vertTopLeftX < xFlipCheck_vertBottomRightX)
+				else
 				{
-					flipX = !flipX;
+					if (xFlipCheck_vertTopLeftX < xFlipCheck_vertBottomRightX)
+					{
+						flipX = !flipX;
+					}
 				}
-			}
-			// y check
-			if (!wasAlreadyFlipped_Y)
-			{
-				xFlipCheck_vertTopLeftX = vertices[1];
-				xFlipCheck_vertBottomRightX = vertices[vertices.length - 1];
-				if (xFlipCheck_vertTopLeftX >= xFlipCheck_vertBottomRightX)
+				// y check
+				if (!wasAlreadyFlipped_Y)
 				{
-					flipY = !flipY;
+					xFlipCheck_vertTopLeftX = vertices[1];
+					xFlipCheck_vertBottomRightX = vertices[vertices.length - 1];
+					if (xFlipCheck_vertTopLeftX >= xFlipCheck_vertBottomRightX)
+					{
+						flipY = !flipY;
+					}
 				}
-			}
-			else
-			{
-				xFlipCheck_vertTopLeftX = vertices[1];
-				xFlipCheck_vertBottomRightX = vertices[vertices.length - 1];
-				if (xFlipCheck_vertTopLeftX < xFlipCheck_vertBottomRightX)
+				else
 				{
-					flipY = !flipY;
+					xFlipCheck_vertTopLeftX = vertices[1];
+					xFlipCheck_vertBottomRightX = vertices[vertices.length - 1];
+					if (xFlipCheck_vertTopLeftX < xFlipCheck_vertBottomRightX)
+					{
+						flipY = !flipY;
+					}
 				}
-			}
 		}
 		updateOldVars();
 	}
-	
+
 	public var cullMode:String = "none";
-	
+
 	var culled:Bool = false;
 
 	// Default to true for when players create their own ZProjectSprites!
@@ -546,17 +610,19 @@ class NewModchartArrow extends FlxSprite
 			{
 				if (copySpriteGraphic)
 				{
-					if (spriteGraphic.x != this.x) this.x = spriteGraphic.x;
-					if (spriteGraphic.y != this.y) this.y = spriteGraphic.y;
+					if (spriteGraphic.x != this.x)
+						this.x = spriteGraphic.x;
+					if (spriteGraphic.y != this.y)
+						this.y = spriteGraphic.y;
 					// this.z = spriteGraphic.z;
-			
-					if (spriteGraphic.scale.x != this.scaleX) this.scaleX = spriteGraphic.scale.x;
-					if (spriteGraphic.scale.y != this.scaleY) this.scaleY = spriteGraphic.scale.y;
-			
-					if (spriteGraphic.angleZ != this.angle) this.angleZ = spriteGraphic.angle;
-			
-					if (spriteGraphic.offset != this.offset) this.offset = spriteGraphic.offset;
-					if (spriteGraphic.cameras != this.cameras) this.cameras = spriteGraphic.cameras;
+
+					this.scaleX = spriteGraphic.scale.x;
+					this.scaleY = spriteGraphic.scale.y;
+
+					this.angleZ = spriteGraphic.angle;
+
+					this.offset = spriteGraphic.offset;
+					this.cameras = spriteGraphic.cameras;
 				}
 				updateTris();
 				drawManual(spriteGraphic.graphic != null ? spriteGraphic.graphic : null);
@@ -567,8 +633,8 @@ class NewModchartArrow extends FlxSprite
 			return; // do nothing lmfao, moved to drawManual just to be safe cuz idk if it will double draw or not (I doubt but, you never know with Flixel)
 		}
 	}
-	
-	public var textureRepeat:Bool = true;
+
+	public var textureRepeat:Bool = false;
 
 	public var debugTesting:Bool = false;
 
@@ -582,12 +648,12 @@ class NewModchartArrow extends FlxSprite
 		var c = TriangleCulling.NONE;
 		switch (cullMode)
 		{
-		case "positive" | "front":
-			c = TriangleCulling.POSITIVE;
-		case "negative" | "back":
-			c = TriangleCulling.NEGATIVE;
-		case "always":
-			culled = true;
+			case "positive" | "front":
+				c = TriangleCulling.POSITIVE;
+			case "negative" | "back":
+				c = TriangleCulling.NEGATIVE;
+			case "always":
+				culled = true;
 		}
 
 		if (culled || alpha < 0 || vertices == null || indices == null || graphicToUse == null || uvtData == null || _point == null || offset == null)
@@ -597,7 +663,8 @@ class NewModchartArrow extends FlxSprite
 
 		if (spriteGraphic != null)
 		{
-			if (spriteGraphic.antialiasing != this.antialiasing) this.antialiasing = spriteGraphic.antialiasing;
+			if (spriteGraphic.antialiasing != this.antialiasing)
+				this.antialiasing = spriteGraphic.antialiasing;
 
 			// var animFrameName:String = "ligma";
 
@@ -607,7 +674,8 @@ class NewModchartArrow extends FlxSprite
 			var animFrameName:String = spriteGraphic.animation.frameName + " - " + graphicCacheSuffix;
 
 			// check to see if we have this frame of animation saved
-			if (graphicCache3D.exists(animFrameName)) graphicToUse = graphicCache3D.get(animFrameName);
+			if (graphicCache3D.exists(animFrameName))
+				graphicToUse = graphicCache3D.get(animFrameName);
 			else
 			{
 				// TODO: MAKE IT SO IT AUTOMATICALLY PRECACHES ALL THE ANIMATION FRAMES BEFORE THE SONG STARTS TO AVOID MID-SONG LAGSPIKES AS IT CACHES NEW ANIMATIONS!
@@ -654,19 +722,22 @@ class NewModchartArrow extends FlxSprite
 
 		for (camera in cameras)
 		{
-			if (!camera.visible || !camera.exists) continue;
-			if (spriteGraphic != null && !spriteGraphic.isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
+			if (!camera.visible || !camera.exists)
+				continue;
+			// if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
 			// memory leak with drawTriangles :c
 
 			// getScreenPosition(_point, camera).subtractPoint(offset);
 			getScreenPosition(_point, camera);
 			camera.drawTriangles(graphicToUse, vertices, indices, uvtData, null, _point, blend, textureRepeat, antialiasing,
-				spriteGraphic.colorTransform != null ? spriteGraphic.colorTransform : colorTransform, spriteGraphic.shader != null ? spriteGraphic.shader : null);
+				spriteGraphic.colorTransform != null ? spriteGraphic.colorTransform : colorTransform,
+				spriteGraphic.shader != null ? spriteGraphic.shader : null);
 		}
 
 		#if FLX_DEBUG
-		if (FlxG.debugger.drawDebug) drawDebug();
+		if (FlxG.debugger.drawDebug)
+			drawDebug();
 		#end
 	}
 
@@ -695,46 +766,88 @@ class NewModchartArrow extends FlxSprite
 	{
 		super.updateColorTransform();
 
-		if (originalWidthHeight == null && spriteGraphic != null) originalWidthHeight = new Vector2(spriteGraphic.frameWidth, spriteGraphic.frameHeight);
+		if (originalWidthHeight == null && spriteGraphic != null)
+		{
+			originalWidthHeight = new Vector2(spriteGraphic.frameWidth, spriteGraphic.frameHeight);
+		}
 	}
 
 	public var offsetBeforeRotation:FlxPoint = new FlxPoint(0, 0);
 
 	public var preRotationMoveX:Float = 0;
-  	public var preRotationMoveY:Float = 0;
-  	public var preRotationMoveZ:Float = 0;
+	public var preRotationMoveY:Float = 0;
+	public var preRotationMoveZ:Float = 0;
 
 	public function applySkew(pos:Vector3D, xPercent:Float, yPercent:Float, w:Float, h:Float):Vector3D
 	{
 		var point3D:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
-	
+
 		var skewPosX:Float = this.x + moveX - offset.x;
 		var skewPosY:Float = this.y + moveY - offset.y;
-	
+
 		skewPosX += (w) / 2;
 		skewPosY += (h) / 2;
-	
+
 		var rotateModPivotPoint:Vector2 = new Vector2(0.5, 0.5); // to skew from center
 		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(xPercent, yPercent), angleZ); // to fix incorrect skew when rotated
-	
+
 		// For some reason, we need a 0.5 offset for this???????????????????
 		var xPercent_SkewOffset:Float = thing.x - skewY_offset - skewOffsetFix;
 		var yPercent_SkewOffset:Float = thing.y - skewX_offset - skewOffsetFix;
 		// Keep math the same as skewedsprite for parity reasons.
 		if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
-		point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h * scaleY;
+			point3D.x += (yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h * scaleY);
 		if (skewY != 0) //
-		point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w * scaleX;
-	
+			point3D.y += (xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w * scaleX);
+
 		// z SKEW //hazard did an oppsie (put skewX instead of skewZ)
-	
-		if (skewZ != 0) point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h * scaleY;
-	
+
+		if (skewZ != 0)
+			point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h * scaleY;
+
 		return point3D;
 	}
-	
+
+	function applyRotX(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(0, h / 2);
+		rotateModPivotPoint.x += pivotOffsetZ;
+		rotateModPivotPoint.y += pivotOffsetY;
+		var angleX_withFlip:Float = angleX + (includeFlip ? (flipY ? 180 : 0) : 0);
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.z, pos.y), angleX_withFlip);
+		pos.z = thing.x;
+		pos.y = thing.y;
+		return pos;
+	}
+
+	function applyRotY(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, 0);
+		rotateModPivotPoint.x += pivotOffsetX;
+		rotateModPivotPoint.y += pivotOffsetZ;
+		var angleY_withFlip:Float = angleY + (flipX ? 180 : 0);
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.x, pos.z), angleY_withFlip);
+		pos.x = thing.x;
+		pos.z = thing.y;
+		return pos;
+	}
+
+	function applyRotZ(pos:Vector3D, xPercent, yPercent, w:Float, h:Float, includeFlip:Bool = true):Vector3D
+	{
+		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, h / 2);
+		rotateModPivotPoint.x += pivotOffsetX;
+		rotateModPivotPoint.y += pivotOffsetY;
+		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos.x, pos.y), angleZ);
+		pos.x = thing.x;
+		pos.y = thing.y;
+		return pos;
+	}
+
+	// EDIT THIS ARRAY TO CHANGE HOW ROTATION IS APPLIED!
+	public var rotationOrder:Array<String> = ["z", "y", "x"];
+
 	var whatWasTheZBefore:Float = 0;
-  	// Future idea -> Make it so that you can change the order the rotations are applied in (so can be changed from Z,Y,X to X,Y,Z for example)
+
 	public function applyRotation(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector3D
 	{
 		var w:Float = spriteGraphic?.frameWidth ?? frameWidth;
@@ -743,35 +856,29 @@ class NewModchartArrow extends FlxSprite
 		var pos_modified:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
 
 		pos_modified.x -= offsetBeforeRotation.x;
-    	pos_modified.y -= offsetBeforeRotation.y;
+		pos_modified.y -= offsetBeforeRotation.y;
 		pos_modified.x += preRotationMoveX;
-    	pos_modified.y += preRotationMoveY;
-    	pos_modified.z += preRotationMoveZ;
+		pos_modified.y += preRotationMoveY;
+		pos_modified.z += preRotationMoveZ;
 
 		whatWasTheZBefore = pos_modified.z;
 
-		var rotateModPivotPoint:Vector2 = new Vector2(w / 2, h / 2);
-		rotateModPivotPoint.x += pivotOffsetX;
-		rotateModPivotPoint.y += pivotOffsetY;
-		var thing:Vector2 = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.y), angleZ);
-		pos_modified.x = thing.x;
-		pos_modified.y = thing.y;
+		for (i in 0...rotationOrder.length)
+		{
+			switch (rotationOrder[i])
+			{
+				case "x":
+					pos_modified = applyRotX(pos_modified, xPercent, yPercent, w, h);
+				case "y":
+					pos_modified = applyRotY(pos_modified, xPercent, yPercent, w, h);
+				case "z":
+					pos_modified = applyRotZ(pos_modified, xPercent, yPercent, w, h);
+			}
+		}
 
-		rotateModPivotPoint = new Vector2(w / 2, 0);
-		rotateModPivotPoint.x += pivotOffsetX;
-		rotateModPivotPoint.y += pivotOffsetZ;
-		var angleY_withFlip:Float = angleY + (flipX ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.x, pos_modified.z), angleY_withFlip);
-		pos_modified.x = thing.x;
-		pos_modified.z = thing.y;
-
-		rotateModPivotPoint = new Vector2(0, h / 2);
-		rotateModPivotPoint.x += pivotOffsetZ;
-		rotateModPivotPoint.y += pivotOffsetY;
-		var angleX_withFlip:Float = angleX + (flipY ? 180 : 0);
-		thing = ModchartUtil.rotateAround(rotateModPivotPoint, new Vector2(pos_modified.z, pos_modified.y), angleX_withFlip);
-		pos_modified.z = thing.x;
-		pos_modified.y = thing.y;
+		//  pos_modified = applyRotZ(pos_modified, xPercent, yPercent, w, h);
+		// pos_modified = applyRotY(pos_modified, xPercent, yPercent, w, h);
+		// pos_modified = applyRotX(pos_modified, xPercent, yPercent, w, h);
 
 		return pos_modified;
 	}
@@ -780,21 +887,12 @@ class NewModchartArrow extends FlxSprite
 	{
 		var w:Float = spriteGraphic != null ? spriteGraphic.frameWidth : frameWidth;
 		var h:Float = spriteGraphic != null ? spriteGraphic.frameHeight : frameHeight;
-		//Calculate the difference of the rotation and use this as input for the applyPerspective function (idk it just works) 
-		//Feel free to move this calculation around if you wanna account for other facts like offsetZ (if added) or moveZ, idk what you're doing exactly with this code lol
+		// Calculate the difference of the rotation and use this as input for the applyPerspective function (idk it just works)
+		// Feel free to move this calculation around if you wanna account for other facts like offsetZ (if added) or moveZ, idk what you're doing exactly with this code lol
 		// -Hazard24
 		var pos_modified:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
 
 		var zDifference:Float = pos_modified.z - whatWasTheZBefore;
-
-		// Apply offset here before it gets affected by z projection!
-		// pos_modified.x -= offset.x;
-		// pos_modified.y -= offset.y;
-		// pos_modified.x += daOffsetX; //Moved offsetX here so it's with the other Offsets -Hazard24
-
-		// pos_modified.x += moveX;
-		// pos_modified.y += moveY;
-		// pos_modified.z += moveZ;
 
 		if (projectionEnabled)
 		{
@@ -806,10 +904,9 @@ class NewModchartArrow extends FlxSprite
 			pos_modified.y += fovOffsetY;
 			pos_modified.z *= 0.001;
 
-			//var thisNotePos = perspectiveMath(new Vector3D(pos_modified.x+(width/2), pos_modified.y+(height/2), zDifference * 0.001), -(width/2), -(height/2));
 			pos_modified.z = zDifference * 0.001;
 			pos_modified = perspectiveMath(pos_modified, 0, 0);
-			//No need for any offsets since the offsets are already a part of pos_modified for each Vert. Plus if you look at the +height/2 part, you'll realise it's just cancelling each other out lmfao
+			// No need for any offsets since the offsets are already a part of pos_modified for each Vert. Plus if you look at the +height/2 part, you'll realise it's just cancelling each other out lmfao
 			// -Hazard24
 
 			pos_modified.x -= this.x;
@@ -819,7 +916,7 @@ class NewModchartArrow extends FlxSprite
 			pos_modified.x -= fovOffsetX;
 			pos_modified.y -= fovOffsetY;
 		}
-			return new Vector2(pos_modified.x, pos_modified.y);
+		return new Vector2(pos_modified.x, pos_modified.y);
 	}
 
 	public var zNear:Float = 0.0;
@@ -837,10 +934,11 @@ class NewModchartArrow extends FlxSprite
 			var newz:Float = pos.z;
 			// Too close to camera!
 			/*if (newz > zNear + ModConstants.tooCloseToCameraFix) //variable does not exist
-			{
-				newz = zNear + ModConstants.tooCloseToCameraFix;
-			}
-			else*/ if (newz < (zFar * -1)) // To far from camera!
+				{
+					newz = zNear + ModConstants.tooCloseToCameraFix;
+				}
+				else */
+			if (newz < (zFar * -1)) // To far from camera!
 			{
 				culled = true;
 			}
@@ -856,7 +954,8 @@ class NewModchartArrow extends FlxSprite
 			var zPerspectiveOffset:Float = (newz + (2 * zFar * zNear / zRange));
 
 			// divide by zero check
-			if (zPerspectiveOffset == 0) zPerspectiveOffset = 0.001;
+			if (zPerspectiveOffset == 0)
+				zPerspectiveOffset = 0.001;
 
 			xOffsetToCenter += (offsetX * -zPerspectiveOffset);
 			yOffsetToCenter += (offsetY * -zPerspectiveOffset);

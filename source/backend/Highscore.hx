@@ -25,7 +25,7 @@ class Highscore
 		setWeekFC(daWeek, false);
 	}
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1,?FC:Bool = false):Void
+	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1, ?FC:Bool = false):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
@@ -34,7 +34,7 @@ class Highscore
 			if (songScores.get(daSong) < score)
 			{
 				setScore(daSong, score);
-				setFC(daSong,FC);
+				setFC(daSong, FC);
 				if (rating >= 0)
 					setRating(daSong, rating);
 			}
@@ -42,28 +42,30 @@ class Highscore
 		else
 		{
 			setScore(daSong, score);
-			setFC(daSong,FC);
+			setFC(daSong, FC);
 			if (rating >= 0)
 				setRating(daSong, rating);
 		}
 	}
 
-	public static function saveWeekScore(week:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1,?FC:Bool = false):Void
+	public static function saveWeekScore(week:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1, ?FC:Bool = false):Void
 	{
 		var daWeek:String = formatSong(week, diff);
 
 		if (weekScores.exists(daWeek))
 		{
-			if (weekScores.get(daWeek) < score){
+			if (weekScores.get(daWeek) < score)
+			{
 				setWeekScore(daWeek, score);
-				setWeekRating(daWeek,rating);
-				setWeekFC(daWeek,FC);
+				setWeekRating(daWeek, rating);
+				setWeekFC(daWeek, FC);
 			}
 		}
-		else{
+		else
+		{
 			setWeekScore(daWeek, score);
-			setWeekRating(daWeek,rating);
-			setWeekFC(daWeek,FC);
+			setWeekRating(daWeek, rating);
+			setWeekFC(daWeek, FC);
 		}
 	}
 

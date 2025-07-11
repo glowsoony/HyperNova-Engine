@@ -1,9 +1,9 @@
 package modcharting;
 
-import flixel.addons.effects.FlxSkewedSprite;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.addons.effects.FlxSkewedSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
@@ -16,25 +16,25 @@ import flixel.util.FlxDirectionFlags;
 // import funkin.graphics.ZSprite;
 // import funkin.play.modchartSystem.ModchartUtil;
 import lime.math.Vector2;
-import openfl.geom.Matrix;
-import openfl.display.TriangleCulling;
-import openfl.geom.Vector3D;
 import modcharting.FlxFilteredSkewedSprite as FlxImprovedSprite;
+import openfl.display.TriangleCulling;
+import openfl.geom.Matrix;
+import openfl.geom.Vector3D;
 
-//A few TODOS im gona leave here:
+// A few TODOS im gona leave here:
 /*
 	- Make this optimized (gives lags spikes at some songs which means its not perfect)
 	- Make SKEW poss correct as if it was a normal skew (similation of skew adds a few more numbers which means skew for this draw its a bit bigger than it should be)
 	- Find a way to make sure we don't need extend this class on notes to make 3D (so people won't get confused once installing the 3D update)
 	- Make sure the class extend of skew sprite but don't use it (only when draw manual it's false)
 	- And finally, find at some point once we get 3D basics, how to make this class have the main balance (meaning it draws 3D stuff and 2D, while notes won't need anymore extend class)
-*/
+ */
 class ModchartArrow extends FlxSkewedSprite
 {
-  	public var z:Float = 0.0;
+	public var z:Float = 0.0;
 
 	// If set, will reference this sprites graphic! Very useful for animations!
-	public var initialized:Bool = false; //if this is false it won't use most of functions
+	public var initialized:Bool = false; // if this is false it won't use most of functions
 	public var projectionEnabled:Bool = true;
 
 	public var angleX:Float = 0;
@@ -68,48 +68,47 @@ class ModchartArrow extends FlxSkewedSprite
 	public var fov:Float = 90;
 
 	/**
-	* A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
-	*/
+	 * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
+	 */
 	public var vertices:DrawData<Float> = new DrawData<Float>();
 
 	/**
-	* A `Vector` of integers or indexes, where every three indexes define a triangle.
-	*/
+	 * A `Vector` of integers or indexes, where every three indexes define a triangle.
+	 */
 	public var indices:DrawData<Int> = new DrawData<Int>();
 
 	/**
-	* A `Vector` of normalized coordinates used to apply texture mapping.
-	*/
+	 * A `Vector` of normalized coordinates used to apply texture mapping.
+	 */
 	public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-	
 	// custom setter to prevent values below 0, cuz otherwise we'll devide by 0!
 	public var subdivisions(default, set):Int = 2;
 
 	function set_subdivisions(value:Int):Int
 	{
-		if (value < 0) value = 0;
+		if (value < 0)
+			value = 0;
 		subdivisions = value;
 		return subdivisions;
 	}
 
-  public var daOffsetX:Float = 0;
-  public var typeOffsetX:Float = 0;
+	public var daOffsetX:Float = 0;
+	public var typeOffsetX:Float = 0;
 	public var typeOffsetY:Float = 0;
 
 	// <----
-
-  public var drawManual:Bool = false;
+	public var drawManual:Bool = false;
 	public var hasSetupRender:Bool = false;
-  
+
 	public function setUpThreeDRender():Void
 	{
-	  if (!hasSetupRender)
-	  {
-		drawManual = true;
-		setUp();
-		hasSetupRender = true;
-	  }
+		if (!hasSetupRender)
+		{
+			drawManual = true;
+			setUp();
+			hasSetupRender = true;
+		}
 	}
 
 	public function setUp():Void
@@ -143,17 +142,16 @@ class ModchartArrow extends FlxSkewedSprite
 		var i:Int = 0;
 		for (x in 0...subdivisions + 2) // x
 		{
-		  for (y in 0...subdivisions + 2) // y
-		  {
-			var xPercent:Float = x / (subdivisions + 1);
-			var yPercent:Float = y / (subdivisions + 1);
-			uvtData[i * 2] = xPercent;
-			uvtData[i * 2 + 1] = yPercent;
-			i++;
-		  }
+			for (y in 0...subdivisions + 2) // y
+			{
+				var xPercent:Float = x / (subdivisions + 1);
+				var yPercent:Float = y / (subdivisions + 1);
+				uvtData[i * 2] = xPercent;
+				uvtData[i * 2 + 1] = yPercent;
+				i++;
+			}
 		}
 		updateTris();
-
 	}
 
 	public function updateTris(debugTrace:Bool = false):Void
@@ -162,49 +160,50 @@ class ModchartArrow extends FlxSkewedSprite
 		var h:Float = frameHeight;
 
 		var i:Int = 0;
-		for (x in 0...subdivisions+2) // x
+		for (x in 0...subdivisions + 2) // x
 		{
-			for (y in 0...subdivisions+2) // y
+			for (y in 0...subdivisions + 2) // y
 			{
-			var point2D:Vector2;
-			var point3D:Vector3D = new Vector3D(0, 0, 0);
-			point3D.x = (w / (subdivisions + 1)) * x;
-			point3D.y = (h / (subdivisions + 1)) * y;
+				var point2D:Vector2;
+				var point3D:Vector3D = new Vector3D(0, 0, 0);
+				point3D.x = (w / (subdivisions + 1)) * x;
+				point3D.y = (h / (subdivisions + 1)) * y;
 
-			// skew funny
-			var xPercent:Float = x / (subdivisions + 1);
-			var yPercent:Float = y / (subdivisions + 1);
-			var xPercent_SkewOffset:Float = xPercent - skewY_offset;
-			var yPercent_SkewOffset:Float = yPercent - skewX_offset;
-			// Keep math the same as skewedsprite for parity reasons.
-			if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
-				point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h;
-			if (skewY != 0) //
-				point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w;
-			if (skewZ != 0) //
-				point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h;
+				// skew funny
+				var xPercent:Float = x / (subdivisions + 1);
+				var yPercent:Float = y / (subdivisions + 1);
+				var xPercent_SkewOffset:Float = xPercent - skewY_offset;
+				var yPercent_SkewOffset:Float = yPercent - skewX_offset;
+				// Keep math the same as skewedsprite for parity reasons.
+				if (skewX != 0) // Small performance boost from this if check to avoid the tan math lol?
+					point3D.x += yPercent_SkewOffset * Math.tan(skewX * FlxAngle.TO_RAD) * h;
+				if (skewY != 0) //
+					point3D.y += xPercent_SkewOffset * Math.tan(skewY * FlxAngle.TO_RAD) * w;
+				if (skewZ != 0) //
+					point3D.z += yPercent_SkewOffset * Math.tan(skewZ * FlxAngle.TO_RAD) * h;
 
-			// scale
-			var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
-			point3D.x += (newWidth) * w;
-			newWidth = (scaleY - 1) * (yPercent - 0.5);
-			point3D.y += (newWidth) * h;
+				// scale
+				var newWidth:Float = (scaleX - 1) * (xPercent - 0.5);
+				point3D.x += (newWidth) * w;
+				newWidth = (scaleY - 1) * (yPercent - 0.5);
+				point3D.y += (newWidth) * h;
 
-			// _skewMatrix.b = Math.tan(skew.y * FlxAngle.TO_RAD);
-			// _skewMatrix.c = Math.tan(skew.x * FlxAngle.TO_RAD);
+				// _skewMatrix.b = Math.tan(skew.y * FlxAngle.TO_RAD);
+				// _skewMatrix.c = Math.tan(skew.x * FlxAngle.TO_RAD);
 
-			point2D = applyPerspective(point3D, xPercent, yPercent);
+				point2D = applyPerspective(point3D, xPercent, yPercent);
 
-			point2D.x += (frameWidth - frameWidth) / 2;
-			point2D.y += (frameHeight - frameHeight) / 2;
-			
-			vertices[i * 2] = point2D.x;
-			vertices[i * 2 + 1] = point2D.y;
-			i++;
+				point2D.x += (frameWidth - frameWidth) / 2;
+				point2D.y += (frameHeight - frameHeight) / 2;
+
+				vertices[i * 2] = point2D.x;
+				vertices[i * 2 + 1] = point2D.y;
+				i++;
 			}
 		}
 
-		if (debugTrace) trace("\nverts: \n" + vertices + "\n");
+		if (debugTrace)
+			trace("\nverts: \n" + vertices + "\n");
 
 		// temp fix for now I guess lol?
 		flipX = false;
@@ -212,7 +211,6 @@ class ModchartArrow extends FlxSkewedSprite
 	}
 
 	@:access(flixel.FlxCamera)
-
 	public function applyPerspective(pos:Vector3D, xPercent:Float = 0, yPercent:Float = 0):Vector2
 	{
 		var w:Float = frameWidth;
@@ -243,16 +241,15 @@ class ModchartArrow extends FlxSkewedSprite
 		pos_modified.z = thing.x;
 		pos_modified.y = thing.y;
 
-		//Calculate the difference of the rotation and use this as input for the applyPerspective function (idk it just works) 
-		//Feel free to move this calculation around if you wanna account for other facts like offsetZ (if added) or moveZ, idk what you're doing exactly with this code lol
+		// Calculate the difference of the rotation and use this as input for the applyPerspective function (idk it just works)
+		// Feel free to move this calculation around if you wanna account for other facts like offsetZ (if added) or moveZ, idk what you're doing exactly with this code lol
 		// -Hazard24
 		var zDifference:Float = pos_modified.z - whatWasTheZBefore;
 
 		// Apply offset here before it gets affected by z projection!
 		pos_modified.x -= offset.x;
 		pos_modified.y -= offset.y;
-		pos_modified.x += daOffsetX; //Moved offsetX here so it's with the other Offsets -Hazard24
-		
+		pos_modified.x += daOffsetX; // Moved offsetX here so it's with the other Offsets -Hazard24
 
 		pos_modified.x += moveX;
 		pos_modified.y += moveY;
@@ -262,18 +259,18 @@ class ModchartArrow extends FlxSkewedSprite
 		{
 			pos_modified.x += this.x;
 			pos_modified.y += this.y;
-			//pos_modified.x += (width/2);
-			//pos_modified.y += (height/2);
+			// pos_modified.x += (width/2);
+			// pos_modified.y += (height/2);
 			pos_modified.z += this.z; // ?????
 
 			pos_modified.x += fovOffsetX;
 			pos_modified.y += fovOffsetY;
 			pos_modified.z *= 0.001;
 
-			//var thisNotePos = perspectiveMath(new Vector3D(pos_modified.x+(width/2), pos_modified.y+(height/2), zDifference * 0.001), -(width/2), -(height/2));
+			// var thisNotePos = perspectiveMath(new Vector3D(pos_modified.x+(width/2), pos_modified.y+(height/2), zDifference * 0.001), -(width/2), -(height/2));
 			pos_modified.z = zDifference * 0.001;
 			var thisNotePos:Vector3D = perspectiveMath(pos_modified, 0, 0);
-			//No need for any offsets since the offsets are already a part of pos_modified for each Vert. Plus if you look at the +height/2 part, you'll realise it's just cancelling each other out lmfao
+			// No need for any offsets since the offsets are already a part of pos_modified for each Vert. Plus if you look at the +height/2 part, you'll realise it's just cancelling each other out lmfao
 			// -Hazard24
 
 			thisNotePos.x -= this.x;
@@ -311,7 +308,8 @@ class ModchartArrow extends FlxSkewedSprite
 				tanHalfFOV = FlxMath.fastSin(_FOV * 0.5) / dividebyzerofix;
 			}
 
-			if (pos.z > 1) newz = 0;
+			if (pos.z > 1)
+				newz = 0;
 
 			var xOffsetToCenter:Float = pos.x - (FlxG.width * 0.5);
 			var yOffsetToCenter:Float = pos.y - (FlxG.height * 0.5);
@@ -319,7 +317,8 @@ class ModchartArrow extends FlxSkewedSprite
 			var zPerspectiveOffset:Float = (newz + (2 * zFar * zNear / zRange));
 
 			// divide by zero check
-			if (zPerspectiveOffset == 0) zPerspectiveOffset = 0.001;
+			if (zPerspectiveOffset == 0)
+				zPerspectiveOffset = 0.001;
 
 			xOffsetToCenter += (offsetX * -zPerspectiveOffset);
 			yOffsetToCenter += (offsetY * -zPerspectiveOffset);

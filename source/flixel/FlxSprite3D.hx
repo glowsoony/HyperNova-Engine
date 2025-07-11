@@ -33,6 +33,7 @@ import openfl.geom.Vector3D;
 class FlxSprite3D extends FlxSprite
 {
 	static var DEPTH_SCALE:Float = 0.001;
+
 	/**
 	 * Represents the depth (Z-axis position) of the sprite in 3D space.
 	 * 
@@ -43,7 +44,7 @@ class FlxSprite3D extends FlxSprite
 
 	/**
 	 * The basic speed of this object (in pixels per second) in the z axis.
- 	 */
+	 */
 	public var velocityZ:Float = 0;
 
 	/**
@@ -63,7 +64,7 @@ class FlxSprite3D extends FlxSprite
 	 * to cap the speed automatically (very useful!).
 	 */
 	public var maxVelocityZ:Float = 0;
-	
+
 	/**
 	 * Represents the 3D rotation angles of the sprite.
 	 * This vector holds the rotation values along the X, Y, and Z axes,
@@ -127,26 +128,27 @@ class FlxSprite3D extends FlxSprite
 			__drawSprite3D(camera);
 		}
 	}
+
 	override function updateMotion(elapsed:Float):Void
 	{
 		// updates 2D motion
 		super.updateMotion(elapsed);
 
 		// Updates 3d angle motion
-		var velocityDelta3D = new Vector3D(
-			0.5 * (FlxVelocity.computeVelocity(angularVelocity3D.x, angularAcceleration3D.x, angularDrag3D.x, maxAngular3D.x, elapsed) - angularVelocity3D.x),
+		var velocityDelta3D = new Vector3D(0.5 * (FlxVelocity.computeVelocity(angularVelocity3D.x, angularAcceleration3D.x, angularDrag3D.x, maxAngular3D.x,
+			elapsed)
+			- angularVelocity3D.x),
 			0.5 * (FlxVelocity.computeVelocity(angularVelocity3D.y, angularAcceleration3D.y, angularDrag3D.y, maxAngular3D.y, elapsed) - angularVelocity3D.y),
-			0.5 * (FlxVelocity.computeVelocity(angularVelocity3D.z, angularAcceleration3D.z, angularDrag3D.z, maxAngular3D.z, elapsed) - angularVelocity3D.z)
-		);
-		
+			0.5 * (FlxVelocity.computeVelocity(angularVelocity3D.z, angularAcceleration3D.z, angularDrag3D.z, maxAngular3D.z, elapsed) - angularVelocity3D.z));
+
 		angularVelocity3D.x += velocityDelta3D.x;
 		angularVelocity3D.y += velocityDelta3D.y;
 		angularVelocity3D.z += velocityDelta3D.z;
-		
+
 		angle3D.x += angularVelocity3D.x * elapsed;
 		angle3D.y += angularVelocity3D.y * elapsed;
 		angle3D.z += angularVelocity3D.z * elapsed;
-		
+
 		angularVelocity3D.x += velocityDelta3D.x;
 		angularVelocity3D.y += velocityDelta3D.y;
 		angularVelocity3D.z += velocityDelta3D.z;
@@ -267,36 +269,48 @@ class FlxSprite3D extends FlxSprite
 		}
 		while (vertPointer < planeVertices.length);
 
-		// this is confusing af
+			// this is confusing af
 		var vertices = new DrawData<Float>(12, true, [
 			// triangle 1
-			planeVertices[0], planeVertices[1], // top left
-			planeVertices[2], planeVertices[3], // top right
-			planeVertices[6], planeVertices[7], // bottom left
+			planeVertices[0],
+			planeVertices[1], // top left
+			planeVertices[2],
+			planeVertices[3], // top right
+			planeVertices[6],
+			planeVertices[7], // bottom left
 			// triangle 2
-			planeVertices[0], planeVertices[1], // top right
-			planeVertices[4], planeVertices[5], // top left
-			planeVertices[6], planeVertices[7] // bottom right
+			planeVertices[0],
+			planeVertices[1], // top right
+			planeVertices[4],
+			planeVertices[5], // top left
+			planeVertices[6],
+			planeVertices[7] // bottom right
 		]);
 		final uvRectangle = this.frame.uv;
 		var uvData = new DrawData<Float>(18, true, [
 			// uv for triangle 1
-			uvRectangle.x,      uvRectangle.y,      1 / projectionZ[0], // top left
-			uvRectangle.width,  uvRectangle.y,      1 / projectionZ[1], // top right
-			uvRectangle.width,  uvRectangle.height, 1 / projectionZ[3], // bottom left
+			uvRectangle.x,
+			uvRectangle.y,
+			1 / projectionZ[0], // top left
+			uvRectangle.width,
+			uvRectangle.y,
+			1 / projectionZ[1], // top right
+			uvRectangle.width,
+			uvRectangle.height,
+			1 / projectionZ[3], // bottom left
 			// uv for triangle 2
-			uvRectangle.x,      uvRectangle.y,      1 / projectionZ[0], // top right
-			uvRectangle.x,      uvRectangle.height, 1 / projectionZ[2], // top left
-			uvRectangle.width,  uvRectangle.height, 1 / projectionZ[3]  // bottom right
+			uvRectangle.x,
+			uvRectangle.y,
+			1 / projectionZ[0], // top right
+			uvRectangle.x,
+			uvRectangle.height,
+			1 / projectionZ[2], // top left
+			uvRectangle.width,
+			uvRectangle.height,
+			1 / projectionZ[3] // bottom right
 		]);
 
-
-		camera.drawTriangles(
-			graphic, vertices,
-			new DrawData<Int>(vertices.length, true, [for (i in 0...vertices.length) i]),
-			uvData, new DrawData<Int>(),
-			camera._point, blend, false,
-			antialiasing, colorTransform, shader
-		);
+		camera.drawTriangles(graphic, vertices, new DrawData<Int>(vertices.length, true, [for (i in 0...vertices.length) i]), uvData, new DrawData<Int>(),
+			camera._point, blend, false, antialiasing, colorTransform, shader);
 	}
 }

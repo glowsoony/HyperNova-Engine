@@ -1,16 +1,16 @@
 package states;
 
-import backend.WeekData;
 import backend.Mods;
+import backend.WeekData;
+import flash.geom.Rectangle;
 import flixel.FlxBasic;
 import flixel.graphics.FlxGraphic;
-import flash.geom.Rectangle;
-import haxe.Json;
 import flixel.util.FlxSpriteUtil;
-import objects.AttachedSprite;
-import options.ModSettingsSubState;
-import openfl.display.BitmapData;
+import haxe.Json;
 import lime.utils.Assets;
+import objects.AttachedSprite;
+import openfl.display.BitmapData;
+import options.ModSettingsSubState;
 
 class ModsMenuState extends MusicBeatState
 {
@@ -178,8 +178,10 @@ class ModsMenuState extends MusicBeatState
 			buttonEnableAll.visible = true;
 
 			var myX = bgList.x + bgList.width + 20;
-			noModsTxt = new FlxText(myX, 0, FlxG.width - myX - 20, Language.getPhrase('no_mods_installed', "NO MODS INSTALLED\nPRESS {1} TO EXIT OR INSTALL A MOD", [daButton]), 48);
-			if(FlxG.random.bool(0.1)) noModsTxt.text += '\nBITCH.'; //meanie
+			noModsTxt = new FlxText(myX, 0, FlxG.width - myX - 20,
+				Language.getPhrase('no_mods_installed', "NO MODS INSTALLED\nPRESS {1} TO EXIT OR INSTALL A MOD", [daButton]), 48);
+			if (FlxG.random.bool(0.1))
+				noModsTxt.text += '\nBITCH.'; // meanie
 			noModsTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			noModsTxt.borderSize = 2;
 			add(noModsTxt);

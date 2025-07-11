@@ -1,24 +1,23 @@
 package options;
 
-import flixel.FlxSubState;
-import flixel.input.gamepad.FlxGamepad;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import substates.PauseSubState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.graphics.FlxGraphic;
-import flixel.FlxSprite;
-import options.SystemOptions;
-import flixel.FlxG;
 import backend.CoolUtil;
 import flixel.FlxCamera;
-import objects.Character;
-import flixel.text.FlxBitmapText;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxSubState;
+import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxBitmapFont;
-
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.math.FlxMath;
+import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import objects.Character;
+import options.SystemOptions;
+import substates.PauseSubState;
 
 using StringTools;
 
@@ -129,44 +128,43 @@ class OptionCata extends FlxSprite
 }
 
 /**
-  * Helper Class of FlxBitmapText
-  ** WARNING: NON-LEFT ALIGNMENT might break some position properties such as X,Y and functions like screenCenter()
-  ** NOTE: IF YOU WANT TO USE YOUR CUSTOM FONT MAKE SURE THEY ARE SET TO SIZE = 32
-  * @param 	sizeX	Be aware that this size property can could be not equal to FlxText size.
-  * @param 	sizeY	Be aware that this size property can could be not equal to FlxText size.
-  * @param 	bitmapFont	Optional parameter for component's font prop
+	* Helper Class of FlxBitmapText
+	** WARNING: NON-LEFT ALIGNMENT might break some position properties such as X,Y and functions like screenCenter()
+	** NOTE: IF YOU WANT TO USE YOUR CUSTOM FONT MAKE SURE THEY ARE SET TO SIZE = 32
+	* @param 	sizeX	Be aware that this size property can could be not equal to FlxText size.
+	* @param 	sizeY	Be aware that this size property can could be not equal to FlxText size.
+	* @param 	bitmapFont	Optional parameter for component's font prop
  */
 class CoolText extends FlxBitmapText
 {
-  public function new(xPos:Float, yPos:Float, sizeX:Float, sizeY:Float, ?bitmapFont:FlxBitmapFont)
-  {
-    super(bitmapFont);
-    x = xPos;
-    y = yPos;
-    scale.set(sizeX / (font.size - 2), sizeY / (font.size - 2));
-    updateHitbox();
-  }
+	public function new(xPos:Float, yPos:Float, sizeX:Float, sizeY:Float, ?bitmapFont:FlxBitmapFont)
+	{
+		super(bitmapFont);
+		x = xPos;
+		y = yPos;
+		scale.set(sizeX / (font.size - 2), sizeY / (font.size - 2));
+		updateHitbox();
+	}
 
-  override function destroy()
-  {
-    super.destroy();
-  }
+	override function destroy()
+	{
+		super.destroy();
+	}
 
-  override function update(elapsed)
-  {
-    super.update(elapsed);
-  }
-  /*public function centerXPos()
-    {
-      var offsetX = 0;
-      if (alignment == FlxTextAlign.LEFT)
-        x = ((FlxG.width - textWidth) / 2);
-       else if (alignment == FlxTextAlign.CENTER)
-        x = ((FlxG.width - (frameWidth - textWidth)) / 2) - frameWidth;
+	override function update(elapsed)
+	{
+		super.update(elapsed);
+	}
+	/*public function centerXPos()
+		{
+		  var offsetX = 0;
+		  if (alignment == FlxTextAlign.LEFT)
+			x = ((FlxG.width - textWidth) / 2);
+		   else if (alignment == FlxTextAlign.CENTER)
+			x = ((FlxG.width - (frameWidth - textWidth)) / 2) - frameWidth;
 
-  }*/
+	}*/
 }
-
 
 class OptionText extends CoolText
 {
@@ -188,10 +186,10 @@ class OptionText extends CoolText
 		lerpFinished = y == rawY;
 	}
 
-    inline public static function boundTo(value:Float, min:Float, max:Float):Float
-    {
-        return Math.max(min, Math.min(max, value));
-    }
+	inline public static function boundTo(value:Float, min:Float, max:Float):Float
+	{
+		return Math.max(min, Math.min(max, value));
+	}
 }
 
 class OptionsMenu extends MusicBeatSubstate
@@ -232,8 +230,8 @@ class OptionsMenu extends MusicBeatSubstate
 
 	public function new(pauseMenu:Bool = false)
 	{
-		Paths.setCurrentLevel('shared'); //LMAO LMAO
-		
+		Paths.setCurrentLevel('shared'); // LMAO LMAO
+
 		super();
 
 		camOptions = new FlxCamera();
@@ -243,13 +241,14 @@ class OptionsMenu extends MusicBeatSubstate
 
 		camOptions.setScale(0.75, 0.75);
 
-        controls.isInSubstate = true;
+		controls.isInSubstate = true;
 
 		isInPause = pauseMenu;
-		
+
 		ClientPrefs.loadPrefs();
 
-		if (!isInPause){
+		if (!isInPause)
+		{
 			options = [
 				new OptionCata(50, 100, "Gameplay", [
 					new DownscrollOption("Notes go Down instead of Up, simple enough."),
@@ -293,11 +292,12 @@ class OptionsMenu extends MusicBeatSubstate
 					new DiscordRichOption("Uncheck this to prevent accidental leaks, it will hide the Application from your Playing box on Discord"),
 					#end
 				]),
-				new OptionCata(10000, 10000, "", [
+				new OptionCata(10000, 10000, "", []),
 
-				]),
 			];
-		}else{
+		}
+		else
+		{
 			options = [
 				new OptionCata(50, 100, "Gameplay", [
 					new OpponentNotesOption("Opponent notes get hidden."),
@@ -328,16 +328,15 @@ class OptionsMenu extends MusicBeatSubstate
 					new DiscordRichOption("Uncheck this to prevent accidental leaks, it will hide the Application from your Playing box on Discord"),
 					#end
 				]),
-                // new OptionCata(60, 160, "V-SLICE", [
+				// new OptionCata(60, 160, "V-SLICE", [
 				// 	new FPSOption("Toggle the FPS Counter"),
 				// 	new Framerate("Pretty self explanatory, isn't it?"),
 				// 	#if desktop
 				// 	new DiscordRichOption("Uncheck this to prevent accidental leaks, it will hide the Application from your Playing box on Discord"),
 				// 	#end
 				// ])
-				new OptionCata(10000, 10000, "", [
+				new OptionCata(10000, 10000, "", []),
 
-				]),
 			];
 		}
 
@@ -384,7 +383,7 @@ class OptionsMenu extends MusicBeatSubstate
 	public var descBack:FlxSprite;
 
 	override function create()
-	{	
+	{
 		instance = this;
 
 		menu.add(background);
@@ -405,7 +404,7 @@ class OptionsMenu extends MusicBeatSubstate
 		for (i in 0...options.length - 1)
 		{
 			/*if (i > 4)
-				continue;*/
+				continue; */
 			var cat = options[i];
 			add(cat);
 			add(cat.titleObject);
@@ -413,11 +412,11 @@ class OptionsMenu extends MusicBeatSubstate
 
 		switchCat(selectedCat);
 
-        ClientPrefs.saveSettings();
+		ClientPrefs.saveSettings();
 
 		super.create();
 
-		if(boyfriend == null)
+		if (boyfriend == null)
 			reloadBoyfriend();
 	}
 
@@ -544,7 +543,7 @@ class OptionsMenu extends MusicBeatSubstate
 			if (PauseSubState.pauseMusic != null && PauseSubState.pauseMusic.time == 0)
 			{
 				if (!PauseSubState.pauseMusic.playing)
-				    PauseSubState.pauseMusic.play();
+					PauseSubState.pauseMusic.play();
 			}
 		}
 		#end
@@ -575,7 +574,8 @@ class OptionsMenu extends MusicBeatSubstate
 		any = FlxG.keys.justPressed.ANY || (gamepad != null ? gamepad.justPressed.ANY : false);
 		escape = controls.BACK || FlxG.keys.justPressed.ESCAPE || (gamepad != null ? gamepad.justPressed.B : false);
 
-		if(boyfriend != null && boyfriend.animation.curAnim.finished) {
+		if (boyfriend != null && boyfriend.animation.curAnim.finished)
+		{
 			boyfriend.dance();
 		}
 
@@ -619,7 +619,7 @@ class OptionsMenu extends MusicBeatSubstate
 			{
 				if (right)
 				{
-					FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 					selectedCatIndex++;
 
 					if (selectedCatIndex > options.length - 2)
@@ -631,7 +631,7 @@ class OptionsMenu extends MusicBeatSubstate
 				}
 				else if (left)
 				{
-					FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 					selectedCatIndex--;
 
 					if (selectedCatIndex > options.length - 2)
@@ -645,7 +645,7 @@ class OptionsMenu extends MusicBeatSubstate
 
 			if (accept)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 				selectedOptionIndex = 0;
 				isInCat = false;
 				selectOption(selectedCat.options[0]);
@@ -671,8 +671,8 @@ class OptionsMenu extends MusicBeatSubstate
 						ease: FlxEase.smootherStepInOut,
 						onComplete: function(twn:FlxTween)
 						{
-                            ClientPrefs.saveSettings();
-							Paths.setCurrentLevel(''); //LMAO LMAO
+							ClientPrefs.saveSettings();
+							Paths.setCurrentLevel(''); // LMAO LMAO
 							close();
 						}
 					});
@@ -681,7 +681,7 @@ class OptionsMenu extends MusicBeatSubstate
 				{
 					ClientPrefs.saveSettings();
 					PauseSubState.goBack = true;
-					Paths.setCurrentLevel(''); //LMAO LMAO
+					Paths.setCurrentLevel(''); // LMAO LMAO
 					close();
 				}
 			}
@@ -730,7 +730,6 @@ class OptionsMenu extends MusicBeatSubstate
 				if (boyfriend != null)
 					boyfriend.visible = selectedOption.showBoyfriend;
 			}
-					
 
 			#if !mobile
 			if (FlxG.mouse.wheel != 0)
@@ -757,7 +756,7 @@ class OptionsMenu extends MusicBeatSubstate
 			{
 				if (selectedOption.acceptType)
 					selectedOption.waitingType = false;
-				FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getValue();
 				selectedOptionIndex++;
 
@@ -786,7 +785,7 @@ class OptionsMenu extends MusicBeatSubstate
 			{
 				if (selectedOption.acceptType)
 					selectedOption.waitingType = false;
-				FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getValue();
 				selectedOptionIndex--;
 
@@ -836,9 +835,9 @@ class OptionsMenu extends MusicBeatSubstate
 
 			if (escape)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'),0.5);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
 
-				//ClientPrefs.loadKeyBinds();
+				// ClientPrefs.loadKeyBinds();
 
 				if (selectedCat.middle)
 				{
@@ -899,7 +898,7 @@ class OptionsMenu extends MusicBeatSubstate
 
 	override function close():Void
 	{
-        controls.isInSubstate = false;
+		controls.isInSubstate = false;
 		#if desktop
 		if (isInPause)
 		{
@@ -971,7 +970,8 @@ class OptionsMenu extends MusicBeatSubstate
 	public function reloadBoyfriend()
 	{
 		var wasVisible:Bool = false;
-		if(boyfriend != null) {
+		if (boyfriend != null)
+		{
 			wasVisible = boyfriend.visible;
 			boyfriend.kill();
 			remove(boyfriend);
@@ -983,7 +983,7 @@ class OptionsMenu extends MusicBeatSubstate
 		boyfriend.updateHitbox();
 		boyfriend.dance();
 		boyfriend.cameras = [camOptions];
-		//boyfriend.antialiasing = changedAntialising;
+		// boyfriend.antialiasing = changedAntialising;
 		insert(1, boyfriend);
 		boyfriend.visible = wasVisible;
 	}

@@ -6,15 +6,15 @@ import openfl.display.GraphicsShader;
 
 class VFDOverlay extends GraphicsShader
 {
-  public var elapsedTime(default, set):Float = 0;
+	public var elapsedTime(default, set):Float = 0;
 
-  function set_elapsedTime(value:Float):Float
-  {
-    u_time.value = [value];
-    return value;
-  }
+	function set_elapsedTime(value:Float):Float
+	{
+		u_time.value = [value];
+		return value;
+	}
 
-  @:glFragmentSource('#pragma header
+	@:glFragmentSource('#pragma header
     const vec2 s = vec2(1, 1.7320508);
 
     uniform float u_time;
@@ -56,15 +56,15 @@ class VFDOverlay extends GraphicsShader
       gl_FragColor = col;
 		}
   ')
-  public function new()
-  {
-    super();
+	public function new()
+	{
+		super();
 
-    this.elapsedTime = 0;
-  }
+		this.elapsedTime = 0;
+	}
 
-  public function update(elapsed:Float):Void
-  {
-    this.elapsedTime += elapsed;
-  }
+	public function update(elapsed:Float):Void
+	{
+		this.elapsedTime += elapsed;
+	}
 }

@@ -1,14 +1,13 @@
 package objects;
 
 import backend.animation.PsychAnimationController;
-
-import shaders.RGBPalette;
-import shaders.RGBPalette.RGBShaderReference;
 import flixel.addons.effects.FlxSkewedSprite;
+import shaders.RGBPalette.RGBShaderReference;
+import shaders.RGBPalette;
 
 class StrumNote extends FlxSkewedSprite
 {
-	public var arrowMesh:modcharting.NewModchartArrow;
+	public var arrowMesh:ModchartArrowMesh;
 	public var z:Float = 0;
 	public var arrowPath:SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
@@ -21,10 +20,13 @@ class StrumNote extends FlxSkewedSprite
 	private var player:Int;
 
 	public var notITGStrums:Bool = false;
-	
+
 	public var texture(default, set):String = null;
-	private function set_texture(value:String):String {
-		if(texture != value) {
+
+	private function set_texture(value:String):String
+	{
+		if (texture != value)
+		{
 			texture = value;
 			reloadNote();
 		}
@@ -36,33 +38,36 @@ class StrumNote extends FlxSkewedSprite
 	{
 		if (arrowMesh == null)
 		{
-			arrowMesh = new modcharting.NewModchartArrow();
-			arrowMesh.spriteGraphic = this;
-			arrowMesh.doDraw = false;
-			arrowMesh.copySpriteGraphic = false;
+			arrowMesh = new ModchartArrowMesh(this);
 		}
-		arrowMesh.setUp();
 	}
 
 	public var useRGBShader:Bool = true;
+
 	var rgb9:Bool = false;
+
 	public var myLibrary:String = "shared";
 	public var loadShader:Bool = true;
-	public function new(x:Float, y:Float, leData:Int, player:Int, ?daTexture:String, ?library:String = 'shared', ?quantizedNotes:Bool = false, ?loadShader:Bool = true) {
+
+	public function new(x:Float, y:Float, leData:Int, player:Int, ?daTexture:String, ?library:String = 'shared', ?quantizedNotes:Bool = false,
+			?loadShader:Bool = true)
+	{
 		animation = new PsychAnimationController(this);
 		notITGStrums = (PlayState.SONG != null && PlayState.SONG.notITG && ClientPrefs.getGameplaySetting('modchart'));
 
 		if (loadShader)
 		{
 			rgb9 = (player < 0);
-			rgbShader = new RGBShaderReference(this, !quantizedNotes ? Note.initializeGlobalRGBShader(leData, rgb9) : 
-				Note.initializeGlobalQuantRBShader(leData));
+			rgbShader = new RGBShaderReference(this,
+				!quantizedNotes ? Note.initializeGlobalRGBShader(leData, rgb9) : Note.initializeGlobalQuantRBShader(leData));
 			rgbShader.enabled = false;
-			if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
+			if (PlayState.SONG != null && PlayState.SONG.disableNoteRGB)
+				useRGBShader = false;
 			var arr:Array<FlxColor> = !quantizedNotes ? (rgb9 ? ClientPrefs.data.arrowRGB9[leData] : ClientPrefs.data.arrowRGB[leData]) : ClientPrefs.data.arrowRGBQuantize[leData];
-			if (!quantizedNotes && !rgb9 && PlayState.isPixelStage) ClientPrefs.data.arrowRGBPixel[leData];
+			if (!quantizedNotes && !rgb9 && PlayState.isPixelStage)
+				ClientPrefs.data.arrowRGBPixel[leData];
 
-			if(leData <= arr.length)
+			if (leData <= arr.length)
 			{
 				@:bypassAccessor
 				{
@@ -72,7 +77,8 @@ class StrumNote extends FlxSkewedSprite
 				}
 			}
 		}
-		if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
+		if (PlayState.SONG != null && PlayState.SONG.disableNoteRGB)
+			useRGBShader = false;
 
 		noteData = leData;
 		this.player = player;
@@ -82,17 +88,23 @@ class StrumNote extends FlxSkewedSprite
 		super(x, y);
 
 		myLibrary = library;
-		var skin = 'Skins/Notes/'+ClientPrefs.data.notesSkin[0]+'/NOTE_assets';
+		var skin = 'Skins/Notes/' + ClientPrefs.data.notesSkin[0] + '/NOTE_assets';
 		daTexture = daTexture != null ? daTexture : skin;
-		if(!Paths.fileExists('images/$skin.png', IMAGE))
+		if (!Paths.fileExists('images/$skin.png', IMAGE))
 		{
-			if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1) skin = PlayState.SONG.arrowSkin;
-			else skin = Note.defaultNoteSkin;
+			if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
+				skin = PlayState.SONG.arrowSkin;
+			else
+				skin = Note.defaultNoteSkin;
 
 			var customSkin:String = skin + Note.getNoteSkinPostfix();
-			if(Paths.fileExists('images/$customSkin.png', IMAGE)) skin = customSkin;
+			if (Paths.fileExists('images/$customSkin.png', IMAGE))
+				skin = customSkin;
 		}
-		if (daTexture != null) texture = daTexture else texture = skin;
+		if (daTexture != null)
+			texture = daTexture
+		else
+			texture = skin;
 
 		scrollFactor.set();
 		playAnim('static');
@@ -107,7 +119,8 @@ class StrumNote extends FlxSkewedSprite
 	public function reloadNote()
 	{
 		var lastAnim:String = null;
-		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
+		if (animation.curAnim != null)
+			lastAnim = animation.curAnim.name;
 
 		var notesAnim:Array<String> = rgb9 ? ["UP", "UP", "UP", "UP", "UP", "UP", "UP", "UP", "UP"] : ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 		var pressAnim:Array<String> = rgb9 ? ["up", "up", "up", "up", "up", "up", "up", "up", "up"] : ['left', 'down', 'up', 'right'];
@@ -115,14 +128,15 @@ class StrumNote extends FlxSkewedSprite
 
 		var daNoteData:Int = Std.int(Math.abs(noteData) % 4);
 
-		if(PlayState.isPixelStage)
+		if (PlayState.isPixelStage)
 		{
 			var testingGraphic = Paths.image('pixelUI/' + texture, null, !notITGStrums);
 			if (testingGraphic == null)
 			{
 				texture = "noteSkins/NOTE_assets" + Note.getNoteSkinPostfix();
 				testingGraphic = Paths.image('pixelUI/' + texture, null, !notITGStrums);
-				if (testingGraphic == null) texture = "NOTE_assets";
+				if (testingGraphic == null)
+					texture = "NOTE_assets";
 			}
 			loadGraphic(Paths.image('pixelUI/' + texture, null, !notITGStrums));
 			width = width / 4;
@@ -160,11 +174,10 @@ class StrumNote extends FlxSkewedSprite
 		}
 		updateHitbox();
 
-		if(lastAnim != null)
+		if (lastAnim != null)
 		{
 			playAnim(lastAnim, true);
 		}
-		if (arrowMesh != null) arrowMesh.updateCol();
 	}
 
 	public function playerPosition()
@@ -174,10 +187,13 @@ class StrumNote extends FlxSkewedSprite
 		x += ((FlxG.width / 2) * player);
 	}
 
-	override function update(elapsed:Float) {
-		if(resetAnim > 0) {
+	override function update(elapsed:Float)
+	{
+		if (resetAnim > 0)
+		{
 			resetAnim -= elapsed;
-			if(resetAnim <= 0) {
+			if (resetAnim <= 0)
+			{
 				playAnim('static');
 				resetAnim = 0;
 			}
@@ -185,32 +201,33 @@ class StrumNote extends FlxSkewedSprite
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false) {
+	public function playAnim(anim:String, ?force:Bool = false)
+	{
 		animation.play(anim, force);
-		if(animation.curAnim != null)
+		if (animation.curAnim != null)
 		{
 			centerOffsets();
 			centerOrigin();
 		}
-		if(loadShader && useRGBShader) rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
+		if (loadShader && useRGBShader)
+			rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
 	}
 
 	public override function kill():Void
 	{
 		super.kill();
 	}
-	
+
 	public override function revive():Void
 	{
 		super.revive();
-		if (arrowMesh != null) arrowMesh.updateCol();
 	}
-	
+
 	override public function destroy():Void
 	{
 		super.destroy();
-		if (arrowMesh != null){ 
-			arrowMesh.clearOutCache();
+		if (arrowMesh != null)
+		{
 			arrowMesh.destroy();
 		}
 	}

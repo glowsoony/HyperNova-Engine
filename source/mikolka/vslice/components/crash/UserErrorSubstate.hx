@@ -9,7 +9,11 @@ import flixel.util.typeLimit.OneOfTwo;
 
 class UserErrorSubstate extends MusicBeatSubstate
 {
-	var textBg:FlxSprite;
+        var textBg:FlxSprite;
+        var EMessage:String;
+        var callstack:OneOfTwo<Array<StackItem>,String>;
+        var isCritical:Bool;
+        var allowClosing:Bool = false;
 
         var camOverlay:FlxCamera;
     

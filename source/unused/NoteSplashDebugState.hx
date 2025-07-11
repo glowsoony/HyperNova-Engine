@@ -1,8 +1,8 @@
 package unused;
 
 import objects.Note;
-import objects.StrumNote;
 import objects.NoteSplash;
+import objects.StrumNote;
 
 class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler.PsychUIEvent
 {
@@ -14,7 +14,7 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 	var selection:FlxSprite;
 	var notes:FlxTypedGroup<StrumNote>;
 	var splashes:FlxTypedGroup<FlxSprite>;
-	
+
 	var imageInputText:PsychUIInputText;
 	var nameInputText:PsychUIInputText;
 	var stepperMinFps:PsychUINumericStepper;
@@ -76,7 +76,7 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 			{
 				loadFrames();
 			}
-			catch(e:Dynamic)
+			catch (e:Dynamic)
 			{
 				trace('ERROR! $e');
 				textureName = defaultTexture;
@@ -108,7 +108,6 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 			config.anim = curText;
 			curAnim = 1;
 			reloadAnims();
-
 		};
 		add(nameInputText);
 
@@ -137,19 +136,22 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		curAnimText.scrollFactor.set();
 		add(curAnimText);
 
-                var sillyText:String;
+		var sillyText:String;
 
-                if (controls.mobileC) {
-                sillyText = "Press Y to Reset animation\n
+		if (controls.mobileC)
+		{
+			sillyText = "Press Y to Reset animation\n
                         Press A twice to save to the loaded Note Splash PNG's folder\n
                         Press Top LEFT/RIGHT to change selected note - Arrow Keys to change offset\n
                         C/V - Copy & Paste";
-                } else {
-                sillyText = "Press SPACE to Reset animation\n
+		}
+		else
+		{
+			sillyText = "Press SPACE to Reset animation\n
                         Press ENTER twice to save to the loaded Note Splash PNG's folder\n
                         A/D change selected note - Arrow Keys to change offset (Hold shift for 10x)\n
                         Ctrl + C/V - Copy & Paste";
-                }
+		}
 
 		var text:FlxText = new FlxText(0, 520, FlxG.width, sillyText, 16);
 		text.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -182,10 +184,11 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 	var curAnim:Int = 1;
 	var visibleTime:Float = 0;
 	var pressEnterToSave:Float = 0;
+
 	override function update(elapsed:Float)
 	{
 		var notTyping:Bool = (PsychUIInputText.focusOn == null);
-		if(controls.BACK && notTyping)
+		if (controls.BACK && notTyping)
 		{
 			MusicBeatState.switchState(new MasterEditorMenu());
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -193,30 +196,38 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		}
 		super.update(elapsed);
 
-		if(!notTyping) return;
-		
-		if (FlxG.keys.justPressed.A || touchPad.buttonUp.justPressed) changeSelection(-1);
-		else if (FlxG.keys.justPressed.D || touchPad.buttonDown.justPressed) changeSelection(1);
+		if (!notTyping)
+			return;
 
-		if(maxAnims < 1) return;
+		if (FlxG.keys.justPressed.A || touchPad.buttonUp.justPressed)
+			changeSelection(-1);
+		else if (FlxG.keys.justPressed.D || touchPad.buttonDown.justPressed)
+			changeSelection(1);
 
-		if(selecArr != null)
+		if (maxAnims < 1)
+			return;
+
+		if (selecArr != null)
 		{
 			var movex = 0;
 			var movey = 0;
-			if(FlxG.keys.justPressed.LEFT || touchPad.buttonLeft2.justPressed) movex = -1;
-			else if(FlxG.keys.justPressed.RIGHT || touchPad.buttonRight2.justPressed) movex = 1;
+			if (FlxG.keys.justPressed.LEFT || touchPad.buttonLeft2.justPressed)
+				movex = -1;
+			else if (FlxG.keys.justPressed.RIGHT || touchPad.buttonRight2.justPressed)
+				movex = 1;
 
-			if(FlxG.keys.justPressed.UP || touchPad.buttonUp2.justPressed) movey = 1;
-			else if(FlxG.keys.justPressed.DOWN || touchPad.buttonDown2.justPressed) movey = -1;
-			
-			if(FlxG.keys.pressed.SHIFT || touchPad.buttonZ.pressed)
+			if (FlxG.keys.justPressed.UP || touchPad.buttonUp2.justPressed)
+				movey = 1;
+			else if (FlxG.keys.justPressed.DOWN || touchPad.buttonDown2.justPressed)
+				movey = -1;
+
+			if (FlxG.keys.pressed.SHIFT || touchPad.buttonZ.pressed)
 			{
 				movex *= 10;
 				movey *= 10;
 			}
 
-			if(movex != 0 || movey != 0)
+			if (movex != 0 || movey != 0)
 			{
 				selecArr[0] -= movex;
 				selecArr[1] += movey;
@@ -226,16 +237,17 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		}
 
 		// Copy & Paste
-		if(FlxG.keys.pressed.CONTROL || idk)
+		if (FlxG.keys.pressed.CONTROL || idk)
 		{
-			if(FlxG.keys.justPressed.C || touchPad.buttonC.justPressed)
+			if (FlxG.keys.justPressed.C || touchPad.buttonC.justPressed)
 			{
 				var arr:Array<Float> = selectedArray();
-				if(copiedArray == null) copiedArray = [0, 0];
+				if (copiedArray == null)
+					copiedArray = [0, 0];
 				copiedArray[0] = arr[0];
 				copiedArray[1] = arr[1];
 			}
-			else if(FlxG.keys.justPressed.V || touchPad.buttonV.justPressed && copiedArray != null)
+			else if (FlxG.keys.justPressed.V || touchPad.buttonV.justPressed && copiedArray != null)
 			{
 				var offs:Array<Float> = selectedArray();
 				offs[0] = copiedArray[0];
@@ -247,17 +259,17 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 
 		// Saving
 		pressEnterToSave -= elapsed;
-		if(visibleTime >= 0)
+		if (visibleTime >= 0)
 		{
 			visibleTime -= elapsed;
-			if(visibleTime <= 0)
+			if (visibleTime <= 0)
 				savedText.visible = false;
 		}
 
-		if(FlxG.keys.justPressed.ENTER || touchPad.buttonA.justPressed)
+		if (FlxG.keys.justPressed.ENTER || touchPad.buttonA.justPressed)
 		{
 			savedText.text = 'Press ${controls.mobileC ? 'A' : 'ENTER'} again to save.';
-			if(pressEnterToSave > 0) //save
+			if (pressEnterToSave > 0) // save
 			{
 				saveFile();
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.4);
@@ -275,22 +287,29 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		// Reset anim & change anim
 		if (FlxG.keys.justPressed.SPACE || touchPad.buttonY.justPressed)
 			changeAnim();
-		else if (FlxG.keys.justPressed.S || touchPad.buttonLeft.justPressed) changeAnim(-1);
-		else if (FlxG.keys.justPressed.W || touchPad.buttonRight.justPressed) changeAnim(1);
+		else if (FlxG.keys.justPressed.S || touchPad.buttonLeft.justPressed)
+			changeAnim(-1);
+		else if (FlxG.keys.justPressed.W || touchPad.buttonRight.justPressed)
+			changeAnim(1);
 
 		// Force frame
 		var updatedFrame:Bool = false;
-		if(updatedFrame = FlxG.keys.justPressed.Q || touchPad.buttonX.justPressed) forceFrame--;
-		else if(updatedFrame = FlxG.keys.justPressed.E || touchPad.buttonE.justPressed) forceFrame++;
+		if (updatedFrame = FlxG.keys.justPressed.Q || touchPad.buttonX.justPressed)
+			forceFrame--;
+		else if (updatedFrame = FlxG.keys.justPressed.E || touchPad.buttonE.justPressed)
+			forceFrame++;
 
-		if(updatedFrame)
+		if (updatedFrame)
 		{
-			if(forceFrame < 0) forceFrame = 0;
-			else if(forceFrame >= maxFrame) forceFrame = maxFrame - 1;
-			//trace('curFrame: $forceFrame');
-			
-			curFrameText.text = 'Force Frame: ${forceFrame+1} / $maxFrame\n(Press Q/E to change)';
-			splashes.forEachAlive(function(spr:FlxSprite) {
+			if (forceFrame < 0)
+				forceFrame = 0;
+			else if (forceFrame >= maxFrame)
+				forceFrame = maxFrame - 1;
+			// trace('curFrame: $forceFrame');
+
+			curFrameText.text = 'Force Frame: ${forceFrame + 1} / $maxFrame\n(Press Q/E to change)';
+			splashes.forEachAlive(function(spr:FlxSprite)
+			{
 				spr.animation.curAnim.paused = true;
 				spr.animation.curAnim.curFrame = forceFrame;
 			});
@@ -306,17 +325,20 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 	var textureName:String = defaultTexture;
 	var texturePath:String = '';
 	var copiedArray:Array<Float> = null;
+
 	function loadFrames()
 	{
 		texturePath = 'noteSplashes/' + textureName;
-		splashes.forEachAlive(function(spr:FlxSprite) {
+		splashes.forEachAlive(function(spr:FlxSprite)
+		{
 			spr.frames = Paths.getSparrowAtlas(texturePath);
 		});
-	
+
 		// Initialize config
 		NoteSplash.configs.clear();
 		config = NoteSplash.precacheConfig(texturePath);
-		if(config == null) config = NoteSplash.precacheConfig(NoteSplash.defaultNoteSplash);
+		if (config == null)
+			config = NoteSplash.precacheConfig(NoteSplash.defaultNoteSplash);
 		nameInputText.text = config.anim;
 		stepperMinFps.value = config.minFps;
 		stepperMaxFps.value = config.maxFps;
@@ -330,7 +352,7 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		#if sys
 		var maxLen:Int = maxAnims * Note.colArray.length;
 		var curLen:Int = config.offsets.length;
-		while(curLen > maxLen)
+		while (curLen > maxLen)
 		{
 			config.offsets.pop();
 			curLen = config.offsets.length;
@@ -341,30 +363,30 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 			strToSave += '\n' + offGroup[0] + ' ' + offGroup[1];
 
 		var pathSplit:Array<String> = (Paths.getPath('images/$texturePath.png', IMAGE, true).split('.png')[0]).split(':');
-		var path:String = pathSplit[pathSplit.length-1].trim() + '.txt';
+		var path:String = pathSplit[pathSplit.length - 1].trim() + '.txt';
 		var assetsDir:String = '';
 		savedText.text = 'Saved to: $path';
 		File.saveContent(path, strToSave);
 
-		//trace(strToSave);
+		// trace(strToSave);
 		#else
 		savedText.text = 'Can\'t save on this platform, too bad.';
 		#end
 	}
-	
+
 	public function UIEvent(id:String, sender:Dynamic)
 	{
 		if (id == PsychUINumericStepper.CHANGE_EVENT && (sender is PsychUINumericStepper))
 		{
 			var nums:PsychUINumericStepper = cast sender;
 			var wname = nums.name;
-			switch(wname)
+			switch (wname)
 			{
 				case 'min_fps':
-					if(nums.value > stepperMaxFps.value)
+					if (nums.value > stepperMaxFps.value)
 						stepperMaxFps.value = nums.value;
 				case 'max_fps':
-					if(nums.value < stepperMinFps.value)
+					if (nums.value < stepperMinFps.value)
 						stepperMinFps.value = nums.value;
 			}
 			config.minFps = Std.int(stepperMinFps.value);
@@ -373,6 +395,7 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 	}
 
 	var maxAnims:Int = 0;
+
 	function reloadAnims()
 	{
 		var loopContinue:Bool = true;
@@ -382,27 +405,31 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		});
 
 		maxAnims = 0;
-		while(loopContinue)
+		while (loopContinue)
 		{
 			var animID:Int = maxAnims + 1;
 			splashes.forEachAlive(function(spr:FlxSprite)
 			{
-				for (i in 0...Note.colArray.length) {
+				for (i in 0...Note.colArray.length)
+				{
 					var animName = 'note$i-$animID';
-					if (!addAnimAndCheck(spr, animName, '${config.anim} ${Note.colArray[i]} $animID', 24, false)) {
+					if (!addAnimAndCheck(spr, animName, '${config.anim} ${Note.colArray[i]} $animID', 24, false))
+					{
 						loopContinue = false;
 						return;
 					}
 					spr.animation.play(animName, true);
 				}
 			});
-			if(loopContinue) maxAnims++;
+			if (loopContinue)
+				maxAnims++;
 		}
 		trace('maxAnims: $maxAnims');
 		changeAnim();
 	}
 
 	var maxFrame:Int = 0;
+
 	function changeAnim(change:Int = 0)
 	{
 		maxFrame = 0;
@@ -410,8 +437,10 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		if (maxAnims > 0)
 		{
 			curAnim += change;
-			if(curAnim > maxAnims) curAnim = 1;
-			else if(curAnim < 1) curAnim = maxAnims;
+			if (curAnim > maxAnims)
+				curAnim = 1;
+			else if (curAnim < 1)
+				curAnim = maxAnims;
 			curAnimText.text = 'Current Animation: $curAnim / $maxAnims\n(Press ${controls.mobileC ? 'Top UP/DOWN' : 'W/S'} to change)';
 			curFrameText.text = 'Force Frame Disabled\n(Press ${controls.mobileC ? 'Q/E' : 'X/E'} to change)';
 
@@ -419,10 +448,10 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 			{
 				var spr:FlxSprite = splashes.members[i];
 				spr.animation.play('note$i-$curAnim', true);
-				
-				if(maxFrame < spr.animation.curAnim.numFrames)
+
+				if (maxFrame < spr.animation.curAnim.numFrames)
 					maxFrame = spr.animation.curAnim.numFrames;
-				
+
 				spr.animation.curAnim.frameRate = FlxG.random.int(config.minFps, config.maxFps);
 				var offs:Array<Float> = selectedArray(i);
 				spr.offset.set(10 + offs[0], 10 + offs[1]);
@@ -447,14 +476,15 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 
 	function selectedArray(sel:Int = -1)
 	{
-		if(sel < 0) sel = curSelected;
+		if (sel < 0)
+			sel = curSelected;
 		var animID:Int = sel + ((curAnim - 1) * Note.colArray.length);
-		if(config.offsets[animID] == null)
+		if (config.offsets[animID] == null)
 		{
-			while(config.offsets[animID] == null)
-				config.offsets.push(config.offsets[FlxMath.wrap(animID, 0, config.offsets.length-1)].copy());
+			while (config.offsets[animID] == null)
+				config.offsets.push(config.offsets[FlxMath.wrap(animID, 0, config.offsets.length - 1)].copy());
 		}
-		return config.offsets[FlxMath.wrap(animID, 0, config.offsets.length-1)];
+		return config.offsets[FlxMath.wrap(animID, 0, config.offsets.length - 1)];
 	}
 
 	function addAnimAndCheck(spr:FlxSprite, name:String, anim:String, ?framerate:Int = 24, ?loop:Bool = false)

@@ -266,6 +266,7 @@ class FlxAnimateFilterRenderer
 		renderer.__worldTransform = new Matrix();
 		renderer.__worldColorTransform = new ColorTransform();
 	}
+
 	public function dispose()
 	{
 		if (rendered != null)
