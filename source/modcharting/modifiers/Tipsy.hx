@@ -4,10 +4,10 @@ import flixel.FlxG;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import modcharting.*;
 import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
-import modcharting.*;
 import objects.Note;
 
 // CHANGE LOG (the changes to modifiers)
@@ -36,6 +36,8 @@ import objects.Note;
 			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Tipsy)
 				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
 				check how to make a customMod (both hx and lua) for better information.
+	[UPDATE]
+	- Tipsy (the shared modifier) now carries strumMath to share instead of copy and paste.
  */
 class Tipsy extends Modifier // My idea is clever, make this more simple to use
 {
@@ -84,6 +86,11 @@ class Tipsy extends Modifier // My idea is clever, make this more simple to use
 
 		return returnValue;
 	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class TipsyXModifier extends Tipsy
@@ -91,11 +98,6 @@ class TipsyXModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.x += tipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
 
@@ -105,11 +107,6 @@ class TipsyYModifier extends Tipsy
 	{
 		noteData.y += tipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TipsyZModifier extends Tipsy
@@ -117,11 +114,6 @@ class TipsyZModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.z += tipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf)
 	}
 }
 
@@ -131,11 +123,6 @@ class TipsyAngleModifier extends Tipsy
 	{
 		noteData.angle += tipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TipsyScaleModifier extends Tipsy
@@ -143,12 +130,7 @@ class TipsyScaleModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleX += tipsyMath(lane, curPos) * 0.001;
-		noteData.scaleY *= tipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleY += tipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -156,12 +138,7 @@ class TipsyScaleXModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= tipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleX += tipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -169,12 +146,7 @@ class TipsyScaleYModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= tipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleY += tipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -185,11 +157,6 @@ class TipsySkewModifier extends Tipsy
 		noteData.skewX += tipsyMath(lane, curPos);
 		noteData.skewY += tipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TipsySkewXModifier extends Tipsy
@@ -197,11 +164,6 @@ class TipsySkewXModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewX += tipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
 
@@ -211,11 +173,6 @@ class TipsySkewYModifier extends Tipsy
 	{
 		noteData.skewY += tipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TanTipsyXModifier extends Tipsy
@@ -223,11 +180,6 @@ class TanTipsyXModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.x += tanTipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
 
@@ -237,11 +189,6 @@ class TanTipsyYModifier extends Tipsy
 	{
 		noteData.y += tanTipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TanTipsyZModifier extends Tipsy
@@ -249,11 +196,6 @@ class TanTipsyZModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.z += tanTipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
 
@@ -263,24 +205,14 @@ class TanTipsyAngleModifier extends Tipsy
 	{
 		noteData.angle += tanTipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TanTipsyScaleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= tanTipsyMath(lane, curPos) * 0.001;
-		noteData.scaleY *= tanTipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleX += tanTipsyMath(lane, curPos) * 0.001;
+		noteData.scaleY += tanTipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -288,12 +220,7 @@ class TanTipsyScaleXModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= tanTipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleX += tanTipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -301,12 +228,7 @@ class TanTipsyScaleYModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= tanTipsyMath(lane, curPos) * 0.001;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
+		noteData.scaleY += tanTipsyMath(lane, curPos) * 0.001;
 	}
 }
 
@@ -317,11 +239,6 @@ class TanTipsySkewModifier extends Tipsy
 		noteData.skewX += tanTipsyMath(lane, curPos);
 		noteData.skewY += tanTipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TanTipsySkewXModifier extends Tipsy
@@ -330,11 +247,6 @@ class TanTipsySkewXModifier extends Tipsy
 	{
 		noteData.skewX += tanTipsyMath(lane, curPos);
 	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
-	}
 }
 
 class TanTipsySkewYModifier extends Tipsy
@@ -342,10 +254,5 @@ class TanTipsySkewYModifier extends Tipsy
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewY += tanTipsyMath(lane, curPos);
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
