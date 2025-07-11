@@ -442,7 +442,7 @@ class ModchartUtil
 		return totalTime;
 	}
 
-	public static var ROTATION_ORDER:RotationOrder = Z_Y_X;
+	public static var ROTATION_ORDER:RotationOrder = X_Y_Z;
 	@:pure @:noDebug
 	inline public static function rotate3DVector(vec:Vector3D, angleX:Float, angleY:Float, angleZ:Float):Vector3D
 	{
