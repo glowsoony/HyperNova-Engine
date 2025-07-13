@@ -22,19 +22,16 @@ import modcharting.Modifier;
  */
 class AttenuateModifer extends Modifier
 {
-	public function attenuateMath(currentValue:Float, curPos:Float, lane:Int, ?endMult:Float = 0.5)
+	public function attenuateMath(curPos:Float, lane:Int, ?endMult:Float = 0.5):Float
 	{
-		var scrollSwitch = 1;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				scrollSwitch *= -1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
 		var nd = lane % NoteMovement.keyCount;
 		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount * -1 * 0.5, NoteMovement.keyCount * 0.5);
 
 		var p = curPos * scrollSwitch;
 		p = (p * p) * 0.1;
 
-		var curVal = currentValue * 0.0015;
+		var curVal = 0.0015;
 
 		var newVal = newPos * curVal * p;
 		newVal += curVal * p * endMult;
@@ -46,7 +43,7 @@ class AttenuateXModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += attenuateMath(currentValue, curPos, lane);
+		noteData.x += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -54,7 +51,7 @@ class AttenuateYModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += attenuateMath(currentValue, curPos, lane);
+		noteData.y += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -62,7 +59,7 @@ class AttenuateZModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += attenuateMath(currentValue, curPos, lane);
+		noteData.z += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -70,7 +67,23 @@ class AttenuateAngleModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += attenuateMath(currentValue, curPos, lane);
+		noteData.angleZ += currentValue * attenuateMath(curPos, lane);
+	}
+}
+
+class AttenuateAngleXModifier extends Modifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleX += currentValue * attenuateMath(curPos, lane);
+	}
+}
+
+class AttenuateAngleYModifier extends Modifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleY += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -78,8 +91,8 @@ class AttenuateScaleModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (attenuateMath(currentValue, curPos, lane, 0.1) - 1);
-		noteData.scaleY += (attenuateMath(currentValue, curPos, lane, 0.1) - 1);
+		noteData.scaleX += currentValue * (attenuateMath(curPos, lane, 0.1) - 1);
+		noteData.scaleY += currentValue * (attenuateMath(curPos, lane, 0.1) - 1);
 	}
 }
 
@@ -87,7 +100,7 @@ class AttenuateScaleXModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (attenuateMath(currentValue, curPos, lane, 0.1) - 1);
+		noteData.scaleX += currentValue * (attenuateMath(curPos, lane, 0.1) - 1);
 	}
 }
 
@@ -95,7 +108,7 @@ class AttenuateScaleYModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY += (attenuateMath(currentValue, curPos, lane, 0.1) - 1);
+		noteData.scaleY += currentValue * (attenuateMath(curPos, lane, 0.1) - 1);
 	}
 }
 
@@ -103,8 +116,8 @@ class AttenuateSkewModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += attenuateMath(currentValue, curPos, lane);
-		noteData.skewY += attenuateMath(currentValue, curPos, lane);
+		noteData.skewX += currentValue * attenuateMath(curPos, lane);
+		noteData.skewY += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -112,7 +125,7 @@ class AttenuateSkewXModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += attenuateMath(currentValue, curPos, lane);
+		noteData.skewX += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
@@ -120,6 +133,6 @@ class AttenuateSkewYModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += attenuateMath(currentValue, curPos, lane);
+		noteData.skewY += currentValue * attenuateMath(curPos, lane);
 	}
 }

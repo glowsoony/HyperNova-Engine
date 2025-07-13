@@ -121,7 +121,7 @@ class TipsyAngleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += tipsyMath(lane, curPos);
+		noteData.angleZ += tipsyMath(lane, curPos);
 	}
 }
 
@@ -203,7 +203,7 @@ class TanTipsyAngleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += tanTipsyMath(lane, curPos);
+		noteData.angleZ += tanTipsyMath(lane, curPos);
 	}
 }
 
@@ -211,8 +211,8 @@ class TanTipsyScaleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += tanTipsyMath(lane, curPos) * 0.001;
-		noteData.scaleY += tanTipsyMath(lane, curPos) * 0.001;
+		noteData.scaleX += ((tanTipsyMath(lane, curPos) * 0.001) - 1);
+		noteData.scaleY += ((tanTipsyMath(lane, curPos) * 0.001) - 1);
 	}
 }
 
@@ -220,7 +220,7 @@ class TanTipsyScaleXModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += tanTipsyMath(lane, curPos) * 0.001;
+		noteData.scaleX += ((tanTipsyMath(lane, curPos) * 0.001) - 1);
 	}
 }
 
@@ -228,7 +228,7 @@ class TanTipsyScaleYModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY += tanTipsyMath(lane, curPos) * 0.001;
+		noteData.scaleY += ((tanTipsyMath(lane, curPos) * 0.001) - 1);
 	}
 }
 

@@ -81,7 +81,7 @@ class TornadoAngleModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += tornadoMath(lane, curPos) * currentValue;
+		noteData.angleZ += tornadoMath(lane, curPos) * currentValue;
 	}
 }
 
@@ -163,7 +163,7 @@ class TanTornadoAngleModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += tornadoTanMath(lane, curPos) * currentValue;
+		noteData.angleZ += tornadoTanMath(lane, curPos) * currentValue;
 	}
 }
 

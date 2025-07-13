@@ -4,10 +4,10 @@ import flixel.FlxG;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import modcharting.*;
 import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
-import modcharting.*;
 import objects.Note;
 
 // CHANGE LOG (the changes to modifiers)
@@ -143,7 +143,7 @@ class DrunkAngleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += drunkMath(lane, curPos);
+		noteData.angleZ += drunkMath(lane, curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -182,8 +182,8 @@ class DrunkScaleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += 1 + (drunkMath(lane, curPos));
-		noteData.scaleY *= 1 + (drunkMath(lane, curPos));
+		noteData.scaleX += (drunkMath(lane, curPos) - 1);
+		noteData.scaleY += (drunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -196,7 +196,7 @@ class DrunkScaleXModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= 1 + (drunkMath(lane, curPos));
+		noteData.scaleX += (drunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -209,7 +209,7 @@ class DrunkScaleYModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= 1 + (drunkMath(lane, curPos));
+		noteData.scaleY += (drunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -301,7 +301,7 @@ class TanDrunkAngleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += tanDrunkMath(lane, curPos);
+		noteData.angleZ += tanDrunkMath(lane, curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -340,8 +340,8 @@ class TanDrunkScaleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= 1 + (tanDrunkMath(lane, curPos));
-		noteData.scaleY *= 1 + (tanDrunkMath(lane, curPos));
+		noteData.scaleX += (tanDrunkMath(lane, curPos) - 1);
+		noteData.scaleY += (tanDrunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -354,7 +354,7 @@ class TanDrunkScaleXModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= 1 + (tanDrunkMath(lane, curPos));
+		noteData.scaleX += (tanDrunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -367,7 +367,7 @@ class TanDrunkScaleYModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= 1 + (tanDrunkMath(lane, curPos));
+		noteData.scaleY += (tanDrunkMath(lane, curPos) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

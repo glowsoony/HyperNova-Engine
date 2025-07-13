@@ -77,7 +77,23 @@ class ZigZagAngleModifier extends ZigZagModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += zigZagMath(lane, curPos) * currentValue;
+		noteData.angleZ += zigZagMath(lane, curPos) * currentValue;
+	}
+}
+
+class ZigZagAngleXModifier extends ZigZagModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleX += zigZagMath(lane, curPos) * currentValue;
+	}
+}
+
+class ZigZagAngleYModifier extends ZigZagModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleY += zigZagMath(lane, curPos) * currentValue;
 	}
 }
 

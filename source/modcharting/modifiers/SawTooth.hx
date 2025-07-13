@@ -63,7 +63,23 @@ class SawToothAngleModifier extends SawToothModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += sawToothMath(lane, curPos) * currentValue;
+		noteData.angleZ += sawToothMath(lane, curPos) * currentValue;
+	}
+}
+
+class SawToothAngleXModifier extends SawToothModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleX += sawToothMath(lane, curPos) * currentValue;
+	}
+}
+
+class SawToothAngleYModifier extends SawToothModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleY += sawToothMath(lane, curPos) * currentValue;
 	}
 }
 

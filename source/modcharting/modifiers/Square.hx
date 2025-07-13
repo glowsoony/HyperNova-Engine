@@ -69,7 +69,23 @@ class SquareAngleModifier extends SquareModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += squareMath(lane, curPos) * currentValue;
+		noteData.angleZ += squareMath(lane, curPos) * currentValue;
+	}
+}
+
+class SquareAngleXModifier extends SquareModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleX += squareMath(lane, curPos) * currentValue;
+	}
+}
+
+class SquareAngleYModifier extends SquareModifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angleY += squareMath(lane, curPos) * currentValue;
 	}
 }
 

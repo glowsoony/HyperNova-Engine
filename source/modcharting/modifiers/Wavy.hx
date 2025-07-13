@@ -4,10 +4,10 @@ import flixel.FlxG;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import modcharting.*;
 import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
-import modcharting.*;
 import objects.Note;
 
 // CHANGE LOG (the changes to modifiers)
@@ -197,7 +197,7 @@ class WavyAngleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angle += waveMath(lane);
+		noteData.angleZ += waveMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -355,7 +355,7 @@ class TanWavyAngleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angle += tanWaveMath(lane);
+		noteData.angleZ += tanWaveMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)

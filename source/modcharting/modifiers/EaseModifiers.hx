@@ -4,10 +4,10 @@ import flixel.FlxG;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import modcharting.*;
 import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
-import modcharting.*;
 import objects.Note;
 
 class EaseXModifier extends Modifier
@@ -73,7 +73,7 @@ class EaseAngleModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.angleZ += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -231,7 +231,7 @@ class EaseCurveAngleModifier extends EaseCurveModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+		noteData.angleZ += (easeFunc(curPos * 0.01) * currentValue * 0.2);
 	}
 }
 
@@ -239,8 +239,8 @@ class EaseCurveScaleModifier extends EaseCurveModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (easeFunc(curPos * 0.01) * currentValue * 0.2);
-		noteData.scaleY *= (easeFunc(curPos * 0.01) * currentValue * 0.2);
+		noteData.scaleX += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
+		noteData.scaleY += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
 	}
 }
 
@@ -248,7 +248,7 @@ class EaseCurveScaleXModifier extends EaseCurveModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (easeFunc(curPos * 0.01) * currentValue * 0.2);
+		noteData.scaleX += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
 	}
 }
 
@@ -256,7 +256,7 @@ class EaseCurveScaleYModifier extends EaseCurveModifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= (easeFunc(curPos * 0.01) * currentValue * 0.2);
+		noteData.scaleY += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
 	}
 }
 
