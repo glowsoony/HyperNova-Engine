@@ -33,7 +33,7 @@ class TornadoModifier extends Modifier
 		// thank you 4mbr0s3 & andromeda for the modifier lol -- LETS GOOOO FINALLY I FIGURED IT OUT
 		var playerColumn = lane % NoteMovement.keyCount;
 		var columnPhaseShift = playerColumn * Math.PI / 3;
-		var phaseShift = (curPos / 135) * subValues.get('speed') * 0.2;
+		var phaseShift = (curPos / 135) * subValues.get('speed').value * 0.2;
 		var returnReceptorToZeroOffsetX = (-Math.cos(-columnPhaseShift) + 1) / 2 * Note.swagWidth * 3;
 		var offsetX = (-Math.cos((phaseShift - columnPhaseShift)) + 1) / 2 * Note.swagWidth * 3 - returnReceptorToZeroOffsetX;
 
@@ -45,7 +45,7 @@ class TornadoModifier extends Modifier
 		// thank you 4mbr0s3 & andromeda for the modifier lol -- LETS GOOOO FINALLY I FIGURED IT OUT
 		var playerColumn = lane % NoteMovement.keyCount;
 		var columnPhaseShift = playerColumn * Math.PI / 3;
-		var phaseShift = (curPos / 135) * subValues.get('speed') * 0.2;
+		var phaseShift = (curPos / 135) * subValues.get('speed').value * 0.2;
 		var returnReceptorToZeroOffsetX = (-Math.tan(-columnPhaseShift) + 1) / 2 * Note.swagWidth * 3;
 		var offsetX = (-Math.tan((phaseShift - columnPhaseShift)) + 1) / 2 * Note.swagWidth * 3 - returnReceptorToZeroOffsetX;
 

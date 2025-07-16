@@ -31,7 +31,7 @@ class SawToothModifier extends Modifier
 	// Sawtooth math
 	public function sawToothMath(lane:Int, curPos:Float)
 	{
-		return Modifier.mod(curPos * 0.45, NoteMovement.arrowSizes[lane] * subValues.get('mult'));
+		return Modifier.mod(curPos * 0.45, NoteMovement.arrowSizes[lane] * subValues.get('mult').value);
 	}
 }
 

@@ -29,7 +29,7 @@ class ZigZagModifier extends Modifier
 
 	function zigZagMath(lane:Int, curPos:Float)
 	{
-		var mult:Float = NoteMovement.arrowSizes[lane] * subValues.get('mult');
+		var mult:Float = NoteMovement.arrowSizes[lane] * subValues.get('mult').value;
 		var mm:Float = mult * 2;
 		var p:Float = curPos * 0.45;
 		if (p < 0)

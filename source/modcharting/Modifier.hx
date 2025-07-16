@@ -8,7 +8,7 @@ import flixel.tweens.FlxEase;
 import haxe.ds.List;
 import lime.math.Vector4;
 import modcharting.PlayfieldRenderer.StrumNoteType;
-import modcharting.modifiers.*; // so this should work?
+//import modcharting.modifiers.*; // so this should work?
 import objects.Note;
 import openfl.geom.Vector3D;
 import states.PlayState;
@@ -186,9 +186,14 @@ class Modifier
 		return mod;
 	}
 
-	public function createSubMod(name:String, startVal:Float)
+	public function setSubMod(name:String, startVal:Float)
 	{
 		subValues.set(name, new ModifierSubValue(startVal));
+	}
+
+	public function getSubMod(name:String)
+	{
+		return subValues.get(name).value;
 	}
 }
 

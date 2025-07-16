@@ -86,8 +86,8 @@ class BounceXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.x += bounce(curPos); // Make sure this only happens if using cos
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.x += bounce(0); // Make sure this only happens if using cos
 	}
 }
 
@@ -100,8 +100,8 @@ class BounceYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.y += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.y += bounce(0);
 	}
 }
 
@@ -114,8 +114,8 @@ class BounceZModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.z += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.z += bounce(0);
 	}
 }
 
@@ -128,8 +128,8 @@ class BounceAngleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleZ += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleZ += bounce(0);
 	}
 }
 
@@ -142,8 +142,8 @@ class BounceAngleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleX += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleX += bounce(0);
 	}
 }
 
@@ -156,8 +156,8 @@ class BounceAngleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleY += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleY += bounce(0);
 	}
 }
 
@@ -171,10 +171,10 @@ class BounceScaleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
+		if (subValues.get("useAlt").value >= 0.5)
 			noteData.scaleX += bounce(curPos) * 0.01;
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleY += bounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleY += bounce(0) * 0.01;
 	}
 }
 
@@ -187,8 +187,8 @@ class BounceScaleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleX += bounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleX += bounce(0) * 0.01;
 	}
 }
 
@@ -201,8 +201,8 @@ class BounceScaleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleY += bounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleY += bounce(0) * 0.01;
 	}
 }
 
@@ -216,10 +216,10 @@ class BounceSkewModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewX += bounce(curPos);
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewY += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewX += bounce(0);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewY += bounce(0);
 	}
 }
 
@@ -232,8 +232,8 @@ class BounceSkewXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewX += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewX += bounce(0);
 	}
 }
 
@@ -246,8 +246,8 @@ class BounceSkewYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewY += bounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewY += bounce(0);
 	}
 }
 
@@ -260,8 +260,8 @@ class TanBounceXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.x += tanBounce(curPos); // Make sure this only happens if using cosec
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.x += tanBounce(0); // Make sure this only happens if using cosec
 	}
 }
 
@@ -274,8 +274,8 @@ class TanBounceYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.y += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.y += tanBounce(0);
 	}
 }
 
@@ -288,8 +288,8 @@ class TanBounceZModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.z += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.z += tanBounce(0);
 	}
 }
 
@@ -302,8 +302,8 @@ class TanBounceAngleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleZ += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleZ += tanBounce(0);
 	}
 }
 
@@ -316,8 +316,8 @@ class TanBounceAngleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleX += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleX += tanBounce(0);
 	}
 }
 
@@ -330,8 +330,8 @@ class TanBounceAngleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.angleY += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.angleY += tanBounce(0);
 	}
 }
 
@@ -345,10 +345,10 @@ class TanBounceScaleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleX += tanBounce(curPos) * 0.01;
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleY += tanBounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleX += tanBounce(0) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleY += tanBounce(0) * 0.01;
 	}
 }
 
@@ -361,8 +361,8 @@ class TanBounceScaleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleX += tanBounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleX += tanBounce(0) * 0.01;
 	}
 }
 
@@ -375,8 +375,8 @@ class TanBounceScaleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.scaleY += tanBounce(curPos) * 0.01;
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.scaleY += tanBounce(0) * 0.01;
 	}
 }
 
@@ -390,10 +390,10 @@ class TanBounceSkewModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewX += tanBounce(curPos);
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewY += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewX += tanBounce(0);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewY += tanBounce(0);
 	}
 }
 
@@ -406,8 +406,8 @@ class TanBounceSkewXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewX += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewX += tanBounce(0);
 	}
 }
 
@@ -420,7 +420,7 @@ class TanBounceSkewYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt") >= 0.5)
-			noteData.skewY += tanBounce(curPos);
+		if (subValues.get("useAlt").value >= 0.5)
+			noteData.skewY += tanBounce(0);
 	}
 }

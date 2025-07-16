@@ -32,9 +32,9 @@ class SquareModifier extends Modifier
 
 	public function squareMath(lane:Int, curPos:Float):Float
 	{
-		var mult:Float = (subValues.get('mult') / (NoteMovement.arrowSizes[lane] * 2));
-		var timeOffset:Float = subValues.get('yoffset');
-		var xOffset:Float = subValues.get('xoffset');
+		var mult:Float = (subValues.get('mult').value / (NoteMovement.arrowSizes[lane] * 2));
+		var timeOffset:Float = subValues.get('yoffset').value;
+		var xOffset:Float = subValues.get('xoffset').value;
 		var xVal:Float = FlxMath.fastSin(((curPos * 0.45) + timeOffset) * Math.PI * mult);
 		xVal = Math.floor(xVal) + 0.5 + xOffset;
 		return xVal;

@@ -1,4 +1,4 @@
-package modcharting;
+package modcharting.modifiers;
 
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;

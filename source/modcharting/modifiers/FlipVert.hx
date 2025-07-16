@@ -31,7 +31,7 @@ class FlipVert extends Modifier
 		var pos = (Conductor.songPosition * 0.001) * scrollSwitch;
 
 		// Copy of Sudden math
-		var a:Float = FlxMath.remapToRange(pos, subValuse.get("start") + subValues.get("offset"), subValues.get("end") + subValuse.get("offset"), 1, 0);
+		var a:Float = FlxMath.remapToRange(pos, subValues.get("start").value + subValues.get("offset").value, subValues.get("end").value + subValues.get("offset").value, 1, 0);
 		a = FlxMath.bound(a, 0, 1); // clamp
 
 		var b:Float = 1 - a;
@@ -43,9 +43,9 @@ class FlipVert extends Modifier
 	public function digitalMath(curPos:Float):Float
 	{
 		// Copy of Sudden math
-		var s = subValues.get('steps') / 2;
+		var s = subValues.get('steps').value / 2;
 
-		var funny:Float = FlxMath.fastSin((curPos * 0.45) * Math.PI * subValues.get("mult") / 250) * s;
+		var funny:Float = FlxMath.fastSin((curPos * 0.45) * Math.PI * subValues.get("mult").value / 250) * s;
 		// trace("1: " + funny);
 		funny = Math.floor(funny);
 		// funny = Math.round(funny); //Why does this not work? no idea :(
@@ -133,15 +133,21 @@ class BlackSphereInvertModifier extends Modifier
 		var value = currentValue % 360; //make sure to always use 0-360 values
 
 		var retu_val:Float = 1;
-		var speedAffectM:Float = subValues.get("speedaffect");
+		var speedAffectM:Float = subValues.get("speedaffect").value;
 		var yValue:Float = FlxMath.fastSin(value * Math.PI / 180);
 
-		var variant:Bool = (subValues.get("variant") >= 0.5);
+		var variant:Bool = (subValues.get("variant").value >= 0.5);
+
+		var laneThing = lane % NoteMovement.keyCount;
 
 		if (variant) //make sure variant only gets applied when 1 or higger
-			if (lane % 4 == 1 || lane % 4 == 2) yValue *= -1;
+		{
+			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+		}
 		else
-			if (lane % 2 == 1) yValue *= -1;
+		{
+			if (laneThing % 2 == 1) yValue *= -1;
+		}
 
 		if (!ud) yValue *= -1;
 
@@ -163,17 +169,20 @@ class BlackSphereInvertModifier extends Modifier
 
 		yValue = 0.5 * FlxMath.fastSin(value * Math.PI / 180);
 
-		var variant:Float = getSubVal("variant");
-		if (variant >= 100)
+		var variant:Bool = (subValues.get("variant").value >= 0.5);
+
+		var laneThing = lane % NoteMovement.keyCount;
+
+		if (variant) //make sure variant only gets applied when 1 or higger
 		{
-			if (lane % 4 == 1 || lane % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
 		}
 		else
 		{
-			if (lane % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1) yValue *= -1;
 		}
 
-		noteData.x += NoteMovement.arrowSizes[lane] * (lane % 2 == 0 ? 1 : -1) * invertValue;
+		noteData.x += NoteMovement.arrowSizes[lane] * (laneThing % 2 == 0 ? 1 : -1) * invertValue;
 		noteData.y += NoteMovement.arrowSizes[lane] * yValue;
 	}
 
@@ -202,15 +211,21 @@ class BlackSphereFlipModifier extends Modifier
 		var value = currentValue % 360; //make sure to always use 0-360 values
 
 		var retu_val:Float = 1;
-		var speedAffectM:Float = subValues.get("speedaffect");
+		var speedAffectM:Float = subValues.get("speedaffect").value;
 		var yValue:Float = FlxMath.fastSin(value * Math.PI / 180);
 
-		var variant:Bool = (subValues.get("variant") >= 0.5);
+		var variant:Bool = (subValues.get("variant").value >= 0.5);
+
+		var laneThing = lane % NoteMovement.keyCount;
 
 		if (variant) //make sure variant only gets applied when 1 or higger
-			if (lane % 4 == 1 || lane % 4 == 2) yValue *= -1;
+		{
+			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+		}
 		else
-			if (lane % 2 == 1) yValue *= -1;
+		{
+			if (laneThing % 2 == 1) yValue *= -1;
+		}
 
 		if (!ud) yValue *= -1;
 
@@ -232,18 +247,20 @@ class BlackSphereFlipModifier extends Modifier
 
 		yValue = 0.5 * FlxMath.fastSin(value * Math.PI / 180);
 
-		var variant:Float = getSubVal("variant");
-		if (variant >= 100)
+		var variant:Bool = (subValues.get("variant").value >= 0.5);
+
+		var laneThing = lane % NoteMovement.keyCount;
+
+		if (variant) //make sure variant only gets applied when 1 or higger
 		{
-			if (lane % 4 == 1 || lane % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
 		}
 		else
 		{
-			if (lane % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1) yValue *= -1;
 		}
 
-		var nd = lane % NoteMovement.keyCount;
-		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
+		var newPos = FlxMath.remapToRange(laneThing, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
 		noteData.x += NoteMovement.arrowSizes[lane] * newPos * invertValue;
 		noteData.y += NoteMovement.arrowSizes[lane] * yValue;
 	}
@@ -258,9 +275,9 @@ class HourGlassXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -272,9 +289,9 @@ class HourGlassYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -286,9 +303,9 @@ class HourGlassZModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -300,9 +317,9 @@ class HourGlassAngleModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)	
 	{
@@ -314,9 +331,9 @@ class HourGlassAngleXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -328,9 +345,9 @@ class HourGlassAngleYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 		}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -342,9 +359,9 @@ class HourGlassScaleModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -357,9 +374,9 @@ class HourGlassScaleXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -371,9 +388,9 @@ class HourGlassScaleYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -385,9 +402,9 @@ class HourGlassSkewModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -400,9 +417,9 @@ class HourGlassSkewXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -414,9 +431,9 @@ class HourGlassSkewYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('start', 420.0);
-		subValues.set('end', 135.0);
-		subValues.set('offset', 0.0);
+		subValues.set('start', new ModifierSubValue(420.0));
+		subValues.set('end', new ModifierSubValue(135.0));
+		subValues.set('offset', new ModifierSubValue(0.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -424,37 +441,12 @@ class HourGlassSkewYModifier extends FlipVert
 	}
 }
 
-class DigitalModifer extends Modifier
-{
-	override function setupSubValues()
-	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
-	}
-
-	public function digitalMath(curPos:Float):Float
-	{
-		// Copy of Sudden math
-		var s = subValues.get('steps') / 2;
-
-		var funny:Float = FlxMath.fastSin((curPos * 0.45) * Math.PI * subValues.get("mult") / 250) * s;
-		// trace("1: " + funny);
-		funny = Math.floor(funny);
-		// funny = Math.round(funny); //Why does this not work? no idea :(
-		// trace("2: " + funny);
-		// funny = funny;
-		funny /= s;
-		// trace("3: " + funny);
-		return funny;
-	}
-}
-
 class DigitalXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -466,8 +458,8 @@ class DigitalYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -479,8 +471,8 @@ class DigitalZModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -492,8 +484,8 @@ class DigitalAngleModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -505,8 +497,8 @@ class DigitalAngleXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -518,8 +510,8 @@ class DigitalAngleYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -531,8 +523,8 @@ class DigitalScaleModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -545,8 +537,8 @@ class DigitalScaleXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -558,8 +550,8 @@ class DigitalScaleYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -571,8 +563,8 @@ class DigitalSkewModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -585,8 +577,8 @@ class DigitalSkewXModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -598,8 +590,8 @@ class DigitalSkewYModifier extends FlipVert
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', 1.0);
-		subValues.set('steps', 4.0);
+		subValues.set('mult', new ModifierSubValue(1.0));
+		subValues.set('steps', new ModifierSubValue(4.0));
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

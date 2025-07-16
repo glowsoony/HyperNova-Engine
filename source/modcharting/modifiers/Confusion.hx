@@ -65,7 +65,7 @@ class AngleModifier extends Modifier // note angle
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		if (subValues.get('force').value >= 0.5)
 			noteData.angleZ += currentValue;
@@ -114,7 +114,7 @@ class ConfusionOffsetModifier extends Modifier // note angle
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		if (subValues.get('force').value >= 0.5)
 			noteData.angleZ += currentValue * FlxAngle.TO_DEG;
@@ -163,7 +163,7 @@ class ConfusionModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 		var mathToUse = 0.0;
 		if (subValues.get('forced').value >= 0.5)
 			mathToUse = Modifier.beat;
@@ -183,13 +183,12 @@ class ConfusionXModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('forced', new ModifierSubValue(1.0));
 		subValues.set('useOld', new ModifierSubValue(0.0));
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		var mathToUse = 0.0;
 		var result = 0.0;
@@ -218,7 +217,7 @@ class ConfusionYModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		var mathToUse = 0.0;
 		var result = 0.0;

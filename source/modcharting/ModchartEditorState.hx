@@ -26,6 +26,7 @@ import lime.utils.Assets;
 import modcharting.*;
 import modcharting.ModchartFile;
 import modcharting.Modifier;
+import modcharting.modifiers.*;
 import modcharting.PlayfieldRenderer.StrumNoteType;
 import objects.Note;
 import objects.StrumNote;
@@ -87,10 +88,11 @@ class ModchartEditorState extends MusicBeatState
 	// getAllClasses output its a haxe.ds.List so thats why im using another loop
 	// ALSO, THE LIST IS UNSORTED !!
 	// public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
-	public static var modifierList:Array<Class<Modifier>> = [
-		for (cls in CompileTime.getAllClasses('modcharting', true, modcharting.Modifier))
-			cls
-	];
+	// public static var modifierList:Array<Class<Modifier>> = [
+	// 	for (cls in CompileTime.getAllClasses('modcharting', true, modcharting.Modifier))
+	// 		cls
+	// ];
+	public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
 	public static var easeList:Array<String> = ImprovedEases.easeList;
 
 	// used for indexing

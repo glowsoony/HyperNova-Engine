@@ -58,7 +58,7 @@ class Beat extends Modifier
 		var speed:Float = subValues.get("speed").value;
 		var mult:Float = subValues.get("mult").value;
 		var offset:Float = subValues.get("offset").value;
-		var alternate:Bool = (subValues.get("alternate") >= 0.5);
+		var alternate:Bool = (subValues.get("alternate").value >= 0.5);
 
 		var mathToUse:Float = 0.0;
 
