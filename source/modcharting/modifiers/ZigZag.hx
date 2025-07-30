@@ -15,7 +15,7 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] ZigZag Improvements:
-	-   Added a halper instead of copy and pasted code for the modifiers.
+	-   Added a helper instead of copy and pasted code for the modifiers.
 
 	[UPDATE] ZigZagScale: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)

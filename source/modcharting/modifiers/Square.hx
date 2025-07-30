@@ -15,7 +15,7 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] Square Improvements:
-	-   Added a halper instead of copy and pasted code for the modifiers.
+	-   Added a helper instead of copy and pasted code for the modifiers.
 	-	Chanegd the math somewhat to hazard's (math it visually the same, not direct behavior changes)
 
 	[UPDATE] Square: (X,Y Included)

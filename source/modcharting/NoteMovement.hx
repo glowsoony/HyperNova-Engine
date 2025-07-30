@@ -28,6 +28,8 @@ class NoteMovement
 	public static var defaultSkewY:Array<Float> = [];
 	public static var defaultScale:Array<Float> = [];
 	public static var arrowSizes:Array<Float> = [];
+	public static var defaultWidth:Array<Float> = [];
+	public static var defaultHeight:Array<Float> = [];
 	#if LEATHER
 	public static var leatherEngineOffsetStuff:Map<String, Float> = [];
 	#end
@@ -40,6 +42,8 @@ class NoteMovement
 		defaultSkewY = [];
 		defaultScale = [];
 		arrowSizes = [];
+		defaultWidth = [];
+		defaultHeight = [];
 		keyCount = #if (LEATHER || KADE) PlayState.strumLineNotes.length
 			- PlayState.playerStrums.length #else game.strumLineNotes.length
 			- game.playerStrums.length #end; // base game doesnt have opponent strums as group
@@ -56,6 +60,8 @@ class NoteMovement
 			defaultSkewY.push(strum.skew.y);
 			defaultStrumX.push(strum.x);
 			defaultStrumY.push(strum.y);
+			defaultWidth.push(strum.width);
+			defaultHeight.push(strum.height);
 			#if LEATHER
 			var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
 			var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount - 1])));
@@ -81,6 +87,8 @@ class NoteMovement
 		defaultSkewY = [];
 		defaultScale = [];
 		arrowSizes = [];
+		defaultWidth = [];
+		defaultHeight = [];
 		keyCount = game.strumLineNotes.length - game.playerStrums.length; // base game doesnt have opponent strums as group
 		playerKeyCount = game.playerStrums.length;
 
@@ -91,6 +99,8 @@ class NoteMovement
 			defaultSkewY.push(strum.skew.y);
 			defaultStrumX.push(strum.x);
 			defaultStrumY.push(strum.y);
+			defaultWidth.push(strum.width);
+			defaultHeight.push(strum.height);
 			#if LEATHER
 			var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
 			var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount - 1])));

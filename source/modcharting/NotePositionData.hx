@@ -34,6 +34,7 @@ class NotePositionData implements IFlxDestroyable
 	public var incomingAngleX:Float;
 	public var incomingAngleY:Float;
 	public var strumTime:Float;
+	public var isSus:Bool;
 
 	public var stealthGlow:Float;
 	public var glowRed:Float;
@@ -141,7 +142,7 @@ class NotePositionData implements IFlxDestroyable
 	}
 
 	public function setupNote(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int, alpha:Float, curPos:Float,
-			noteDist:Float, iaX:Float, iaY:Float, strumTime:Float, index:Int)
+			noteDist:Float, iaX:Float, iaY:Float, strumTime:Float, index:Int, isSus:Bool)
 	{
 		this.x = x;
 		this.y = y;
@@ -162,6 +163,7 @@ class NotePositionData implements IFlxDestroyable
 		this.incomingAngleX = iaX;
 		this.incomingAngleY = iaY;
 		this.strumTime = strumTime;
+		this.isSus = isSus;
 
 		this.stealthGlow = 0;
 		this.glowRed = 1;

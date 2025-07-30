@@ -150,16 +150,16 @@ class PlayfieldRenderer extends FlxBasic
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
 		// not really needed since we draw the shit manually now
-		
-			strum.x = strumData.x;
-			strum.y = strumData.y;
-			strum.angle = strumData.angle;
-			strum.alpha = strumData.alpha;
 
-			/*
-				strum.scale.x = strumData.scaleX;
-				strum.scale.y = strumData.scaleY;
-		 	*/
+		strum.x = strumData.x;
+		strum.y = strumData.y;
+		strum.angle = strumData.angle;
+		strum.alpha = strumData.alpha;
+
+		/*
+			strum.scale.x = strumData.scaleX;
+			strum.scale.y = strumData.scaleY;
+		 */
 
 		strum.rgbShader.stealthGlow = strumData.stealthGlow;
 		strum.rgbShader.stealthGlowRed = strumData.glowRed;
@@ -247,7 +247,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		var noteData:NotePositionData = NotePositionData.get();
 		noteData.setupNote(noteX, noteY, noteZ, lane, noteScaleX, noteScaleY, noteSkewX, noteSkewY, playfieldIndex, noteAlpha, curPos, noteDist,
-			incomingAngle[0], incomingAngle[1], notes.members[noteIndex].strumTime, noteIndex);
+			incomingAngle[0], incomingAngle[1], notes.members[noteIndex].strumTime, noteIndex, note.members[noteIndex].isSustainNote);
 		playfields[playfieldIndex].applyOffsets(noteData);
 		return noteData;
 	}
@@ -676,11 +676,14 @@ class PlayfieldRenderer extends FlxBasic
 		var changeX:Bool = noteData.z != 0;
 
 		var finalNotePos;
-		if (changeX){
+		if (changeX)
+		{
 			finalNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
-			noteData.y + (daNote.height / 2), noteData.z * 0.001),
-			ModchartUtil.defaultFOV * (Math.PI / 180));
-		}else{
+				noteData.y + (daNote.height / 2), noteData.z * 0.001),
+				ModchartUtil.defaultFOV * (Math.PI / 180));
+		}
+		else
+		{
 			finalNotePos = new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance), noteData.y + (daNote.height / 2), 0);
 		}
 

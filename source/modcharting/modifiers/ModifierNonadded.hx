@@ -495,41 +495,6 @@ class ModifierMath
 //     }
 // }
 
-class RotateModifier extends Modifier
-{
-	override function setupSubValues()
-	{
-		subValues.set('x', new ModifierSubValue(0.0));
-		subValues.set('y', new ModifierSubValue(0.0));
-
-		subValues.set('rotatePointX', new ModifierSubValue((FlxG.width / 2) - (NoteMovement.arrowSize / 2)));
-		subValues.set('rotatePointY', new ModifierSubValue((FlxG.height / 2) - (NoteMovement.arrowSize / 2)));
-		currentValue = 1.0;
-	}
-
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		var xPos = NoteMovement.defaultStrumX[lane];
-		var yPos = NoteMovement.defaultStrumY[lane];
-		var rotX = ModchartUtil.getCartesianCoords3D(subValues.get('x').value, 90, xPos - subValues.get('rotatePointX').value);
-		noteData.x += rotX.x + subValues.get('rotatePointX').value - xPos;
-		var rotY = ModchartUtil.getCartesianCoords3D(90, subValues.get('y').value, yPos - subValues.get('rotatePointY').value);
-		noteData.y += rotY.y + subValues.get('rotatePointY').value - yPos;
-		noteData.z += rotX.z + rotY.z;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf);
-	}
-
-	override function reset()
-	{
-		super.reset();
-		currentValue = 1.0;
-	}
-}
-
 class StrumLineRotateModifier extends Modifier
 {
 	override function setupSubValues()

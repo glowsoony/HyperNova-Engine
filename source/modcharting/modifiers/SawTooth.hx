@@ -15,7 +15,7 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] SawTooth Improvements:
-	-   Added a halper instead of copy and pasted code for the modifiers.
+	-   Added a helper instead of copy and pasted code for the modifiers.
 	-   Changed the math to be hazard's
 
 	[UPDATE] SawTootahScale: (X,Y Included)
