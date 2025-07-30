@@ -273,3 +273,51 @@ class Center2Modifier extends Modifier
 		strumMath(noteData, lane, pf);
 	}
 }
+
+class ReceptorScrollModifier extends Modifier
+{
+	function getStaticCrochet():Float
+	{
+		return Conductor.crochet + 8;
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var moveSpeed = getStaticCrochet() * 4;
+		var diff = curPos;
+		var songTime = Conductor.songPosition;
+		var vDiff = -(diff - songTime) / moveSpeed;
+		var reversed = Math.floor(vDiff) % 2 == 0;
+
+		var startY = noteData.y;
+		var revPerc = reversed ? 1 - vDiff % 1 : vDiff % 1;
+
+		var ud = false;
+		if (instance != null)
+			if (ModchartUtil.getDownscroll(instance))
+				ud = true;
+
+		var scrollSwitch = 520;
+		if (ud)
+			scrollSwitch *= -1;
+
+		var offset = 0;
+		var reversedOffset = -scrollSwitch;
+
+		var endY = offset + ((reversedOffset - NoteMovement.arrowSizes[lane]) * revPerc) + NoteMovement.arrowSizes[lane];
+
+		noteData.y = FlxMath.lerp(startY, endY, currentValue);
+
+		// ALPHA//
+		var a:Float = FlxMath.remapToRange(curPos, (50 * -100), (10 * -100), 1, 0);
+		a = FlxMath.bound(a, 0, 1);
+
+		noteData.alpha -= a * currentValue;
+		return;
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+}

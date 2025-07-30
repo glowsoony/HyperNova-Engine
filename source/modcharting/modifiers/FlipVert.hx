@@ -20,18 +20,18 @@ import modcharting.PlayfieldRenderer.StrumNoteType;
 
 	[UPDATE] HourGlassScale && Digital: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
-*/
+ */
 class FlipVert extends Modifier
 {
-	//subValues are called on the modifiers for less use of classes but same method of creation
-
+	// subValues are called on the modifiers for less use of classes but same method of creation
 	public function hourGlassMath():Float
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 		var pos = (Conductor.songPosition * 0.001) * scrollSwitch;
 
 		// Copy of Sudden math
-		var a:Float = FlxMath.remapToRange(pos, subValues.get("start").value + subValues.get("offset").value, subValues.get("end").value + subValues.get("offset").value, 1, 0);
+		var a:Float = FlxMath.remapToRange(pos, subValues.get("start").value + subValues.get("offset").value,
+			subValues.get("end").value + subValues.get("offset").value, 1, 0);
 		a = FlxMath.bound(a, 0, 1); // clamp
 
 		var b:Float = 1 - a;
@@ -93,10 +93,10 @@ class VideoGamesModifier extends Modifier
 	{
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (laneThing > 0 && laneThing < 3) //down and up notes
+		if (laneThing > 0 && laneThing < 3) // down and up notes
 			noteData.x += NoteMovement.arrowSizes[lane] * (laneThing == 1 ? 1 : -1) * currentValue;
 
-		//if its 1 then it adds, otherwise it subtracts
+		// if its 1 then it adds, otherwise it subtracts
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -109,28 +109,29 @@ class InvertSineModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += ModifierMath.InvertSine(lane, curPos, pf, currentValue); // silly ah math
+		noteData.x += FlxMath.fastSin(0 + (curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * (lane % 2 == 0 ? 1 : -1) * currentValue * 0.5); // silly ah math
 	}
 }
-
 
 class BlackSphereInvertModifier extends Modifier
 {
 	override public function setupSubValues()
 	{
-		baseValue = 1.0; //default set to skip math if value is default (1.0)
+		baseValue = 1.0; // default set to skip math if value is default (1.0)
 		currentValue = 1.0;
 		subValues.set("variant", new ModifierSubValue(0.0));
 		subValues.set("speedaffect", new ModifierSubValue(1.0));
 	}
 
-	//speed = curpos * currentValue (you could use noteDistToo but its a little more complex)
+	// speed = curpos * currentValue (you could use noteDistToo but its a little more complex)
 	override function curPosMath(lane:Int, curPos:Float, pf:Int):Float
 	{
 		var ud = false;
-        if (instance != null) if (ModchartUtil.getDownscroll(instance)) ud = true;
+		if (instance != null)
+			if (ModchartUtil.getDownscroll(instance))
+				ud = true;
 
-		var value = currentValue % 360; //make sure to always use 0-360 values
+		var value = currentValue % 360; // make sure to always use 0-360 values
 
 		var retu_val:Float = 1;
 		var speedAffectM:Float = subValues.get("speedaffect").value;
@@ -140,19 +141,21 @@ class BlackSphereInvertModifier extends Modifier
 
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (variant) //make sure variant only gets applied when 1 or higger
+		if (variant) // make sure variant only gets applied when 1 or higger
 		{
-			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2)
+				yValue *= -1;
 		}
 		else
 		{
-			if (laneThing % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1)
+				yValue *= -1;
 		}
 
-		if (!ud) yValue *= -1;
+		if (!ud)
+			yValue *= -1;
 
 		retu_val += yValue * 0.125 * speedAffectM;
-
 
 		return curPos * retu_val;
 	}
@@ -173,13 +176,15 @@ class BlackSphereInvertModifier extends Modifier
 
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (variant) //make sure variant only gets applied when 1 or higger
+		if (variant) // make sure variant only gets applied when 1 or higger
 		{
-			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2)
+				yValue *= -1;
 		}
 		else
 		{
-			if (laneThing % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1)
+				yValue *= -1;
 		}
 
 		noteData.x += NoteMovement.arrowSizes[lane] * (laneThing % 2 == 0 ? 1 : -1) * invertValue;
@@ -196,19 +201,21 @@ class BlackSphereFlipModifier extends Modifier
 {
 	override public function setupSubValues()
 	{
-		baseValue = 1.0; //default set to skip math if value is default (1.0)
+		baseValue = 1.0; // default set to skip math if value is default (1.0)
 		currentValue = 1.0;
 		subValues.set("variant", new ModifierSubValue(0.0));
 		subValues.set("speedaffect", new ModifierSubValue(1.0));
 	}
 
-	//speed = curpos * currentValue (you could use noteDistToo but its a little more complex)
+	// speed = curpos * currentValue (you could use noteDistToo but its a little more complex)
 	override function curPosMath(lane:Int, curPos:Float, pf:Int):Float
 	{
 		var ud = false;
-        if (instance != null) if (ModchartUtil.getDownscroll(instance)) ud = true;
+		if (instance != null)
+			if (ModchartUtil.getDownscroll(instance))
+				ud = true;
 
-		var value = currentValue % 360; //make sure to always use 0-360 values
+		var value = currentValue % 360; // make sure to always use 0-360 values
 
 		var retu_val:Float = 1;
 		var speedAffectM:Float = subValues.get("speedaffect").value;
@@ -218,19 +225,21 @@ class BlackSphereFlipModifier extends Modifier
 
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (variant) //make sure variant only gets applied when 1 or higger
+		if (variant) // make sure variant only gets applied when 1 or higger
 		{
-			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2)
+				yValue *= -1;
 		}
 		else
 		{
-			if (laneThing % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1)
+				yValue *= -1;
 		}
 
-		if (!ud) yValue *= -1;
+		if (!ud)
+			yValue *= -1;
 
 		retu_val += yValue * 0.125 * speedAffectM;
-
 
 		return curPos * retu_val;
 	}
@@ -251,13 +260,15 @@ class BlackSphereFlipModifier extends Modifier
 
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (variant) //make sure variant only gets applied when 1 or higger
+		if (variant) // make sure variant only gets applied when 1 or higger
 		{
-			if (laneThing % 4 == 1 || laneThing % 4 == 2) yValue *= -1;
+			if (laneThing % 4 == 1 || laneThing % 4 == 2)
+				yValue *= -1;
 		}
 		else
 		{
-			if (laneThing % 2 == 1) yValue *= -1;
+			if (laneThing % 2 == 1)
+				yValue *= -1;
 		}
 
 		var newPos = FlxMath.remapToRange(laneThing, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
@@ -279,6 +290,7 @@ class HourGlassXModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.x += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
@@ -293,6 +305,7 @@ class HourGlassYModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.y += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
@@ -307,6 +320,7 @@ class HourGlassZModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.z += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
@@ -321,7 +335,8 @@ class HourGlassAngleModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)	
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angle += hourGlassMath() * (currentValue * -1);
 	}
@@ -335,6 +350,7 @@ class HourGlassAngleXModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angleX += hourGlassMath() * (currentValue * -1);
@@ -348,7 +364,8 @@ class HourGlassAngleYModifier extends FlipVert
 		subValues.set('start', new ModifierSubValue(420.0));
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
-		}
+	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angleY += hourGlassMath() * (currentValue * -1);
@@ -363,6 +380,7 @@ class HourGlassScaleModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleX += ((hourGlassMath() * (currentValue * -1)) - 1);
@@ -378,6 +396,7 @@ class HourGlassScaleXModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleX += ((hourGlassMath() * (currentValue * -1)) - 1);
@@ -392,6 +411,7 @@ class HourGlassScaleYModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleY += ((hourGlassMath() * (currentValue * -1)) - 1);
@@ -406,6 +426,7 @@ class HourGlassSkewModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewX += hourGlassMath() * (currentValue * -1);
@@ -421,6 +442,7 @@ class HourGlassSkewXModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewX += hourGlassMath() * (currentValue * -1);
@@ -435,6 +457,7 @@ class HourGlassSkewYModifier extends FlipVert
 		subValues.set('end', new ModifierSubValue(135.0));
 		subValues.set('offset', new ModifierSubValue(0.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewY += hourGlassMath() * (currentValue * -1);
@@ -448,6 +471,7 @@ class DigitalXModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.x += (digitalMath(curPos) * currentValue) * (NoteMovement.arrowSize / 2.0);
@@ -461,6 +485,7 @@ class DigitalYModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.y += (digitalMath(curPos) * currentValue) * (NoteMovement.arrowSize / 2.0);
@@ -474,6 +499,7 @@ class DigitalZModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.z += (digitalMath(curPos) * currentValue) * (NoteMovement.arrowSize / 2.0);
@@ -487,6 +513,7 @@ class DigitalAngleModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angle += digitalMath(curPos) * currentValue;
@@ -500,6 +527,7 @@ class DigitalAngleXModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angleX += digitalMath(curPos) * currentValue;
@@ -513,6 +541,7 @@ class DigitalAngleYModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.angleY += digitalMath(curPos) * currentValue;
@@ -526,6 +555,7 @@ class DigitalScaleModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleX += ((digitalMath(curPos) * currentValue) - 1);
@@ -540,6 +570,7 @@ class DigitalScaleXModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleX += ((digitalMath(curPos) * currentValue) - 1);
@@ -553,6 +584,7 @@ class DigitalScaleYModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.scaleY += ((digitalMath(curPos) * currentValue) - 1);
@@ -566,6 +598,7 @@ class DigitalSkewModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewX += (digitalMath(curPos) * currentValue);
@@ -580,6 +613,7 @@ class DigitalSkewXModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewX += (digitalMath(curPos) * currentValue);
@@ -593,6 +627,7 @@ class DigitalSkewYModifier extends FlipVert
 		subValues.set('mult', new ModifierSubValue(1.0));
 		subValues.set('steps', new ModifierSubValue(4.0));
 	}
+
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.skewY += (digitalMath(curPos) * currentValue);

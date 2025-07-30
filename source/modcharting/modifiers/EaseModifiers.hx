@@ -10,16 +10,26 @@ import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
 import objects.Note;
 
-class EaseXModifier extends Modifier
+class EaseModifier extends Modifier
 {
 	override function setupSubValues()
 	{
 		subValues.set('speed', new ModifierSubValue(1.0));
 	}
 
+	function easeMath(lane:Int)
+	{
+		return currentValue * (FlxMath.fastCos(((Conductor.songPosition * 0.001) +
+			((lane % NoteMovement.keyCount) * 0.2) * (10 / FlxG.height)) * (subValues.get('speed')
+			.value * 0.2)) * Note.swagWidth * 0.5);
+	}
+}
+
+class EaseXModifier extends EaseModifier
+{
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.x += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -28,16 +38,11 @@ class EaseXModifier extends Modifier
 	}
 }
 
-class EaseYModifier extends Modifier
+class EaseYModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.y += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -46,16 +51,11 @@ class EaseYModifier extends Modifier
 	}
 }
 
-class EaseZModifier extends Modifier
+class EaseZModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.z += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -64,16 +64,11 @@ class EaseZModifier extends Modifier
 	}
 }
 
-class EaseAngleModifier extends Modifier
+class EaseAngleModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.angleZ += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -82,17 +77,12 @@ class EaseAngleModifier extends Modifier
 	}
 }
 
-class EaseScaleModifier extends Modifier
+class EaseScaleModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
-		noteData.scaleY *= (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
+		noteData.scaleX += ((0.01 * easeMath(lane)) - 1);
+		noteData.scaleY += ((0.01 * easeMath(lane)) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -101,16 +91,11 @@ class EaseScaleModifier extends Modifier
 	}
 }
 
-class EaseScaleXModifier extends Modifier
+class EaseScaleXModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX *= (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
+		noteData.scaleX += ((0.01 * easeMath(lane)) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -119,16 +104,11 @@ class EaseScaleXModifier extends Modifier
 	}
 }
 
-class EaseScaleYModifier extends Modifier
+class EaseScaleYModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY *= (1 + ((currentValue * 0.01) * ModifierMath.Ease(lane, subValues.get('speed').value)));
+		noteData.scaleY += ((0.01 * easeMath(lane)) - 1);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -137,18 +117,12 @@ class EaseScaleYModifier extends Modifier
 	}
 }
 
-class EaseSkewModifier extends Modifier
+class EaseSkewModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
-
-		noteData.skewY += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.skewX += easeMath(lane);
+		noteData.skewY += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -157,16 +131,11 @@ class EaseSkewModifier extends Modifier
 	}
 }
 
-class EaseSkewXModifier extends Modifier
+class EaseSkewXModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.skewX += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -175,16 +144,11 @@ class EaseSkewXModifier extends Modifier
 	}
 }
 
-class EaseSkewYModifier extends Modifier
+class EaseSkewYModifier extends EaseModifier
 {
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += currentValue * ModifierMath.Ease(lane, subValues.get('speed').value);
+		noteData.skewY += easeMath(lane);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

@@ -186,3 +186,49 @@ class RotateStrumZModifier extends RotateModifier
 		strumRotatePivot(noteData, lane, "z");
 	}
 }
+
+// here i add custom modifiers, why? well its to make some cool modcharts shits -Ed
+
+class StrumAngleModifier extends Modifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var multiply = -1;
+		if (instance != null)
+			if (ModchartUtil.getDownscroll(instance))
+				multiply *= -1;
+		noteData.angle += (currentValue * multiply);
+		var laneShit = lane % NoteMovement.keyCount;
+		var offsetThing = 0.5;
+		var halfKeyCount = NoteMovement.keyCount / 2;
+		if (lane < halfKeyCount)
+		{
+			offsetThing = -0.5;
+			laneShit = lane + 1;
+		}
+		var distFromCenter = ((laneShit) - halfKeyCount) + offsetThing;
+		noteData.x += -distFromCenter * NoteMovement.arrowSize;
+
+		var q = SimpleQuaternion.fromEuler(90, 0, (currentValue * multiply)); // i think this is the right order???
+		noteData.x += q.x * distFromCenter * NoteMovement.arrowSize;
+		noteData.y += q.y * distFromCenter * NoteMovement.arrowSize;
+		noteData.z += q.z * distFromCenter * NoteMovement.arrowSize;
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		// noteData.angle += (subValues.get('y').value/2);
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
+	{
+		return [0, currentValue * -1];
+	}
+
+	override function reset()
+	{
+		super.reset();
+		currentValue = 0; // the code that stop the mod from running gets confused when it resets in the editor i guess??
+	}
+}
