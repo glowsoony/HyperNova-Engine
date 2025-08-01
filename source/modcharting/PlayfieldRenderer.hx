@@ -247,7 +247,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		var noteData:NotePositionData = NotePositionData.get();
 		noteData.setupNote(noteX, noteY, noteZ, lane, noteScaleX, noteScaleY, noteSkewX, noteSkewY, playfieldIndex, noteAlpha, curPos, noteDist,
-			incomingAngle[0], incomingAngle[1], notes.members[noteIndex].strumTime, noteIndex, note.members[noteIndex].isSustainNote);
+			incomingAngle[0], incomingAngle[1], notes.members[noteIndex].strumTime, noteIndex, notes.members[noteIndex].isSustainNote);
 		playfields[playfieldIndex].applyOffsets(noteData);
 		return noteData;
 	}

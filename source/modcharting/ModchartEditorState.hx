@@ -92,7 +92,12 @@ class ModchartEditorState extends MusicBeatState
 	// 	for (cls in CompileTime.getAllClasses('modcharting', true, modcharting.Modifier))
 	// 		cls
 	// ];
-	public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
+	//public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
+	public static var modifierList:Array<Class<Modifier>> = [
+		modcharting.modifiers.Rotate.RotateXModifier,
+		modcharting.modifiers.Rotate.RotateYModifier,
+		modcharting.modifiers.Rotate.RotateZModifier,
+	];
 	public static var easeList:Array<String> = ImprovedEases.easeList;
 
 	// used for indexing

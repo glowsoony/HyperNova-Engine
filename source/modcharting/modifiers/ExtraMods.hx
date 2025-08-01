@@ -99,9 +99,9 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 			var blend:Float = Math.abs(currentValue);
 			blend = FlxMath.bound(blend, 0, 1); // clamp
 
-			noteData.x = newPosition.x * blend;
-			noteData.y = newPosition.y * blend;
-			noteData.z = newPosition.z * blend;
+			noteData.x = (newPosition.x * blend) + noteData.x;
+			noteData.y = (newPosition.y * blend) + noteData.y;
+			noteData.z = (newPosition.z * blend) + noteData.z;
 		}
 	}
 
