@@ -10,7 +10,7 @@ import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
 import objects.Note;
 
-class EaseModifier extends Modifier
+class EaseMod extends Modifier
 {
 	override function setupSubValues()
 	{
@@ -25,7 +25,7 @@ class EaseModifier extends Modifier
 	}
 }
 
-class EaseXModifier extends EaseModifier
+class EaseXModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -38,7 +38,7 @@ class EaseXModifier extends EaseModifier
 	}
 }
 
-class EaseYModifier extends EaseModifier
+class EaseYModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -51,7 +51,7 @@ class EaseYModifier extends EaseModifier
 	}
 }
 
-class EaseZModifier extends EaseModifier
+class EaseZModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -64,7 +64,7 @@ class EaseZModifier extends EaseModifier
 	}
 }
 
-class EaseAngleModifier extends EaseModifier
+class EaseAngleModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -77,7 +77,7 @@ class EaseAngleModifier extends EaseModifier
 	}
 }
 
-class EaseScaleModifier extends EaseModifier
+class EaseScaleModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -91,7 +91,7 @@ class EaseScaleModifier extends EaseModifier
 	}
 }
 
-class EaseScaleXModifier extends EaseModifier
+class EaseScaleXModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -104,7 +104,7 @@ class EaseScaleXModifier extends EaseModifier
 	}
 }
 
-class EaseScaleYModifier extends EaseModifier
+class EaseScaleYModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -117,7 +117,7 @@ class EaseScaleYModifier extends EaseModifier
 	}
 }
 
-class EaseSkewModifier extends EaseModifier
+class EaseSkewModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -131,7 +131,7 @@ class EaseSkewModifier extends EaseModifier
 	}
 }
 
-class EaseSkewXModifier extends EaseModifier
+class EaseSkewXModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -144,7 +144,7 @@ class EaseSkewXModifier extends EaseModifier
 	}
 }
 
-class EaseSkewYModifier extends EaseModifier
+class EaseSkewYModifier extends EaseMod
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
