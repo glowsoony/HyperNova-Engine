@@ -224,7 +224,6 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Drunk.TanDrunkSkewModifier,
 		modcharting.modifiers.Drunk.TanDrunkSkewXModifier,
 		modcharting.modifiers.Drunk.TanDrunkSkewYModifier,
-		modcharting.modifiers.EaseModifiers.EaseModifier,
 		modcharting.modifiers.EaseModifiers.EaseXModifier,
 		modcharting.modifiers.EaseModifiers.EaseYModifier,
 		modcharting.modifiers.EaseModifiers.EaseZModifier,
