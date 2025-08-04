@@ -21,7 +21,7 @@ import modcharting.Modifier;
 	[UPDATE] SawTootahScale: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
  */
-class SawToothModifier extends Modifier
+class SawTooth extends Modifier
 {
 	override function setupSubValues()
 	{
@@ -35,7 +35,7 @@ class SawToothModifier extends Modifier
 	}
 }
 
-class SawToothXModifier extends SawToothModifier
+class SawToothXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -43,7 +43,7 @@ class SawToothXModifier extends SawToothModifier
 	}
 }
 
-class SawToothYModifier extends SawToothModifier
+class SawToothYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -51,7 +51,7 @@ class SawToothYModifier extends SawToothModifier
 	}
 }
 
-class SawToothZModifier extends SawToothModifier
+class SawToothZModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -59,7 +59,7 @@ class SawToothZModifier extends SawToothModifier
 	}
 }
 
-class SawToothAngleModifier extends SawToothModifier
+class SawToothAngleModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -67,7 +67,7 @@ class SawToothAngleModifier extends SawToothModifier
 	}
 }
 
-class SawToothAngleXModifier extends SawToothModifier
+class SawToothAngleXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -75,7 +75,7 @@ class SawToothAngleXModifier extends SawToothModifier
 	}
 }
 
-class SawToothAngleYModifier extends SawToothModifier
+class SawToothAngleYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -83,7 +83,7 @@ class SawToothAngleYModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleModifier extends SawToothModifier
+class SawToothScaleModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -92,7 +92,7 @@ class SawToothScaleModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleXModifier extends SawToothModifier
+class SawToothScaleXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -100,7 +100,7 @@ class SawToothScaleXModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleYModifier extends SawToothModifier
+class SawToothScaleYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -108,7 +108,7 @@ class SawToothScaleYModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewModifier extends SawToothModifier
+class SawToothSkewModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -117,7 +117,7 @@ class SawToothSkewModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewXModifier extends SawToothModifier
+class SawToothSkewXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -125,7 +125,7 @@ class SawToothSkewXModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewYModifier extends SawToothModifier
+class SawToothSkewYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
