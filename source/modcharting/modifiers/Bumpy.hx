@@ -66,7 +66,7 @@ class Bumpy extends Modifier
 		return currentValue * mathToUse;
 	}
 
-	function tanBumpyMath(curPos:Float, speed:Float):Float
+	function tanBumpyMath(curPos:Float):Float
 	{
 		var mathToUse:Float = 0.0;
 		var scrollSpeed:Float = renderer.getCorrectScrollSpeed();

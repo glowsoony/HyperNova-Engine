@@ -20,7 +20,7 @@ import modcharting.Modifier;
 	[UPDATE] ZigZagScale: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
  */
-class ZigZagModifier extends Modifier
+class ZigZag extends Modifier
 {
 	override function setupSubValues()
 	{
@@ -49,7 +49,7 @@ class ZigZagModifier extends Modifier
 	}
 }
 
-class ZigZagXModifier extends ZigZagModifier
+class ZigZagXModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -57,7 +57,7 @@ class ZigZagXModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagYModifier extends ZigZagModifier
+class ZigZagYModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -65,7 +65,7 @@ class ZigZagYModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagZModifier extends ZigZagModifier
+class ZigZagZModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -73,7 +73,7 @@ class ZigZagZModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagAngleModifier extends ZigZagModifier
+class ZigZagAngleModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -81,7 +81,7 @@ class ZigZagAngleModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagAngleXModifier extends ZigZagModifier
+class ZigZagAngleXModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -89,7 +89,7 @@ class ZigZagAngleXModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagAngleYModifier extends ZigZagModifier
+class ZigZagAngleYModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -97,7 +97,7 @@ class ZigZagAngleYModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagScaleModifier extends ZigZagModifier
+class ZigZagScaleModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -106,7 +106,7 @@ class ZigZagScaleModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagScaleXModifier extends ZigZagModifier
+class ZigZagScaleXModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -114,7 +114,7 @@ class ZigZagScaleXModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagScaleYModifier extends ZigZagModifier
+class ZigZagScaleYModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -122,7 +122,7 @@ class ZigZagScaleYModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagSkewModifier extends ZigZagModifier
+class ZigZagSkewModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -131,7 +131,7 @@ class ZigZagSkewModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagSkewXModifier extends ZigZagModifier
+class ZigZagSkewXModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -139,7 +139,7 @@ class ZigZagSkewXModifier extends ZigZagModifier
 	}
 }
 
-class ZigZagSkewYModifier extends ZigZagModifier
+class ZigZagSkewYModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

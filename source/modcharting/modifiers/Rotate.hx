@@ -5,6 +5,7 @@ import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
 import modcharting.PlayfieldRenderer.StrumNoteType;
 import lime.math.Vector2;
+import openfl.geom.Vector3D;
 
 // EDWHAK SI VES ESTO ENTIENDE QUE NO SE SI FUNCIONA CORRECTAMENTE.
 // CHANGE LOG (the changes to modifiers)
@@ -31,29 +32,34 @@ class Rotate extends Modifier
 	var pivotPoint:Vector2 = new Vector2(0, 0);
 	var point:Vector2 = new Vector2(0, 0);
 
-	function noteGetPivot(noteData:NotePositionData, lane:Int, type:String = "x")
+	override function setupSubValues()
 	{
-		switch (type)
-		{
-			case "x":
-				return NoteMovement.defaultStrumX[lane];
-			case "y":
-				return (NoteMovement.defaultStrumY[lane] + (NoteMovement.arrowSizes[lane] / 2));
-			case "z":
-				return 0.0;
-			default:
-				return 0.0;
-		}
+		setSubMod("offset_x", 0.0);
+		setSubMod("offset_y", 0.0);
+		setSubMod("offset_z", 0.0);
 	}
 
-	function strumGetPivot(noteData:NotePositionData, lane:Int, type:String = "x")
+	function getPivot(noteData:NotePositionData, lane:Int, type:String = "x")
 	{
 		switch (type)
 		{
 			case "x":
-				return (NoteMovement.defaultStrumX[lane] + (NoteMovement.arrowSizes[lane] * 1.5)) + getSubMod("offset_x");
+				var r:Float = 0;
+					
+				//1 should return oponent's midPoint, while 2 should return player's
+				var downStrumPosition:Float = NoteMovement.defaultStrumX[
+					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2)) - 1
+				];
+				var upStrumPosition:Float = NoteMovement.defaultStrumX[
+					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2))
+				];
+
+				var midPosition = (upStrumPosition - downStrumPosition) / 2;
+				r += downStrumPosition + midPosition;
+				r += getSubMod("offset_x");
+				return r;
 			case "y":
-				return (FlxG.height / 2) - (NoteMovement.defaultHeight[lane] / 2) + getSubMod("offset_y");
+				return (FlxG.height/2) + getSubMod("offset_y");
 			case "z":
 				return 0.0 + getSubMod("offset_z");
 			default:
@@ -61,31 +67,31 @@ class Rotate extends Modifier
 		}
 	}
 
-	function noteRotatePivot(noteData:NotePositionData, lane:Int, type:String = "x", angle:Null<Float> = null)
+	function rotatePivot(noteData:NotePositionData, lane:Int, pf:Int, type:String = "x")
 	{
-		if (angle == null) angle = currentValue;
-		if (angle % 360 == 0) return;
+		var angle:Float = currentValue;
+
 		switch (type)
 		{
 			case "z":
-				pivotPoint.x = noteGetPivot(noteData, lane, "x");
-				pivotPoint.y = noteGetPivot(noteData, lane, "y");
+				pivotPoint.x = getPivot(noteData, lane, "x");
+				pivotPoint.y = getPivot(noteData, lane, "y");
 				point.x = noteData.x;
 				point.y = noteData.y;
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
 				noteData.x = output.x;
 				noteData.y = output.y;
 			case "y":
-				pivotPoint.x = noteGetPivot(noteData, lane, "x");
-				pivotPoint.y = noteGetPivot(noteData, lane, "z");
+				pivotPoint.x = getPivot(noteData, lane, "x");
+				pivotPoint.y = getPivot(noteData, lane, "z");
 				point.x = noteData.x;
 				point.y = noteData.z;
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
 				noteData.x = output.x;
 				noteData.z = output.y;
 			case "x":
-				pivotPoint.x = noteGetPivot(noteData, lane, "z");
-				pivotPoint.y = noteGetPivot(noteData, lane, "y");
+				pivotPoint.x = getPivot(noteData, lane, "z");
+				pivotPoint.y = getPivot(noteData, lane, "y");
 				point.x = noteData.z;
 				point.y = noteData.y;
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
@@ -93,98 +99,84 @@ class Rotate extends Modifier
 				noteData.y = output.y;
 		}
 	}
+}
 
-	function strumRotatePivot(noteData:NotePositionData, lane:Int, type:String = "x", angle:Null<Float> = null)
+class RotateModifier extends Modifier
+{
+	override function setupSubValues()
 	{
-		if (angle == null) angle = currentValue;
-		if (angle % 360 == 0) return;
-		switch (type)
-		{
-			case "z":
-				pivotPoint.x = strumGetPivot(noteData, lane, "x");
-				pivotPoint.y = strumGetPivot(noteData, lane, "y");
-				point.x = noteData.x;
-				point.y = noteData.y;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
-				noteData.x = output.x;
-				noteData.y = output.y;
-			case "y":
-				pivotPoint.x = strumGetPivot(noteData, lane, "x");
-				pivotPoint.y = strumGetPivot(noteData, lane, "z");
-				point.x = noteData.x;
-				point.y = noteData.z;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
-				noteData.x = output.x;
-				noteData.z = output.y;
-			case "x":
-				pivotPoint.x = strumGetPivot(noteData, lane, "z");
-				pivotPoint.y = strumGetPivot(noteData, lane, "y");
-				point.x = noteData.z;
-				point.y = noteData.y;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
-				noteData.z = output.x;
-				noteData.y = output.y;
-		}
+		baseValue = 0.0;
+		currentValue = 1.0;
+
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 0.0);
+	}
+
+	public function getOrigin(noteData:NotePositionData):Vector3D {
+		var fixedLane = Math.round(NoteMovement.totalKeyCount / 2);
+		return new Vector3D(NoteMovement.defaultStrumX[fixedLane], FlxG.height / 2);
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var angleX = getSubMod("x");
+		var angleY = getSubMod("y");
+		var angleZ = getSubMod("z");
+
+		var curData:Vector3D = new Vector3D(noteData.x, noteData.y, noteData.z);
+		var data:Vector3D = getOrigin(noteData);
+		curData.decrementBy(data);
+
+		var finalData = ModchartUtil.rotate3DVector(curData, angleX, angleY, angleZ);
+
+		noteData.x += finalData.x;
+		noteData.y += finalData.y;
+		noteData.z += finalData.z;
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
 	}
 }
 
 class RotateXModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "x");
+		rotatePivot(noteData, lane, pf, "x");
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "x");
+		rotatePivot(noteData, lane, pf, "x");
 	}
 }
 
 class RotateYModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "y");
+		rotatePivot(noteData, lane, pf, "y");
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "y");
+		rotatePivot(noteData, lane, pf, "y");
 	}
 }
 
 class RotateZModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "z");
+		rotatePivot(noteData, lane, pf, "z");
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "z");
+		rotatePivot(noteData, lane, pf, "z");
 	}
 }
 
@@ -192,7 +184,7 @@ class RotateNoteXModifier extends Rotate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "x");
+		rotatePivot(noteData, lane, pf, "x");
 	}
 }
 
@@ -200,7 +192,7 @@ class RotateNoteYModifier extends Rotate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "y");
+		rotatePivot(noteData, lane, pf, "y");
 	}
 }
 
@@ -208,54 +200,54 @@ class RotateNoteZModifier extends Rotate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteRotatePivot(noteData, lane, "z");
+		rotatePivot(noteData, lane, pf, "z");
 	}
 }
 
 class RotateStrumXModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "x");
+		rotatePivot(noteData, lane, pf, "x");
 	}
 }
 
 class RotateStrumYModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "y");
+		rotatePivot(noteData, lane, pf, "y");
 	}
 }
 
 class RotateStrumZModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		setSubMod("offset_x", 1.0);
-		setSubMod("offset_y", 1.0);
-		setSubMod("offset_z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		strumRotatePivot(noteData, lane, "z");
+		rotatePivot(noteData, lane, pf, "z");
 	}
 }
+
+// class RotatingYModifier extends Rotate
+// {
+// 	override function setupSubValues()
+// 	{
+// 		setSubMod("affects_strum", 0.0);
+// 	}
+	
+// 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+// 	{
+// 		var curVal:Float = currentValue * curPos / 180;
+// 		noteRotatePivot(noteData, lane, "y", curVal);
+// 	}
+
+// 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+// 	{
+// 		if (currentValue % 360 == 0 || getSubMod("affects_strum") == 0) return;
+// 		var curVal:Float = currentValue * 1 / 180;
+// 		strumRotatePivot(noteData, lane, "y", curVal);
+// 	}
+// }
 
 // here i add custom modifiers, why? well its to make some cool modcharts shits -Ed
 

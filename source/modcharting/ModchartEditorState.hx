@@ -36,6 +36,7 @@ import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
 import openfl.net.FileReference;
 import ui.*;
+import haxe.rtti.Meta;
 
 using StringTools;
 
@@ -87,13 +88,223 @@ class ModchartEditorState extends MusicBeatState
 	// public static var modifierList:Array<Class<Modifier>> = ModchartMacros.getModifierList();
 	// getAllClasses output its a haxe.ds.List so thats why im using another loop
 	// ALSO, THE LIST IS UNSORTED !!
-	// public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
 	// public static var modifierList:Array<Class<Modifier>> = [
 	// 	for (cls in CompileTime.getAllClasses('modcharting', true, modcharting.Modifier))
 	// 		cls
 	// ];
 	//public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
+	// public static var modifierList:Array<Class<Modifier>> = (function() {
+	// 	var modifiers:Array<Class<Modifier>> = [];
+	// 	var packagePath = "modcharting.modifiers";
+		
+	// 	#if haxe_boot
+	// 	var classNames:Array<String> = Reflect.field(Type, "allClassesInPackage").get(packagePath);
+	// 	#else
+	// 	var classNames:Array<String> = [];
+	// 	#end
+
+	// 	for (className in classNames) {
+	// 		if (className.indexOf("Modifier") != -1) {
+	// 			var cls = Type.resolveClass(packagePath + "." + className);
+				
+	// 			if (cls != null && Std.is(Type.createEmptyInstance(cls), Modifier)) {
+	// 				modifiers.push(cast cls);
+	// 			}
+	// 		}
+	// 	}
+	// 	return modifiers;
+	// })();
+
 	public static var modifierList:Array<Class<Modifier>> = [
+		modcharting.modifiers.Attenuate.AttenuateXModifier,
+		modcharting.modifiers.Attenuate.AttenuateYModifier,
+		modcharting.modifiers.Attenuate.AttenuateZModifier,
+		modcharting.modifiers.Attenuate.AttenuateAngleModifier,
+		modcharting.modifiers.Attenuate.AttenuateAngleXModifier,
+		modcharting.modifiers.Attenuate.AttenuateAngleYModifier,
+		modcharting.modifiers.Attenuate.AttenuateScaleModifier,
+		modcharting.modifiers.Attenuate.AttenuateScaleXModifier,
+		modcharting.modifiers.Attenuate.AttenuateScaleYModifier,
+		modcharting.modifiers.Attenuate.AttenuateSkewModifier,
+		modcharting.modifiers.Attenuate.AttenuateSkewXModifier,
+		modcharting.modifiers.Attenuate.AttenuateSkewYModifier,
+		modcharting.modifiers.Beat.BeatXModifier,
+		modcharting.modifiers.Beat.BeatYModifier,
+		modcharting.modifiers.Beat.BeatZModifier,
+		modcharting.modifiers.Beat.BeatAngleModifier,
+		modcharting.modifiers.Beat.BeatAngleXModifier,
+		modcharting.modifiers.Beat.BeatAngleYModifier,
+		modcharting.modifiers.Beat.BeatScaleModifier,
+		modcharting.modifiers.Beat.BeatScaleXModifier,
+		modcharting.modifiers.Beat.BeatScaleYModifier,
+		modcharting.modifiers.Beat.BeatSkewModifier,
+		modcharting.modifiers.Beat.BeatSkewXModifier,
+		modcharting.modifiers.Beat.BeatSkewYModifier,
+		modcharting.modifiers.Bounce.BounceXModifier,
+		modcharting.modifiers.Bounce.BounceYModifier,
+		modcharting.modifiers.Bounce.BounceZModifier,
+		modcharting.modifiers.Bounce.BounceAngleModifier,
+		modcharting.modifiers.Bounce.BounceAngleXModifier,
+		modcharting.modifiers.Bounce.BounceAngleYModifier,
+		modcharting.modifiers.Bounce.BounceScaleModifier,
+		modcharting.modifiers.Bounce.BounceScaleXModifier,
+		modcharting.modifiers.Bounce.BounceScaleYModifier,
+		modcharting.modifiers.Bounce.BounceSkewModifier,
+		modcharting.modifiers.Bounce.BounceSkewXModifier,
+		modcharting.modifiers.Bounce.BounceSkewYModifier,
+		modcharting.modifiers.Bounce.TanBounceXModifier,
+		modcharting.modifiers.Bounce.TanBounceYModifier,
+		modcharting.modifiers.Bounce.TanBounceZModifier,
+		modcharting.modifiers.Bounce.TanBounceAngleModifier,
+		modcharting.modifiers.Bounce.TanBounceAngleXModifier,
+		modcharting.modifiers.Bounce.TanBounceAngleYModifier,
+		modcharting.modifiers.Bounce.TanBounceScaleModifier,
+		modcharting.modifiers.Bounce.TanBounceScaleXModifier,
+		modcharting.modifiers.Bounce.TanBounceScaleYModifier,
+		modcharting.modifiers.Bounce.TanBounceSkewModifier,
+		modcharting.modifiers.Bounce.TanBounceSkewXModifier,
+		modcharting.modifiers.Bounce.TanBounceSkewYModifier,
+		modcharting.modifiers.Bumpy.BumpyModifier,
+		modcharting.modifiers.Bumpy.BumpyXModifier,
+		modcharting.modifiers.Bumpy.BumpyYModifier,
+		modcharting.modifiers.Bumpy.BumpyAngleModifier,
+		modcharting.modifiers.Bumpy.BumpyAngleXModifier,
+		modcharting.modifiers.Bumpy.BumpyAngleYModifier,
+		modcharting.modifiers.Bumpy.BumpyScaleModifier,
+		modcharting.modifiers.Bumpy.BumpyScaleXModifier,
+		modcharting.modifiers.Bumpy.BumpyScaleYModifier,
+		modcharting.modifiers.Bumpy.BumpySkewModifier,
+		modcharting.modifiers.Bumpy.BumpySkewXModifier,
+		modcharting.modifiers.Bumpy.BumpySkewYModifier,
+		modcharting.modifiers.Bumpy.TanBumpyModifier,
+		modcharting.modifiers.Bumpy.TanBumpyXModifier,
+		modcharting.modifiers.Bumpy.TanBumpyYModifier,
+		modcharting.modifiers.Bumpy.TanBumpyAngleModifier,
+		modcharting.modifiers.Bumpy.TanBumpyAngleXModifier,
+		modcharting.modifiers.Bumpy.TanBumpyAngleYModifier,
+		modcharting.modifiers.Bumpy.TanBumpyScaleModifier,
+		modcharting.modifiers.Bumpy.TanBumpyScaleXModifier,
+		modcharting.modifiers.Bumpy.TanBumpyScaleYModifier,
+		modcharting.modifiers.Bumpy.TanBumpySkewModifier,
+		modcharting.modifiers.Bumpy.TanBumpySkewXModifier,
+		modcharting.modifiers.Bumpy.TanBumpySkewYModifier,
+		modcharting.modifiers.Confusion.AngleModifier,
+		modcharting.modifiers.Confusion.AngleXModifier,
+		modcharting.modifiers.Confusion.AngleYModifier,
+		modcharting.modifiers.Confusion.ConfusionOffsetModifier,
+		modcharting.modifiers.Confusion.ConfusionOffsetXModifier,
+		modcharting.modifiers.Confusion.ConfusionOffsetYModifier,
+		modcharting.modifiers.Confusion.ConfusionModifier,
+		modcharting.modifiers.Confusion.ConfusionXModifier,
+		modcharting.modifiers.Confusion.ConfusionYModifier,
+		modcharting.modifiers.Confusion.DizzyModifier,
+		modcharting.modifiers.Confusion.TwirlModifier,
+		modcharting.modifiers.Confusion.RollModifier,
+		modcharting.modifiers.Drunk.DrunkXModifier,
+		modcharting.modifiers.Drunk.DrunkYModifier,
+		modcharting.modifiers.Drunk.DrunkZModifier,
+		modcharting.modifiers.Drunk.DrunkAngleModifier,
+		modcharting.modifiers.Drunk.DrunkAngleXModifier,
+		modcharting.modifiers.Drunk.DrunkAngleYModifier,
+		modcharting.modifiers.Drunk.DrunkScaleModifier,
+		modcharting.modifiers.Drunk.DrunkScaleXModifier,
+		modcharting.modifiers.Drunk.DrunkScaleYModifier,
+		modcharting.modifiers.Drunk.DrunkSkewModifier,
+		modcharting.modifiers.Drunk.DrunkSkewXModifier,
+		modcharting.modifiers.Drunk.DrunkSkewYModifier,
+		modcharting.modifiers.Drunk.TanDrunkXModifier,
+		modcharting.modifiers.Drunk.TanDrunkYModifier,
+		modcharting.modifiers.Drunk.TanDrunkZModifier,
+		modcharting.modifiers.Drunk.TanDrunkAngleModifier,
+		modcharting.modifiers.Drunk.TanDrunkAngleXModifier,
+		modcharting.modifiers.Drunk.TanDrunkAngleYModifier,
+		modcharting.modifiers.Drunk.TanDrunkScaleModifier,
+		modcharting.modifiers.Drunk.TanDrunkScaleXModifier,
+		modcharting.modifiers.Drunk.TanDrunkScaleYModifier,
+		modcharting.modifiers.Drunk.TanDrunkSkewModifier,
+		modcharting.modifiers.Drunk.TanDrunkSkewXModifier,
+		modcharting.modifiers.Drunk.TanDrunkSkewYModifier,
+		modcharting.modifiers.EaseModifiers.EaseModifier,
+		modcharting.modifiers.EaseModifiers.EaseXModifier,
+		modcharting.modifiers.EaseModifiers.EaseYModifier,
+		modcharting.modifiers.EaseModifiers.EaseZModifier,
+		modcharting.modifiers.EaseModifiers.EaseAngleModifier,
+		modcharting.modifiers.EaseModifiers.EaseScaleModifier,
+		modcharting.modifiers.EaseModifiers.EaseScaleXModifier,
+		modcharting.modifiers.EaseModifiers.EaseScaleYModifier,
+		modcharting.modifiers.EaseModifiers.EaseSkewModifier,
+		modcharting.modifiers.EaseModifiers.EaseSkewXModifier,
+		modcharting.modifiers.EaseModifiers.EaseSkewYModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveXModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveYModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveZModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveAngleModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveScaleModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveScaleXModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveScaleYModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveSkewModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveSkewXModifier,
+		modcharting.modifiers.EaseModifiers.EaseCurveSkewYModifier,
+		modcharting.modifiers.ExtraMods.ShakyNotesModifier,
+		modcharting.modifiers.ExtraMods.ShakeNotesModifier,
+		modcharting.modifiers.ExtraMods.OrientModifier,
+		modcharting.modifiers.ExtraMods.ArrowPathModifier,
+		modcharting.modifiers.ExtraMods.CustomPathModifier,
+		modcharting.modifiers.ExtraMods.SpiralHoldsModifier,
+		modcharting.modifiers.FlipVert.FlipModifier,
+		modcharting.modifiers.FlipVert.InvertModifier,
+		modcharting.modifiers.FlipVert.VideoGamesModifier,
+		modcharting.modifiers.FlipVert.InvertSineModifier,
+		modcharting.modifiers.FlipVert.BlackSphereInvertModifier,
+		modcharting.modifiers.FlipVert.BlackSphereFlipModifier,
+		modcharting.modifiers.FlipVert.HourGlassXModifier,
+		modcharting.modifiers.FlipVert.HourGlassYModifier,
+		modcharting.modifiers.FlipVert.HourGlassZModifier,
+		modcharting.modifiers.FlipVert.HourGlassAngleModifier,
+		modcharting.modifiers.FlipVert.HourGlassAngleXModifier,
+		modcharting.modifiers.FlipVert.HourGlassAngleYModifier,
+		modcharting.modifiers.FlipVert.HourGlassScaleModifier,
+		modcharting.modifiers.FlipVert.HourGlassScaleXModifier,
+		modcharting.modifiers.FlipVert.HourGlassScaleYModifier,
+		modcharting.modifiers.FlipVert.HourGlassSkewModifier,
+		modcharting.modifiers.FlipVert.HourGlassSkewXModifier,
+		modcharting.modifiers.FlipVert.HourGlassSkewYModifier,
+		modcharting.modifiers.FlipVert.DigitalXModifier,
+		modcharting.modifiers.FlipVert.DigitalYModifier,
+		modcharting.modifiers.FlipVert.DigitalZModifier,
+		modcharting.modifiers.FlipVert.DigitalAngleModifier,
+		modcharting.modifiers.FlipVert.DigitalAngleXModifier,
+		modcharting.modifiers.FlipVert.DigitalAngleYModifier,
+		modcharting.modifiers.FlipVert.DigitalScaleModifier,
+		modcharting.modifiers.FlipVert.DigitalScaleXModifier,
+		modcharting.modifiers.FlipVert.DigitalScaleYModifier,
+		modcharting.modifiers.FlipVert.DigitalSkewModifier,
+		modcharting.modifiers.FlipVert.DigitalSkewXModifier,
+		modcharting.modifiers.FlipVert.DigitalSkewYModifier,
+		modcharting.modifiers.Incoming.LinearXModifier,
+		modcharting.modifiers.Incoming.LinearYModifier,
+		modcharting.modifiers.Incoming.LinearZModifier,
+		modcharting.modifiers.Incoming.LinearScaleModifier,
+		modcharting.modifiers.Incoming.LinearScaleXModifier,
+		modcharting.modifiers.Incoming.LinearScaleYModifier,
+		modcharting.modifiers.Incoming.LinearSkewModifier,
+		modcharting.modifiers.Incoming.LinearSkewXModifier,
+		modcharting.modifiers.Incoming.LinearSkewYModifier,
+		modcharting.modifiers.Incoming.CircXModifier,
+		modcharting.modifiers.Incoming.CircYModifier,
+		modcharting.modifiers.Incoming.CircZModifier,
+		modcharting.modifiers.Incoming.CircAngleModifier,
+		modcharting.modifiers.Incoming.CircAngleXModifier,
+		modcharting.modifiers.Incoming.CircAngleYModifier,
+		modcharting.modifiers.Incoming.CircScaleModifier,
+		modcharting.modifiers.Incoming.CircScaleXModifier,
+		modcharting.modifiers.Incoming.CircScaleYModifier,
+		modcharting.modifiers.Incoming.CircSkewModifier,
+		modcharting.modifiers.Incoming.CircSkewXModifier,
+		modcharting.modifiers.Incoming.CircSkewYModifier,
+		modcharting.modifiers.Incoming.IncomingAngleModifier,
+		modcharting.modifiers.Rotate.RotateModifier,
 		modcharting.modifiers.Rotate.RotateXModifier,
 		modcharting.modifiers.Rotate.RotateYModifier,
 		modcharting.modifiers.Rotate.RotateZModifier,
@@ -1451,7 +1662,7 @@ class ModchartEditorState extends MusicBeatState
 		var modClassList:Array<String> = [];
 		for (i in 0...modifierList.length)
 		{
-			modClassList.push(Std.string(modifierList[i]).replace("modcharting.", ""));
+			modClassList.push(Std.string(modifierList[i]).replace("modcharting.modifiers", ""));
 		}
 
 		var modClassDropDown = new PsychUIDropDownMenu(modClassInputText.x, modClassInputText.y + 30, modClassList, function(id:Int, mod:String)

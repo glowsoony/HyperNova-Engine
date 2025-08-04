@@ -1,5 +1,34 @@
 package modcharting.modifiers;
 
+import flixel.FlxG;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
+import haxe.ds.List;
+import lime.math.Vector4;
+import modcharting.PlayfieldRenderer.StrumNoteType;
+//import modcharting.modifiers.*; // so this should work?
+import objects.Note;
+import openfl.geom.Vector3D;
+import states.PlayState;
+import modcharting.Modifier;
+
+class TimeVector extends Vector4
+{
+	public var startDist:Float;
+	public var endDist:Float;
+	public var next:TimeVector;
+
+	public function new(x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0)
+	{
+		super(x, y, z, w);
+		startDist = 0.0;
+		endDist = 0.0;
+		next = null;
+	}
+}
+
 class ShakyNotesModifier extends Modifier
 {
 	override function setupSubValues()
@@ -99,9 +128,9 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 			var blend:Float = Math.abs(currentValue);
 			blend = FlxMath.bound(blend, 0, 1); // clamp
 
-			noteData.x = (newPosition.x * blend) + noteData.x;
-			noteData.y = (newPosition.y * blend) + noteData.y;
-			noteData.z = (newPosition.z * blend) + noteData.z;
+			noteData.x = (newPosition.x * blend);
+			noteData.y = (newPosition.y * blend);
+			noteData.z = (newPosition.z * blend);
 		}
 	}
 

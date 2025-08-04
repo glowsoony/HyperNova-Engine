@@ -20,7 +20,7 @@ import modcharting.Modifier;
 	[UPDATE] TornadoScale && TanTornadoScale: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
  */
-class TornadoModifier extends Modifier
+class Tornado extends Modifier
 {
 	override function setupSubValues()
 	{
@@ -53,7 +53,7 @@ class TornadoModifier extends Modifier
 	}
 }
 
-class TornadoXModifier extends Modifier
+class TornadoXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -61,7 +61,7 @@ class TornadoXModifier extends Modifier
 	}
 }
 
-class TornadoYModifier extends Modifier
+class TornadoYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -69,7 +69,7 @@ class TornadoYModifier extends Modifier
 	}
 }
 
-class TornadoZModifier extends Modifier
+class TornadoZModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -77,7 +77,7 @@ class TornadoZModifier extends Modifier
 	}
 }
 
-class TornadoAngleModifier extends Modifier
+class TornadoAngleModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -85,7 +85,7 @@ class TornadoAngleModifier extends Modifier
 	}
 }
 
-class TornadoScaleModifier extends Modifier
+class TornadoScaleModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -94,7 +94,7 @@ class TornadoScaleModifier extends Modifier
 	}
 }
 
-class TornadoScaleXModifier extends Modifier
+class TornadoScaleXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -102,7 +102,7 @@ class TornadoScaleXModifier extends Modifier
 	}
 }
 
-class TornadoScaleYModifier extends Modifier
+class TornadoScaleYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -110,7 +110,7 @@ class TornadoScaleYModifier extends Modifier
 	}
 }
 
-class TornadoSkewModifier extends Modifier
+class TornadoSkewModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -119,7 +119,7 @@ class TornadoSkewModifier extends Modifier
 	}
 }
 
-class TornadoSkewXModifier extends Modifier
+class TornadoSkewXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -127,7 +127,7 @@ class TornadoSkewXModifier extends Modifier
 	}
 }
 
-class TornadoSkewYModifier extends Modifier
+class TornadoSkewYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -135,7 +135,7 @@ class TornadoSkewYModifier extends Modifier
 	}
 }
 
-class TanTornadoModifier extends Modifier
+class TanTornadoModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -143,7 +143,7 @@ class TanTornadoModifier extends Modifier
 	}
 }
 
-class TanTornadoYModifier extends Modifier
+class TanTornadoYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -151,7 +151,7 @@ class TanTornadoYModifier extends Modifier
 	}
 }
 
-class TanTornadoZModifier extends Modifier
+class TanTornadoZModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -159,7 +159,7 @@ class TanTornadoZModifier extends Modifier
 	}
 }
 
-class TanTornadoAngleModifier extends Modifier
+class TanTornadoAngleModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -167,7 +167,7 @@ class TanTornadoAngleModifier extends Modifier
 	}
 }
 
-class TanTornadoScaleModifier extends Modifier
+class TanTornadoScaleModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -176,7 +176,7 @@ class TanTornadoScaleModifier extends Modifier
 	}
 }
 
-class TanTornadoScaleXModifier extends Modifier
+class TanTornadoScaleXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -184,7 +184,7 @@ class TanTornadoScaleXModifier extends Modifier
 	}
 }
 
-class TanTornadoScaleYModifier extends Modifier
+class TanTornadoScaleYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -192,7 +192,7 @@ class TanTornadoScaleYModifier extends Modifier
 	}
 }
 
-class TanTornadoSkewModifier extends Modifier
+class TanTornadoSkewModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -201,7 +201,7 @@ class TanTornadoSkewModifier extends Modifier
 	}
 }
 
-class TanTornadoSkewXModifier extends Modifier
+class TanTornadoSkewXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -209,7 +209,7 @@ class TanTornadoSkewXModifier extends Modifier
 	}
 }
 
-class TanTornadoSkewYModifier extends Modifier
+class TanTornadoSkewYModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

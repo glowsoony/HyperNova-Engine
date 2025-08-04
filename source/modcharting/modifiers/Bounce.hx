@@ -172,7 +172,7 @@ class BounceScaleModifier extends Bounce
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += bounce(curPos) * 0.01;
+			noteData.scaleX += bounce(0) * 0.01;
 		if (subValues.get("useAlt").value >= 0.5)
 			noteData.scaleY += bounce(0) * 0.01;
 	}
