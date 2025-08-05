@@ -62,7 +62,7 @@ class Tornado extends Modifier
 		var daCurPos = curPos + getSubMod('offset') * (ud ? -1 : 1);
 		var playerColumn = lane % NoteMovement.keyCount;
 		var columnPhaseShift = playerColumn * Math.PI / 3;
-		var phaseShift = (daCurPos / 135) * getSubValue('speed') * 0.2;
+		var phaseShift = (daCurPos / 135) * getSubMod('speed') * 0.2;
 		var returnReceptorToZeroOffsetX = (-Math.tan(-columnPhaseShift) + 1) / 2 * Note.swagWidth * 3;
 		var offsetX = (-Math.tan((phaseShift - columnPhaseShift)) + 1) / 2 * Note.swagWidth * 3 - returnReceptorToZeroOffsetX;
 
@@ -152,7 +152,7 @@ class TornadoSkewYModifier extends Tornado
 	}
 }
 
-class TanTornadoModifier extends Tornado
+class TanTornadoXModifier extends Tornado
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

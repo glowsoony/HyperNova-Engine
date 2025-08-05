@@ -141,7 +141,7 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Scroll.ReceptorScrollModifier,
 
 		modcharting.modifiers.Stealth.AlphaModifier,modcharting.modifiers.Stealth.NoteAlphaModifier,modcharting.modifiers.Stealth.StrumAlphaModifier,
-		modcharting.modifiers.Stealth.StealthAngleModifier,modcharting.modifiers.Stealth.DarkModifier,modcharting.modifiers.Stealth.FlashModifier,
+		modcharting.modifiers.Stealth.StealthModifier,modcharting.modifiers.Stealth.DarkModifier,modcharting.modifiers.Stealth.FlashModifier,
 		modcharting.modifiers.Stealth.StealthColorModifier,modcharting.modifiers.Stealth.DarkColorModifier,modcharting.modifiers.Stealth.FlashColorModifier,
 		modcharting.modifiers.Stealth.SuddenModifier,modcharting.modifiers.Stealth.HiddenModifier,modcharting.modifiers.Stealth.VanishModifier,modcharting.modifiers.Stealth.BlinkModifier,
 
@@ -169,7 +169,7 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Reverse.AlternateModifier,
 
 		modcharting.modifiers.Rotate.RotateModifier,modcharting.modifiers.Rotate.NoteRotateModifier,modcharting.modifiers.Rotate.StrumRotateModifier,
-		modcharting.modifiers.Rotate.RotateFieldModifier,modcharting.modifiers.Rotate.StrumLineRotateModifier,modcharting.modifiers.Rotate.RotateField3DModifier,
+		modcharting.modifiers.Rotate.RotateFieldsModifier,modcharting.modifiers.Rotate.StrumLineRotateModifier,modcharting.modifiers.Rotate.RotateFields3DModifier,
 
 		modcharting.modifiers.Drunk.DrunkXModifier,modcharting.modifiers.Drunk.DrunkYModifier,modcharting.modifiers.Drunk.DrunkZModifier,
 		modcharting.modifiers.Drunk.DrunkAngleModifier,modcharting.modifiers.Drunk.DrunkAngleXModifier,modcharting.modifiers.Drunk.DrunkAngleYModifier,
@@ -181,11 +181,11 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Drunk.TanDrunkSkewModifier,modcharting.modifiers.Drunk.TanDrunkSkewXModifier,modcharting.modifiers.Drunk.TanDrunkSkewYModifier,
 
 		modcharting.modifiers.Tipsy.TipsyXModifier,modcharting.modifiers.Tipsy.TipsyYModifier,modcharting.modifiers.Tipsy.TipsyZModifier,
-		modcharting.modifiers.Tipsy.TipsyAngleModifier,modcharting.modifiers.Tipsy.TipsyAngleXModifier,modcharting.modifiers.Tipsy.TipsyAngleYModifier,
+		modcharting.modifiers.Tipsy.TipsyAngleModifier,
 		modcharting.modifiers.Tipsy.TipsyScaleModifier,modcharting.modifiers.Tipsy.TipsyScaleXModifier,modcharting.modifiers.Tipsy.TipsyScaleYModifier,
 		modcharting.modifiers.Tipsy.TipsySkewModifier,modcharting.modifiers.Tipsy.TipsySkewXModifier,modcharting.modifiers.Tipsy.TipsySkewYModifier,
 		modcharting.modifiers.Tipsy.TanTipsyXModifier,modcharting.modifiers.Tipsy.TanTipsyYModifier,modcharting.modifiers.Tipsy.TanTipsyZModifier,
-		modcharting.modifiers.Tipsy.TanTipsyAngleModifier,modcharting.modifiers.Tipsy.TanTipsyAngleXModifier,modcharting.modifiers.Tipsy.TanTipsyAngleYModifier,
+		modcharting.modifiers.Tipsy.TanTipsyAngleModifier,
 		modcharting.modifiers.Tipsy.TanTipsyScaleModifier,modcharting.modifiers.Tipsy.TanTipsyScaleXModifier,modcharting.modifiers.Tipsy.TanTipsyScaleYModifier,
 		modcharting.modifiers.Tipsy.TanTipsySkewModifier,modcharting.modifiers.Tipsy.TanTipsySkewXModifier,modcharting.modifiers.Tipsy.TanTipsySkewYModifier,
 
@@ -247,11 +247,11 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Square.SquareSkewModifier,modcharting.modifiers.Square.SquareSkewXModifier,modcharting.modifiers.Square.SquareSkewYModifier,
 
 		modcharting.modifiers.Tornado.TornadoXModifier,modcharting.modifiers.Tornado.TornadoYModifier,modcharting.modifiers.Tornado.TornadoZModifier,
-		modcharting.modifiers.Tornado.TornadoAngleModifier,modcharting.modifiers.Tornado.TornadoAngleXModifier,modcharting.modifiers.Tornado.TornadoAngleYModifier,
+		modcharting.modifiers.Tornado.TornadoAngleModifier,
 		modcharting.modifiers.Tornado.TornadoScaleModifier,modcharting.modifiers.Tornado.TornadoScaleXModifier,modcharting.modifiers.Tornado.TornadoScaleYModifier,
 		modcharting.modifiers.Tornado.TornadoSkewModifier,modcharting.modifiers.Tornado.TornadoSkewXModifier,modcharting.modifiers.Tornado.TornadoSkewYModifier,
 		modcharting.modifiers.Tornado.TanTornadoXModifier,modcharting.modifiers.Tornado.TanTornadoYModifier,modcharting.modifiers.Tornado.TanTornadoZModifier,
-		modcharting.modifiers.Tornado.TanTornadoAngleModifier,modcharting.modifiers.Tornado.TanTornadoAngleXModifier,modcharting.modifiers.Tornado.TanTornadoAngleYModifier,
+		modcharting.modifiers.Tornado.TanTornadoAngleModifier,
 		modcharting.modifiers.Tornado.TanTornadoScaleModifier,modcharting.modifiers.Tornado.TanTornadoScaleXModifier,modcharting.modifiers.Tornado.TanTornadoScaleYModifier,
 		modcharting.modifiers.Tornado.TanTornadoSkewModifier,modcharting.modifiers.Tornado.TanTornadoSkewXModifier,modcharting.modifiers.Tornado.TanTornadoSkewYModifier,
 
