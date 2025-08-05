@@ -15,21 +15,29 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] ZigZag Improvements:
-	-   Added a helper instead of copy and pasted code for the modifiers.
+	-   Now instead of copy paste the math over and over, ZigZag has a main helper class with all math, making it easier to use ZigZag.
 
-	[UPDATE] ZigZagScale: (X,Y Included)
-	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
+	[EXTRA & REWORK] ZigZag Helper class:
+	-   ZigZag helper class has the basics of ZigZag with 1 subValue.
+	-   Added 1 subValue:
+		+   mult (multiplies ZigZag's intencity)
+	-   ZigZag helper class can be called via custom mods (so you can create any custom ZigZagMod, such as idk, ZigZagDadX. yet you are the one who defines how to use it).
+		+ Methods (2):
+			1. Use ModifiersMath.ZigZag(values) and set it to whatever you want to modify.
+			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.ZigZag)
+				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+				check how to make a customMod (both hx and lua) for better information.
  */
 class ZigZag extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', new ModifierSubValue(1.0));
+		setSubMod('mult', 1.0);
 	}
 
 	function zigZagMath(lane:Int, curPos:Float)
 	{
-		var mult:Float = NoteMovement.arrowSizes[lane] * subValues.get('mult').value;
+		var mult:Float = NoteMovement.arrowSizes[lane] * getSubMod('mult');
 		var mm:Float = mult * 2;
 		var p:Float = curPos * 0.45;
 		if (p < 0)
@@ -77,7 +85,7 @@ class ZigZagAngleModifier extends ZigZag
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += zigZagMath(lane, curPos) * currentValue;
+		noteData.angle += zigZagMath(lane, curPos) * currentValue;
 	}
 }
 

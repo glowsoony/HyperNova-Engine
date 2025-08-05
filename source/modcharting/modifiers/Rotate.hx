@@ -7,7 +7,6 @@ import modcharting.PlayfieldRenderer.StrumNoteType;
 import lime.math.Vector2;
 import openfl.geom.Vector3D;
 
-// EDWHAK SI VES ESTO ENTIENDE QUE NO SE SI FUNCIONA CORRECTAMENTE.
 // CHANGE LOG (the changes to modifiers)
 // [REWORK] = totally overhaul of a modifier
 // [UPDATE] = changed something on the modifier
@@ -18,14 +17,27 @@ import openfl.geom.Vector3D;
 // HERE CHANGE LIST
 
 /*
-	[REWORK] Rotate:
-	-   The math is now directly from WHAT IN THE FUNKIN!
-	[EXTRA] Rotate Improvements:
-	-   Added a helper instead of copy and pasted code for the modifiers.
+	[NEW] Rotate:
+	-   New modifier that creates a rotation of both fields into a 3D space, like notITG (The math is directly ported from WITF (WHAT IN THE FUNKIN) by hazard24).
+
+	[EXTRA & REWORK] Rotate Helper class:
+	-   Rotate helper class has the basics of Rotate with new subValues.
+	-   Added 3 subValues:
+		+   offset_X (changes X midPoint to take when rotating)
+		+   offset_Y (changes Y midPoint to take when rotating)
+		+   offset_Z (changes Z midPoint to take when rotating)
+	-   Rotate helper class can be called via custom mods (so you can create any custom RotateMod, such as idk, RotateDadX. yet you are the one who defines how to use it).
+		+ Methods (2):
+			1. Use ModifiersMath.Rotate(values) and set it to whatever you want to modify.
+			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Rotate)
+				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+				check how to make a customMod (both hx and lua) for better information.
+
+	[NEW & RENAME] RotateFieldsModifier & RotateFields3DModifier: (Previously known as RotateModifier and Rotate3DModifier)
+	-   Renamed modifiers to allow new "Rotate" modifier to exist, as the behaviour of these is more based on fields rather than 3D spaces.
  */
 
 //PlayState.instance.strumLineNotes
-
 
 class Rotate extends Modifier
 {
@@ -101,7 +113,8 @@ class Rotate extends Modifier
 	}
 }
 
-class RotateModifier extends Modifier
+//This modifier was made based on "TheoDev's" RotateModifier which doesn't properly work
+/*class RotateAltModifier extends Modifier
 {
 	override function setupSubValues()
 	{
@@ -139,91 +152,69 @@ class RotateModifier extends Modifier
 	{
 		noteMath(noteData, lane, 0, pf);
 	}
-}
+}*/
 
-class RotateXModifier extends Rotate
+class RotateModifier extends Rotate
 {
+	override function setupSubValues()
+	{
+		baseValue = 0.0;
+        currentValue = 1.0;
+
+		setSubMod("offset_x", 0.0);
+		setSubMod("offset_y", 0.0);
+		setSubMod("offset_z", 0.0);
+	}
+	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		rotatePivot(noteData, lane, pf, "x");
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		rotatePivot(noteData, lane, pf, "x");
-	}
-}
-
-class RotateYModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
 		rotatePivot(noteData, lane, pf, "y");
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		rotatePivot(noteData, lane, pf, "y");
-	}
-}
-
-class RotateZModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
 		rotatePivot(noteData, lane, pf, "z");
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
+		noteMath(noteData, lane, 0, pf);
+	}
+}
+
+class NoteRotateModifier extends Rotate
+{
+	override function setupSubValues()
+	{
+		baseValue = 0.0;
+        currentValue = 1.0;
+
+		setSubMod("offset_x", 0.0);
+		setSubMod("offset_y", 0.0);
+		setSubMod("offset_z", 0.0);
+	}
+	
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		rotatePivot(noteData, lane, pf, "x");
+		rotatePivot(noteData, lane, pf, "y");
 		rotatePivot(noteData, lane, pf, "z");
 	}
 }
 
-class RotateNoteXModifier extends Rotate
+class StrumRotateModifier extends Rotate
 {
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	override function setupSubValues()
+	{
+		baseValue = 0.0;
+        currentValue = 1.0;
+
+		setSubMod("offset_x", 0.0);
+		setSubMod("offset_y", 0.0);
+		setSubMod("offset_z", 0.0);
+	}
+	
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		rotatePivot(noteData, lane, pf, "x");
-	}
-}
-
-class RotateNoteYModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
 		rotatePivot(noteData, lane, pf, "y");
-	}
-}
-
-class RotateNoteZModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		rotatePivot(noteData, lane, pf, "z");
-	}
-}
-
-class RotateStrumXModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		rotatePivot(noteData, lane, pf, "x");
-	}
-}
-
-class RotateStrumYModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		rotatePivot(noteData, lane, pf, "y");
-	}
-}
-
-class RotateStrumZModifier extends Rotate
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
 		rotatePivot(noteData, lane, pf, "z");
 	}
 }
@@ -250,6 +241,142 @@ class RotateStrumZModifier extends Rotate
 // }
 
 // here i add custom modifiers, why? well its to make some cool modcharts shits -Ed
+
+class RotateFieldsModifier extends Modifier
+{
+	override function setupSubValues()
+	{
+		subValues.set('x', new ModifierSubValue(0.0));
+		subValues.set('y', new ModifierSubValue(0.0));
+
+		subValues.set('rotatePointX', new ModifierSubValue((FlxG.width / 2) - (NoteMovement.arrowSize / 2)));
+		subValues.set('rotatePointY', new ModifierSubValue((FlxG.height / 2) - (NoteMovement.arrowSize / 2)));
+		currentValue = 1.0;
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var xPos = NoteMovement.defaultStrumX[lane];
+		var yPos = NoteMovement.defaultStrumY[lane];
+		var rotX = ModchartUtil.getCartesianCoords3D(subValues.get('x').value, 90, xPos - subValues.get('rotatePointX').value);
+		noteData.x += rotX.x + subValues.get('rotatePointX').value - xPos;
+		var rotY = ModchartUtil.getCartesianCoords3D(90, subValues.get('y').value, yPos - subValues.get('rotatePointY').value);
+		noteData.y += rotY.y + subValues.get('rotatePointY').value - yPos;
+		noteData.z += rotX.z + rotY.z;
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function reset()
+	{
+		super.reset();
+		currentValue = 1.0;
+	}
+}
+
+class StrumLineRotateModifier extends Modifier
+{
+	override function setupSubValues()
+	{
+		subValues.set('x', new ModifierSubValue(0.0));
+		subValues.set('y', new ModifierSubValue(0.0));
+		subValues.set('z', new ModifierSubValue(90.0));
+		currentValue = 1.0;
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var laneShit = lane % NoteMovement.keyCount;
+		var offsetThing = 0.5;
+		var halfKeyCount = NoteMovement.keyCount / 2;
+		if (lane < halfKeyCount)
+		{
+			offsetThing = -0.5;
+			laneShit = lane + 1;
+		}
+		var distFromCenter = ((laneShit) - halfKeyCount) + offsetThing; // theres probably an easier way of doing this
+		// basically
+		// 0 = 1.5
+		// 1 = 0.5
+		// 2 = -0.5
+		// 3 = -1.5
+		// so if you then multiply by the arrow size, all notes should be in the same place
+		noteData.x += -distFromCenter * NoteMovement.arrowSize;
+
+		var upscroll = true;
+		if (instance != null)
+			if (ModchartUtil.getDownscroll(instance))
+				upscroll = false;
+
+		// var rot = ModchartUtil.getCartesianCoords3D(subValues.get('x').value, subValues.get('y').value, distFromCenter*NoteMovement.arrowSize);
+		var q = SimpleQuaternion.fromEuler(subValues.get('z').value, subValues.get('x').value,
+			(upscroll ? -subValues.get('y').value : subValues.get('y').value)); // i think this is the right order???
+		// q = SimpleQuaternion.normalize(q); //dont think its too nessessary???
+		noteData.x += q.x * distFromCenter * NoteMovement.arrowSize;
+		noteData.y += q.y * distFromCenter * NoteMovement.arrowSize;
+		noteData.z += q.z * distFromCenter * NoteMovement.arrowSize;
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function reset()
+	{
+		super.reset();
+		currentValue = 1.0;
+	}
+}
+
+class RotateFields3DModifier extends Modifier
+{
+	override function setupSubValues()
+	{
+		subValues.set('x', new ModifierSubValue(0.0));
+		subValues.set('y', new ModifierSubValue(0.0));
+
+		subValues.set('rotatePointX', new ModifierSubValue((FlxG.width / 2) - (NoteMovement.arrowSize / 2)));
+		subValues.set('rotatePointY', new ModifierSubValue((FlxG.height / 2) - (NoteMovement.arrowSize / 2)));
+		currentValue = 1.0;
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		var xPos = NoteMovement.defaultStrumX[lane];
+		var yPos = NoteMovement.defaultStrumY[lane];
+		var rotX = ModchartUtil.getCartesianCoords3D(-subValues.get('x').value, 90, xPos - subValues.get('rotatePointX').value);
+		noteData.x += rotX.x + subValues.get('rotatePointX').value - xPos;
+		var rotY = ModchartUtil.getCartesianCoords3D(90, subValues.get('y').value, yPos - subValues.get('rotatePointY').value);
+		noteData.y += rotY.y + subValues.get('rotatePointY').value - yPos;
+		noteData.z += rotX.z + rotY.z;
+
+		noteData.angleY += -subValues.get('x').value;
+		noteData.angleX += -subValues.get('y').value;
+	}
+
+	override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
+	{
+		var multiply:Bool = subValues.get('y').value % 180 != 0; // so it calculates the stuff ONLY if angle its not 180/360 base
+		var valueToUse:Float = multiply ? 90 : 0;
+		return [valueToUse, subValues.get('y')
+			.value]; // ik this might cause problems at some point with some modifiers but eh, there is nothing i could do about it- (i can LMAO)
+	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function reset()
+	{
+		super.reset();
+		currentValue = 1.0;
+	}
+}
 
 class StrumAngleModifier extends Modifier
 {

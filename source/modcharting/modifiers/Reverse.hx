@@ -36,8 +36,8 @@ class SplitModifier extends Modifier
     {
         baseValue = 0.0;
         currentValue = 1.0;
-        subValues.set('VarA', new ModifierSubValue(0.0));
-        subValues.set('VarB', new ModifierSubValue(0.0));
+        setSubMod("VarA", 0.0);
+        setSubMod("VarB", 0.0);
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {  
@@ -49,11 +49,9 @@ class SplitModifier extends Modifier
 
         var laneThing = lane % NoteMovement.keyCount;
 
-        if (laneThing > 1)
-            noteData.y += (subValues.get('VarA').value) * scrollSwitch;
+        if (laneThing > 1) noteData.y += (getSubMod("VarA")) * scrollSwitch;
 
-        if (laneThing < 2)
-            noteData.y += (subValues.get('VarB').value) * scrollSwitch;
+        if (laneThing < 2) noteData.y += (getSubMod("VarB")) * scrollSwitch;
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
@@ -63,11 +61,9 @@ class SplitModifier extends Modifier
     {
         var laneThing = lane % NoteMovement.keyCount;
 
-        if (laneThing > 1)
-            return noteDist * (1-(subValues.get('VarA').value*2));
+        if (laneThing > 1) return noteDist * (1-(getSubMod("VarA")*2));
 
-        if (laneThing < 2)
-            return noteDist * (1-(subValues.get('VarB').value*2));
+        if (laneThing < 2) return noteDist * (1-(getSubMod("VarB")*2));
 
         return noteDist;
     }
@@ -84,8 +80,8 @@ class CrossModifier extends Modifier
     {
         baseValue = 0.0;
         currentValue = 1.0;
-        subValues.set('VarA', new ModifierSubValue(0.0));
-        subValues.set('VarB', new ModifierSubValue(0.0));
+        setSubMod("VarA", 0.0);
+        setSubMod("VarB", 0.0);
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {  
@@ -97,11 +93,9 @@ class CrossModifier extends Modifier
         
         var laneThing = lane % NoteMovement.keyCount;
 
-        if (laneThing > 0 && laneThing < 3)
-            noteData.y += (subValues.get('VarA').value) * scrollSwitch;
+        if (laneThing > 0 && laneThing < 3) noteData.y += (getSubMod("VarA")) * scrollSwitch;
 
-        if (laneThing == 0 || laneThing == 3)
-            noteData.y += (subValues.get('VarB').value) * scrollSwitch;
+        if (laneThing == 0 || laneThing == 3) noteData.y += (getSubMod("VarB")) * scrollSwitch;
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
@@ -111,11 +105,9 @@ class CrossModifier extends Modifier
     {
         var laneThing = lane % NoteMovement.keyCount;
 
-        if (laneThing > 0 && laneThing < 3)
-            return noteDist * (1-(subValues.get('VarA').value*2));
+        if (laneThing > 0 && laneThing < 3) return noteDist * (1-(getSubMod("VarA")*2));
 
-        if (laneThing == 0 || laneThing == 3)
-            return noteDist * (1-(subValues.get('VarB').value*2));
+        if (laneThing == 0 || laneThing == 3) return noteDist * (1-(getSubMod("VarB")*2));
 
         return noteDist;
     }
@@ -132,8 +124,8 @@ class AlternateModifier extends Modifier
     {
         baseValue = 0.0;
         currentValue = 1.0;
-        subValues.set('VarA', new ModifierSubValue(0.0));
-        subValues.set('VarB', new ModifierSubValue(0.0));
+        setSubMod("VarA", 0.0);
+        setSubMod("VarB", 0.0);
     }
     override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
     {  
@@ -143,11 +135,9 @@ class AlternateModifier extends Modifier
         var scrollSwitch = 520;
 		if (ud) scrollSwitch *= -1;
 
-        if (lane%2 == 1)
-            noteData.y += (subValues.get('VarA').value) * scrollSwitch;
+        if (lane%2 == 1) noteData.y += (getSubMod("VarA")) * scrollSwitch;
 
-        if (lane%2 == 0)
-            noteData.y += (subValues.get('VarB').value) * scrollSwitch;
+        if (lane%2 == 0) noteData.y += (getSubMod("VarB")) * scrollSwitch;
     }
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
@@ -155,11 +145,9 @@ class AlternateModifier extends Modifier
     }
     override function noteDistMath(noteDist:Float, lane:Int, curPos:Float, pf:Int)
     {
-        if (lane%2 == 1)
-            return noteDist * (1-(subValues.get('VarA').value*2));
+        if (lane%2 == 1) return noteDist * (1-(getSubMod("VarA")*2));
 
-        if (lane%2 == 0)
-            return noteDist * (1-(subValues.get('VarB').value*2));
+        if (lane%2 == 0) return noteDist * (1-(getSubMod("VarB")*2));
 
         return noteDist;
     }

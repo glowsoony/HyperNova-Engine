@@ -15,10 +15,22 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] Attenuate Improvements:
-	-   Added a helper instead of copy and pasted code for the modifiers.
+	-   Now instead of copy paste the math over and over, Attenuate has a main helper class with all math, making it easier to use Attenuate.
 
-	[UPDATE] AttenuateScale: (X,Y Included)
-	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
+	[NEW] AttenuateAngleX:
+	-	Modifier added to allow modifying AngleX with Attenuate without needing a custom mod.
+
+	[NEW] AttenuateAngleY:
+	-	Modifier added to allow modifying AngleY with Attenuate without needing a custom mod.
+
+	[EXTRA & REWORK] Attenuate Helper class:
+	-   Attenuate helper class has the basics of Attenuate.
+	-   Attenuate helper class can be called via custom mods (so you can create any custom AttenuateMod, such as idk, AttenuateDadX. yet you are the one who defines how to use it).
+		+ Methods (2):
+			1. Use ModifiersMath.Attenuate(values) and set it to whatever you want to modify.
+			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Attenuate)
+				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+				check how to make a customMod (both hx and lua) for better information.
  */
 class Attenuate extends Modifier
 {
@@ -67,7 +79,7 @@ class AttenuateAngleModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += currentValue * attenuateMath(curPos, lane);
+		noteData.angle += currentValue * attenuateMath(curPos, lane);
 	}
 }
 

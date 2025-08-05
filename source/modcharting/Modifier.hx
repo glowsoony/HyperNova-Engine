@@ -464,6 +464,27 @@ class ModifierMath
 			+ ((lane % NoteMovement.keyCount) * 0.2)
 			+ (curPos * (0.225 * offset)) * ((spacing * 10) / FlxG.height)) * (speed * 0.2)) * Note.swagWidth * (0.5 * size));
 	}
+
+	/**
+	 * Performs a modulo operation to calculate the remainder of `a` divided by `b`.
+	 *
+	 * The definition of "remainder" varies by implementation;
+	 * this one is similar to GLSL or Python in that it uses Euclidean division, which always returns positive,
+	 * while Haxe's `%` operator uses signed truncated division.
+	 *
+	 * For example, `-5 % 3` returns `-2` while `FlxMath.mod(-5, 3)` returns `1`.
+	 *
+	 * @param a The dividend.
+	 * @param b The divisor.
+	 * @return `a mod b`.
+	 *
+	 * SOURCE: https://github.com/HaxeFlixel/flixel/pull/3341/files
+	 */
+	public static inline function mod(a:Float, b:Float):Float
+	{
+		b = Math.abs(b);
+		return a - b * Math.floor(a / b);
+	}
 }
 
 // adding drunk and tipsy for all axis because i can

@@ -176,3 +176,77 @@ class ScaleYModifier extends Modifier
         noteMath(noteData, lane, 0, pf); //just reuse same thing
     }
 }
+
+/*class Zoom extends Modifier
+{
+	var pivotPoint:Vector2 = new Vector2(0, 0);
+	var point:Vector2 = new Vector2(0, 0);
+
+	override function setupSubValues()
+	{
+		setSubMod("offset_x", 0.0);
+		setSubMod("offset_y", 0.0);
+		setSubMod("offset_z", 0.0);
+	}
+
+	function getPivot(noteData:NotePositionData, lane:Int, type:String = "x")
+	{
+		switch (type)
+		{
+			case "x":
+				var r:Float = 0;
+					
+				//1 should return oponent's midPoint, while 2 should return player's
+				var downStrumPosition:Float = NoteMovement.defaultStrumX[
+					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2)) - 1
+				];
+				var upStrumPosition:Float = NoteMovement.defaultStrumX[
+					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2))
+				];
+
+				var midPosition = (upStrumPosition - downStrumPosition) / 2;
+				r += downStrumPosition + midPosition;
+				r += getSubMod("offset_x");
+				return r;
+			case "y":
+				return (FlxG.height/2) + getSubMod("offset_y");
+			case "z":
+				return 0.0 + getSubMod("offset_z");
+			default:
+				return 0.0;
+		}
+	}
+
+	function rotatePivot(noteData:NotePositionData, lane:Int, pf:Int, type:String = "x")
+	{
+		var angle:Float = currentValue;
+
+		switch (type)
+		{
+			case "z":
+				pivotPoint.x = getPivot(noteData, lane, "x");
+				pivotPoint.y = getPivot(noteData, lane, "y");
+				point.x = noteData.x;
+				point.y = noteData.y;
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				noteData.x = output.x;
+				noteData.y = output.y;
+			case "y":
+				pivotPoint.x = getPivot(noteData, lane, "x");
+				pivotPoint.y = getPivot(noteData, lane, "z");
+				point.x = noteData.x;
+				point.y = noteData.z;
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				noteData.x = output.x;
+				noteData.z = output.y;
+			case "x":
+				pivotPoint.x = getPivot(noteData, lane, "z");
+				pivotPoint.y = getPivot(noteData, lane, "y");
+				point.x = noteData.z;
+				point.y = noteData.y;
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				noteData.z = output.x;
+				noteData.y = output.y;
+		}
+	}
+}*/

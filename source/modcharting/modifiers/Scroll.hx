@@ -44,14 +44,14 @@ class BoostModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('offset', new ModifierSubValue(1.0));
+		setSubMod("offset", 1.0);
 	}
 
 	override function curPosMath(lane:Int, curPos:Float, pf:Int)
 	{
 		var yOffset:Float = 0;
 
-		var speed = renderer.getCorrectScrollSpeed() * subValues.get('offset').value;
+		var speed = renderer.getCorrectScrollSpeed() * getSubMod("offset");
 
 		var fYOffset = -curPos / speed;
 		var fEffectHeight = FlxG.height;
@@ -69,14 +69,14 @@ class BrakeModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('offset', new ModifierSubValue(1.0));
+		setSubMod("offset", 1.0);
 	}
 
 	override function curPosMath(lane:Int, curPos:Float, pf:Int)
 	{
 		var yOffset:Float = 0;
 
-		var speed = renderer.getCorrectScrollSpeed() * subValues.get('offset').value;
+		var speed = renderer.getCorrectScrollSpeed() * getSubMod("offset");
 
 		var fYOffset = -curPos / speed;
 		var fEffectHeight = FlxG.height;
@@ -95,7 +95,7 @@ class BoomerangModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		noteData.y += (FlxMath.fastSin((curPos / -700)) * 400 + (curPos / 3.5)) * scrollSwitch * (-currentValue);
 		noteData.alpha *= FlxMath.bound(1 - (curPos / -600 - 3.5), 0, 1);
@@ -111,7 +111,7 @@ class WaveModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('multiplier', new ModifierSubValue(1.0));
+		setSubMod("multiplier", 1.0);
 	}
 
 	// override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -125,7 +125,7 @@ class WaveModifier extends Modifier
 	// }
 	override function curPosMath(lane:Int, curPos:Float, pf:Int)
 	{
-		curPos += (FlxMath.fastSin(-curPos / 38.0 * (subValues.get('multiplier').value * 0.75) * 0.2) * 100) * (currentValue * 2);
+		curPos += (FlxMath.fastSin(-curPos / 38.0 * (getSubMod("multiplier") * 0.75) * 0.2) * 100) * (currentValue * 2);
 
 		return curPos * 0.75;
 	}
@@ -141,7 +141,7 @@ class JumpModifier extends Modifier // custom thingy i made //ended just being d
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		var beatVal = Modifier.beat - Math.floor(Modifier.beat); // should give decimal
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		noteData.y += (beatVal * (Conductor.stepCrochet * currentValue)) * renderer.getCorrectScrollSpeed() * 0.45 * scrollSwitch;
 	}
@@ -152,7 +152,7 @@ class JumpStrumsModifier extends Modifier
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		var beatVal = Modifier.beat - Math.floor(Modifier.beat); // should give decimal
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		noteData.y += (beatVal * (Conductor.stepCrochet * currentValue)) * renderer.getCorrectScrollSpeed() * 0.45 * scrollSwitch;
 	}
@@ -163,7 +163,7 @@ class JumpNotesModifier extends Modifier
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var beatVal = Modifier.beat - Math.floor(Modifier.beat); // should give decimal
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		noteData.y += (beatVal * (Conductor.stepCrochet * currentValue)) * renderer.getCorrectScrollSpeed() * 0.45 * scrollSwitch;
 	}
@@ -174,7 +174,7 @@ class DrivenModifier extends Modifier
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var scrollSpeed = renderer.getCorrectScrollSpeed();
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
 		noteData.y += 0.45 * scrollSpeed * scrollSwitch * currentValue;
 	}
@@ -189,30 +189,29 @@ class TimeStopModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('stop', new ModifierSubValue(0.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('continue', new ModifierSubValue(0.0));
+		setSubMod("stop", 0.0);
+		setSubMod("speed", 1.0);
+		setSubMod("continue", 0.0);
 	}
 
 	override function curPosMath(lane:Int, curPos:Float, pf:Int)
 	{
-		if (curPos <= (subValues.get('stop').value * -1000))
+		if (curPos <= (getSubMod("stop") * -1000))
 		{
-			curPos = (subValues.get('stop').value * -1000) + (curPos * (subValues.get('speed').value / 100));
+			curPos = (getSubMod("stop") * -1000) + (curPos * (getSubMod("speed") / 100));
 		}
 		return curPos;
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		if (curPos <= (subValues.get('stop').value * -1000))
+		if (curPos <= (getSubMod('stop') * -1000))
 		{
-			curPos = (subValues.get('stop').value * -1000) + (curPos * (subValues.get('speed').value / 100));
+			curPos = (getSubMod('stop') * -1000) + (curPos * (getSubMod('speed') / 100));
 		}
-		else if (curPos <= (subValues.get('continue').value * -100))
+		else if (curPos <= (getSubMod('continue') * -100))
 		{
-			var a = ((subValues.get('continue')
-				.value * 100) - Math.abs(curPos)) / ((subValues.get('continue').value * 100) + (subValues.get('stop').value * -1000));
+			var a = ((getSubMod('continue') * 100) - Math.abs(curPos)) / ((getSubMod('continue') * 100) + (getSubMod('stop') * -1000));
 		}
 		else
 		{
@@ -230,7 +229,7 @@ class ParalysisModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('amplitude', new ModifierSubValue(1.0));
+		setSubMod("amplitude", 1.0);
 	}
 
 	override function curPosMath(lane:Int, curPos:Float, pf:Int)
@@ -238,7 +237,7 @@ class ParalysisModifier extends Modifier
 		var beat = (Conductor.songPosition / Conductor.crochet / 2);
 		var fixedperiod = (Math.floor(beat) * Conductor.crochet * 2);
 		var strumTime = (Conductor.songPosition - (curPos / PlayState.SONG.speed));
-		return ((fixedperiod - strumTime) * PlayState.SONG.speed / 4) * subValues.get('amplitude').value;
+		return ((fixedperiod - strumTime) * PlayState.SONG.speed / 4) * getSubMod("amplitude");
 	}
 }
 

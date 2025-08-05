@@ -43,46 +43,46 @@ class Tipsy extends Modifier // My idea is clever, make this more simple to use
 {
 	override function setupSubValues()
 	{
-		subValues.set('period', new ModifierSubValue(1.0));
-		subValues.set('offset', new ModifierSubValue(0.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('usesAlt', new ModifierSubValue(0.0));
-		subValues.set('timertype', new ModifierSubValue(0.0));
+		setSubMod('period', 1.0);
+		setSubMod('offset', 0.0);
+		setSubMod('speed', 1.0);
+		setSubMod('useAlt', 0.0);
+		setSubMod('timertype', 0.0);
 	}
 
 	function tanTipsyMath(lane:Int, curPos:Float):Float
 	{
-		var time:Float = (subValues.get('timertype').value >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001 * 1.2);
-		time *= subValues.get('speed').value;
-		time += subValues.get('offset').value;
+		var time:Float = (getSubMod('timertype') >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001 * 1.2);
+		time *= getSubMod('speed');
+		time += getSubMod('offset');
 
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var returnValue:Float = 0.0;
 		if (usesAlt)
 			returnValue = currentValue * (1 / Math.sin((time
-				+ ((lane) % NoteMovement.keyCount) * subValues.get('period').value) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+				+ ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 		else
 			returnValue = currentValue * (Math.tan((time
-				+ ((lane) % NoteMovement.keyCount) * subValues.get('period').value) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+				+ ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
 
 	function tipsyMath(lane:Int, curPos:Float):Float
 	{
-		var time:Float = (subValues.get('timertype').value >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001 * 1.2);
-		time *= subValues.get('speed').value;
-		time += subValues.get('offset').value;
+		var time:Float = (getSubMod('timertype') >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001 * 1.2);
+		time *= getSubMod('speed');
+		time += getSubMod('offset');
 
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var returnValue:Float = 0.0;
 
 		if (usesAlt)
 			returnValue = currentValue * (FlxMath.fastCos((time
-				+ ((lane) % NoteMovement.keyCount) * subValues.get('period').value) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+				+ ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 		else
 			returnValue = currentValue * (FlxMath.fastSin((time
-				+ ((lane) % NoteMovement.keyCount) * subValues.get('period').value) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+				+ ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
@@ -121,7 +121,7 @@ class TipsyAngleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += tipsyMath(lane, curPos);
+		noteData.angle += tipsyMath(lane, curPos);
 	}
 }
 
@@ -203,7 +203,7 @@ class TanTipsyAngleModifier extends Tipsy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += tanTipsyMath(lane, curPos);
+		noteData.angle += tanTipsyMath(lane, curPos);
 	}
 }
 

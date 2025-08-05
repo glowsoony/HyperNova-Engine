@@ -25,14 +25,14 @@ class Square extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('yoffset', new ModifierSubValue(0.0));
-		subValues.set('xoffset', new ModifierSubValue(0.0));
+		setSubMod("mult", 1.0);
+		setSubMod("yoffset", 0.0);
+		setSubMod("xoffset", 0.0);
 	}
 
 	public function squareMath(lane:Int, curPos:Float):Float
 	{
-		var mult:Float = (subValues.get('mult').value / (NoteMovement.arrowSizes[lane] * 2));
+		var mult:Float = (getSubMod("mult") / (NoteMovement.arrowSizes[lane] * 2));
 		var timeOffset:Float = subValues.get('yoffset').value;
 		var xOffset:Float = subValues.get('xoffset').value;
 		var xVal:Float = FlxMath.fastSin(((curPos * 0.45) + timeOffset) * Math.PI * mult);
@@ -69,7 +69,7 @@ class SquareAngleModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += squareMath(lane, curPos) * currentValue;
+		noteData.angle += squareMath(lane, curPos) * currentValue;
 	}
 }
 

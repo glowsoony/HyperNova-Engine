@@ -20,8 +20,8 @@ import objects.Note;
 // HERE CHANGE LIST
 
 /*
-	[RENAME & REWORK] WavyModifier: (Previously known as WaveModifier)
-	-   Change made so WaveModifier (Previously known as WaveingModifier) fits notITG, but i decided to keep these own mods.
+	[RENAME & REWORK] WavyModifier: (Previously known as wavyModifier)
+	-   Change made so waveModifier (Previously known as waveingModifier) fits notITG, but i decided to keep these own mods.
 	-   Made a totally overhaul of the modifier, with a new math system, and new subValues but this one has 3 different maths (Legacy, Old, New).
 		*   Legacy uses the old behavior (before rework)
 		*   Old uses a beta edition of the math
@@ -40,7 +40,7 @@ import objects.Note;
 		+	oldMath (changes Wavy's math, if value is 0.5 or higher, uses old rework method, otherwise uses new method (default))
 		+   timertype (changes Wavy's timer method, only will work for "newMath (aka oldMath subValue set to 0-0.49)")
 		+   useAlt (changes it's math, if Wavy (uses sin) it will now use cos, if tanWavy (uses tangent) it will now use cosecant)
-		+   legacy (changes Wavy's behaviour, to keep track on older versions of Wavy (WaveModifier), will use older math, and will disable all subValues (except speed and useAlt)).
+		+   legacy (changes Wavy's behaviour, to keep track on older versions of Wavy (wavyModifier), will use older math, and will disable all subValues (except speed and useAlt)).
 	-   Wavy helper class can be called via custom mods (so you can create any custom WavyMod, such as idk, WavyDadX. yet you are the one who defines how to use it).
 		+ Methods (2):
 			1. Use ModifiersMath.Wavy(values) and set it to whatever you want to modify.
@@ -52,25 +52,25 @@ class Wavy extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('desync', new ModifierSubValue(0.2));
-		subValues.set('time_add', new ModifierSubValue(0.0));
-		subValues.set('timertype', new ModifierSubValue(0.0));
-		subValues.set('oldmath', new ModifierSubValue(0.0)); // 1.0 = old math (new behaviour), 0.0 = new math (new behaviour)
-		subValues.set('useAlt', new ModifierSubValue(0.0));
-		subValues.set('legacy', new ModifierSubValue(0.0)); // 1.0 = old behaviour, 0.0 = new behaviour
+		setSubMod('speed', 1.0);
+		setSubMod('desync', 0.2);
+		setSubMod('time_add', 0.0);
+		setSubMod('timertype', 0.0);
+		setSubMod('oldmath', 0.0);
+		setSubMod('useAlt', 0.0);
+		setSubMod('legacy', 0.0);
 	}
 
 	function wavyMath(lane:Int)
 	{
-		var legacy:Bool = (subValues.get('legacy').value >= 0.5);
-		var oldMath:Bool = (subValues.get('oldmath').value >= 0.5);
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var legacy:Bool = (getSubMod('legacy') >= 0.5);
+		var oldMath:Bool = (getSubMod('oldmath') >= 0.5);
+		var usesAlt:Bool = (getSubMod('useAlt') >= 0.5);
 
-		var speed:Float = subValues.get('speed').value;
-		var add:Float = subValues.get('time_add').value;
-		var desync:Float = subValues.get('desync').value;
-		var timerType:Float = subValues.get('timertype').value;
+		var speed:Float = getSubMod('speed');
+		var add:Float = getSubMod('time_add');
+		var desync:Float = getSubMod('desync');
+		var timerType:Float = getSubMod('timertype');
 
 		var returnValue:Float = 0.0;
 
@@ -109,14 +109,14 @@ class Wavy extends Modifier
 
 	function tanWavyMath(lane:Int)
 	{
-		var legacy:Bool = (subValues.get('legacy').value >= 0.5);
-		var oldMath:Bool = (subValues.get('oldmath').value >= 0.5);
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var legacy:Bool = (getSubMod('legacy') >= 0.5);
+		var oldMath:Bool = (getSubMod('oldmath') >= 0.5);
+		var usesAlt:Bool = (getSubMod('useAlt') >= 0.5);
 
-		var speed:Float = subValues.get('speed').value;
-		var add:Float = subValues.get('time_add').value;
-		var desync:Float = subValues.get('desync').value;
-		var timerType:Float = subValues.get('timertype').value;
+		var speed:Float = getSubMod('speed');
+		var add:Float = getSubMod('time_add');
+		var desync:Float = getSubMod('desync');
+		var timerType:Float = getSubMod('timertype');
 
 		var returnValue:Float = 0.0;
 
@@ -158,7 +158,7 @@ class WavyXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.x += waveMath(lane);
+		noteData.x += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -171,7 +171,7 @@ class WavyYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.y += waveMath(lane);
+		noteData.y += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -184,7 +184,7 @@ class WavyZModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.z += waveMath(lane);
+		noteData.z += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -197,7 +197,7 @@ class WavyAngleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleZ += waveMath(lane);
+		noteData.angle += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -210,7 +210,7 @@ class WavyAngleXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleX += waveMath(lane);
+		noteData.angleX += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -223,7 +223,7 @@ class WavyAngleYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleY += waveMath(lane);
+		noteData.angleY += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -236,8 +236,8 @@ class WavyScaleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleX += (waveMath(lane) - 1);
-		noteData.scaleY += (waveMath(lane) - 1);
+		noteData.scaleX += (wavyMath(lane) - 1);
+		noteData.scaleY += (wavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -250,7 +250,7 @@ class WavyScaleXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleX += (waveMath(lane) - 1);
+		noteData.scaleX += (wavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -263,7 +263,7 @@ class WavyScaleYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleY += (waveMath(lane) - 1);
+		noteData.scaleY += (wavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -276,8 +276,8 @@ class WavySkewModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewX += waveMath(lane);
-		noteData.skewY += waveMath(lane);
+		noteData.skewX += wavyMath(lane);
+		noteData.skewY += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -290,7 +290,7 @@ class WavySkewXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewX += waveMath(lane);
+		noteData.skewX += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -303,7 +303,7 @@ class WavySkewYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewY += waveMath(lane);
+		noteData.skewY += wavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -316,7 +316,7 @@ class TanWavyXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.x += tanWaveMath(lane);
+		noteData.x += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -329,7 +329,7 @@ class TanWavyYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.y += tanWaveMath(lane);
+		noteData.y += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -342,7 +342,7 @@ class TanWavyZModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.z += tanWaveMath(lane);
+		noteData.z += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -355,7 +355,7 @@ class TanWavyAngleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleZ += tanWaveMath(lane);
+		noteData.angle += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -368,7 +368,7 @@ class TanWavyAngleXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleX += tanWaveMath(lane);
+		noteData.angleX += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -381,7 +381,7 @@ class TanWavyAngleYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.angleY += tanWaveMath(lane);
+		noteData.angleY += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -394,8 +394,8 @@ class TanWavyScaleModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleX += (tanWaveMath(lane) - 1);
-		noteData.scaleY += (tanWaveMath(lane) - 1);
+		noteData.scaleX += (tanWavyMath(lane) - 1);
+		noteData.scaleY += (tanWavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -408,7 +408,7 @@ class TanWavyScaleXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleX += (tanWaveMath(lane) - 1);
+		noteData.scaleX += (tanWavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -421,7 +421,7 @@ class TanWavyScaleYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.scaleY += (tanWaveMath(lane) - 1);
+		noteData.scaleY += (tanWavyMath(lane) - 1);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -434,8 +434,8 @@ class TanWavySkewModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewX += tanWaveMath(lane);
-		noteData.skewY += tanWaveMath(lane);
+		noteData.skewX += tanWavyMath(lane);
+		noteData.skewY += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -448,7 +448,7 @@ class TanWavySkewXModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewX += tanWaveMath(lane);
+		noteData.skewX += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -461,7 +461,7 @@ class TanWavySkewYModifier extends Wavy
 {
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		noteData.skewY += tanWaveMath(lane);
+		noteData.skewY += tanWavyMath(lane);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)

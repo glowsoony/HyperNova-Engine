@@ -26,7 +26,102 @@ import objects.Note;
 
 	[NEW] CircModifier: (Includes X,Y,Z,Angle,Scale,Skew variants)
 	-   New modifier similar to LinearModifier but with a circular incoming change on the scroll.
+
+	[RENAME] EaseModifier: (Previously known as EaseCurveModifier)
+	-   Renamed to have a simpler name that is more friendly for MT's enviroment and new modcharters.
  */
+class Ease extends Modifier
+{
+	public var easeFunc = FlxEase.linear;
+
+	public function setEase(ease:String)
+	{
+		easeFunc = ModchartUtil.getFlxEaseByString(ease);
+	}
+}
+
+class EaseXModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.x += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseYModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.y += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseZModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.z += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseAngleModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.angle += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseScaleModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleX += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
+		noteData.scaleY += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
+	}
+}
+
+class EaseScaleXModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleX += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
+	}
+}
+
+class EaseScaleYModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.scaleY += ((easeFunc(curPos * 0.01) * currentValue * 0.2) - 1);
+	}
+}
+
+class EaseSkewModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+		noteData.skewY += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseSkewXModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewX += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
+class EaseSkewYModifier extends Ease
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewY += (easeFunc(curPos * 0.01) * currentValue * 0.2);
+	}
+}
+
 class LinearXModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -158,7 +253,7 @@ class CircAngleModifier extends Modifier
 				ud = true;
 
 		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.angleZ += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.angle += curPos2 * curPos2 * currentValue * -0.001;
 	}
 }
 

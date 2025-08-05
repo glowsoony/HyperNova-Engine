@@ -14,6 +14,7 @@ import openfl.geom.Vector3D;
 import states.PlayState;
 import modcharting.Modifier;
 
+@:exclude
 class TimeVector extends Vector4
 {
 	public var startDist:Float;
@@ -33,18 +34,18 @@ class ShakyNotesModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('speed', new ModifierSubValue(1.0));
+		setSubMod("speed", 1.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		noteData.x += FlxMath.fastSin(500)
 			+ currentValue * (Math.cos(Conductor.songPosition * 4 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+				- (120 * getSubMod('speed') * 0.4)));
 
 		noteData.y += FlxMath.fastSin(500)
 			+ currentValue * (Math.cos(Conductor.songPosition * 8 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+				- (120 * getSubMod('speed') * 0.4)));
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -84,19 +85,19 @@ class ArrowPathModifier extends Modifier // used but unstable (as old way)
 {
 	override function setupSubValues()
 	{
-		subValues.set('length', new ModifierSubValue(14.0));
-		subValues.set('backlength', new ModifierSubValue(2.0));
-		subValues.set('grain', new ModifierSubValue(5.0));
-		subValues.set('width', new ModifierSubValue(1.0));
+		setSubMod("length", 14.0);
+		setSubMod("backlength", 2.0);
+		setSubMod("grain", 5.0);
+		setSubMod("width", 1.0);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		noteData.arrowPathAlpha += currentValue;
-		noteData.arrowPathLength += subValues.get('length').value; // length is in pixels
-		noteData.arrowPathBackwardsLength += subValues.get('backlength').value;
-		noteData.pathGrain += subValues.get('grain').value;
-		noteData.arrowPathWidth *= subValues.get('width').value;
+		noteData.arrowPathLength += getSubMod('length'); // length is in pixels
+		noteData.arrowPathBackwardsLength += getSubMod('backlength');
+		noteData.pathGrain += getSubMod('grain');
+		noteData.arrowPathWidth *= getSubMod('width');
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -141,7 +142,7 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 
 	override function setupSubValues()
 	{
-		subValues.set('path', new ModifierSubValue(0.0));
+		setSubMod("path", 0.0);
 	}
 
 	override function reset()
@@ -153,9 +154,9 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 
 	public function loadPath()
 	{
-		var file = CoolUtil.coolTextFile(Paths.modFolders("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path" + subValues.get('path').value
+		var file = CoolUtil.coolTextFile(Paths.modFolders("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path" + getSubMod('path')
 			+ ".txt"));
-		var file2 = CoolUtil.coolTextFile(Paths.getSharedPath("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path" + subValues.get('path').value
+		var file2 = CoolUtil.coolTextFile(Paths.getSharedPath("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path" + getSubMod('path')
 			+ ".txt"));
 
 		var filePath = null;
