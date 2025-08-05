@@ -5,6 +5,7 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 import haxe.ds.Vector;
 import modcharting.Modifier;
+import modcharting.modifiers.*;
 #if LEATHER
 import game.Conductor;
 #end

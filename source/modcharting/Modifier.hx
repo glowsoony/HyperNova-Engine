@@ -499,6 +499,7 @@ class ModifierMath
 //         noteMath(noteData, lane, 0, pf); //just reuse same thing
 //     }
 // }
+/**
 class DrunkXModifier extends Modifier
 {
 	override function setupSubValues()
@@ -4078,31 +4079,31 @@ class CosecantSkewYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
+**/
+// class ShakyNotesModifier extends Modifier
+// {
+// 	override function setupSubValues()
+// 	{
+// 		subValues.set('speed', new ModifierSubValue(1.0));
+// 	}
 
-class ShakyNotesModifier extends Modifier
-{
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
+// 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+// 	{
+// 		noteData.x += FlxMath.fastSin(500)
+// 			+ currentValue * (Math.cos(Conductor.songPosition * 4 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
+// 				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
 
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		noteData.x += FlxMath.fastSin(500)
-			+ currentValue * (Math.cos(Conductor.songPosition * 4 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+// 		noteData.y += FlxMath.fastSin(500)
+// 			+ currentValue * (Math.cos(Conductor.songPosition * 8 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
+// 				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+// 	}
 
-		noteData.y += FlxMath.fastSin(500)
-			+ currentValue * (Math.cos(Conductor.songPosition * 8 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf);
-	}
-}
-
+// 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+// 	{
+// 		noteMath(noteData, lane, 0, pf);
+// 	}
+// }
+/*
 class ShakeNotesModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -5574,6 +5575,7 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 		return 1;
 	}
 }
+*/
 /*
 	class MegaMindModifier extend Modifier
 	trace("

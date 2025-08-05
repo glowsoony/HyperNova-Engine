@@ -6,6 +6,7 @@ import flixel.FlxG;
 import haxe.Json;
 import modcharting.ModchartUtil;
 import modcharting.Modifier;
+import modcharting.modifiers.*;
 import modcharting.NoteMovement;
 import modcharting.PlayfieldRenderer;
 import openfl.events.Event;
@@ -474,10 +475,10 @@ class ModchartFuncs
 		if (instance.playfieldRenderer.modifierTable.modifiers.exists(name))
 		{
 			var mod = instance.playfieldRenderer.modifierTable.modifiers.get(name);
-			if (Std.isOfType(mod, EaseCurveModifier))
+			if (Std.isOfType(mod, EaseModifier))
 			{
 				var temp:Dynamic = mod;
-				var castedMod:EaseCurveModifier = temp;
+				var castedMod:EaseModifier = temp;
 				castedMod.setEase(ease);
 			}
 		}
