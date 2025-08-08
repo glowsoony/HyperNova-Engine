@@ -323,10 +323,10 @@ class ModchartFuncs
 			return;
 		}
 
-		var mod = Type.resolveClass('modcharting.' + modClass);
+		var mod = Type.resolveClass('modcharting.modifiers.' + modClass);
 		if (mod == null)
 		{
-			mod = Type.resolveClass('modcharting.' + modClass + "Modifier");
+			mod = Type.resolveClass('modcharting.modifiers.' + modClass + "Modifier");
 		} // dont need to add "Modifier" to the end of every mod
 
 		if (mod != null)
@@ -475,10 +475,10 @@ class ModchartFuncs
 		if (instance.playfieldRenderer.modifierTable.modifiers.exists(name))
 		{
 			var mod = instance.playfieldRenderer.modifierTable.modifiers.get(name);
-			if (Std.isOfType(mod, EaseModifier))
+			if (Std.isOfType(mod, modcharting.modifiers.Incoming.Ease))
 			{
 				var temp:Dynamic = mod;
-				var castedMod:EaseModifier = temp;
+				var castedMod:modcharting.modifiers.Incoming.Ease = temp;
 				castedMod.setEase(ease);
 			}
 		}
