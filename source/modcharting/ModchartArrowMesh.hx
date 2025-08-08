@@ -71,7 +71,12 @@ class ModchartArrowMesh extends FlxBasic
 			_rotationVector.setTo(planeVertices[vertPointer], planeVertices[vertPointer + 1], 0);
 
 			// The result of the vert rotation
-			var rotation = ModchartUtil.rotate3DVector(_rotationVector, data.angleX, data.angleY, data.angle + data.angleZ);
+			var rotation = _rotationVector;
+
+			// apply scale
+			rotation.x = rotation.x * data.scaleX;
+			rotation.y = rotation.y * data.scaleY;
+			rotation.z *= 0.001;
 
 			// apply skewness
 			if (data.skewX != 0 || data.skewY != 0)
@@ -84,9 +89,9 @@ class ModchartArrowMesh extends FlxBasic
 				rotation.x = _matrix.__transformX(rotation.x, rotation.y);
 				rotation.y = _matrix.__transformY(rotation.x, rotation.y);
 			}
-			rotation.x = rotation.x * data.scaleX;
-			rotation.y = rotation.y * data.scaleY;
-			rotation.z *= 0.001;
+
+			// apply rotation
+			rotation = ModchartUtil.rotate3DVector(rotation, data.angleX, data.angleY, data.angle + data.angleZ);
 
 			final projection = ModchartUtil.calculatePerspective(rotation, ModchartUtil.defaultFOV * (Math.PI / 180));
 

@@ -49,7 +49,7 @@ class Beat extends Modifier
 {
 	override function setupSubValues()
 	{
-		setSubMod("speed", 0.0);
+		setSubMod("speed", 1.0);
 		setSubMod("mult", 1.0);
 		setSubMod("offset", 0.0);
 		setSubMod("alternate", 1.0);
