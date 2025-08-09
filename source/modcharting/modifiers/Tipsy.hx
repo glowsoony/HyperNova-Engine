@@ -76,9 +76,9 @@ class Tipsy extends Modifier // My idea is clever, make this more simple to use
 		var returnValue:Float = 0.0;
 
 		if (usesAlt)
-			returnValue = currentValue * (FlxMath.fastCos((time + ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+			returnValue = currentValue * (FlxMath.fastCos((time + ((lane) % NoteMovement.keyCount) * getSubMod('desync')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 		else
-			returnValue = currentValue * (FlxMath.fastSin((time + ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+			returnValue = currentValue * (FlxMath.fastSin((time + ((lane) % NoteMovement.keyCount) * getSubMod('desync')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
