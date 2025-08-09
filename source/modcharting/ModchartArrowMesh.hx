@@ -91,9 +91,9 @@ class ModchartArrowMesh extends FlxBasic
 			}
 
 			// apply rotation
-			rotation = ModchartUtil.rotate3DVector(rotation, data.angleX, data.angleY, data.angle + data.angleZ);
+			final rotate = ModchartUtil.rotate3DVector(rotation, data.angleX, data.angleY, data.angle + data.angleZ);
 
-			final projection = ModchartUtil.calculatePerspective(rotation, ModchartUtil.defaultFOV * (Math.PI / 180));
+			final projection = ModchartUtil.calculatePerspective(rotate, ModchartUtil.defaultFOV * (Math.PI / 180));
 
 			planeVertices[vertPointer] = data.x + projection.x;
 			planeVertices[vertPointer + 1] = data.y + projection.y;

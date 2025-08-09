@@ -43,11 +43,11 @@ class Tipsy extends Modifier // My idea is clever, make this more simple to use
 {
 	override function setupSubValues()
 	{
-		setSubMod('period', 1.0);
-		setSubMod('offset', 0.0);
 		setSubMod('speed', 1.0);
-		setSubMod('useAlt', 0.0);
+		setSubMod('desync', 2.0);
+		setSubMod('offset', 0.0);
 		setSubMod('timertype', 0.0);
+		setSubMod('useAlt', 0.0);
 	}
 
 	function tanTipsyMath(lane:Int, curPos:Float):Float
@@ -59,9 +59,9 @@ class Tipsy extends Modifier // My idea is clever, make this more simple to use
 		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var returnValue:Float = 0.0;
 		if (usesAlt)
-			returnValue = currentValue * (1 / Math.sin((time + ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+			returnValue = currentValue * (1 / Math.sin((time + ((lane) % NoteMovement.keyCount) * getSubMod('desync')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 		else
-			returnValue = currentValue * (Math.tan((time + ((lane) % NoteMovement.keyCount) * getSubMod('period')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
+			returnValue = currentValue * (Math.tan((time + ((lane) % NoteMovement.keyCount) * getSubMod('desync')) * (5) * 1 * 0.2) * Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
