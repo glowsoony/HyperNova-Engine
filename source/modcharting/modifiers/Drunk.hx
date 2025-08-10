@@ -66,13 +66,13 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 		var screenHeight:Float = FlxG.height;
 		var drunk_desync:Float = getSubMod("desync") * 0.2;
 		var returnValue:Float = 0.0;
-		var mult:Float = getSubMod("size");
+		var mult:Float = getSubMod("size")/2;
 		if (!usesAlt)
 			returnValue = currentValue * (Math.tan((time) + (((lane) % NoteMovement.keyCount) * drunk_desync) +
-				(curPos * 0.45) * (10.0 / screenHeight) * mult * 1.75)) * (Note.swagWidth * 0.5);
+				(curPos * 0.45) * (10.0 / screenHeight) * mult)) * (Note.swagWidth * 0.5);
 		else
 			returnValue = currentValue * (1 / Math.sin((time) + (((lane) % NoteMovement.keyCount) * drunk_desync)
-				+ (curPos * 0.45) * (10.0 / screenHeight) * mult * 2)) * (Note.swagWidth * 0.5);
+				+ (curPos * 0.45) * (10.0 / screenHeight) * mult)) * (Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
@@ -87,14 +87,14 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 		var screenHeight:Float = FlxG.height;
 		var drunk_desync:Float = getSubMod("desync") * 0.2;
 		var returnValue:Float = 0.0;
-		var mult:Float = getSubMod("size");
+		var mult:Float = getSubMod("size")/2;
 
 		if (!usesAlt)
 			returnValue = currentValue * (FlxMath.fastSin((time) + (((lane) % NoteMovement.keyCount) * drunk_desync)
-				+ (curPos * 0.45) * (10.0 / screenHeight) * mult * 2)) * (Note.swagWidth * 0.5);
+				+ (curPos * 0.45) * (10.0 / screenHeight) * mult)) * (Note.swagWidth * 0.5);
 		else
 			returnValue = currentValue * (FlxMath.fastCos((time) + (((lane) % NoteMovement.keyCount) * drunk_desync)
-				+ (curPos * 0.45) * (10.0 / screenHeight) * mult * 1.75)) * (Note.swagWidth * 0.5);
+				+ (curPos * 0.45) * (10.0 / screenHeight) * mult)) * (Note.swagWidth * 0.5);
 
 		return returnValue;
 	}
