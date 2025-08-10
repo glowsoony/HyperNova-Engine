@@ -26,7 +26,7 @@ import objects.Note;
 	[EXTRA & REWORK] Drunk Helper class:
 	-   Drunk helper class has the basics of Drunk with lot of new subValues (for both Drunk and TanDrunk).
 	-   Added 5 subValues:
-		+   Period (changes drunk's period)
+		+   desync (changes drunk's desync)
 		+   Offset (changes drunk's offset)
 		+   Size (changes how big/small drunk goes)
 		+   UseAlt (changes it's math, if drunk (uses sin) it will now use cos, if tanDrunk (uses tangent) it will now use cosecant).
@@ -48,10 +48,10 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 {
 	override function setupSubValues()
 	{
-		setSubMod("period", 1.0);
-		setSubMod("offset", 1.0);
 		setSubMod("speed", 1.0);
 		setSubMod("size", 1.0);
+		setSubMod("desync", 1.0);
+		setSubMod("offset", 1.0);
 		setSubMod("useAlt", 0.0);
 		setSubMod("timertype", 0.0);
 	}
@@ -64,7 +64,7 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 
 		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var screenHeight:Float = FlxG.height;
-		var drunk_desync:Float = getSubMod("period") * 0.1;
+		var drunk_desync:Float = getSubMod("desync") * 0.2;
 		var returnValue:Float = 0.0;
 		var mult:Float = getSubMod("size") / 2.0;
 		if (!usesAlt)
@@ -85,7 +85,7 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 
 		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var screenHeight:Float = FlxG.height;
-		var drunk_desync:Float = getSubMod("period");
+		var drunk_desync:Float = getSubMod("desync");
 		var returnValue:Float = 0.0;
 		var mult:Float = getSubMod("size");
 
