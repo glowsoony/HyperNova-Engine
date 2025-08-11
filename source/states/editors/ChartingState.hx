@@ -2719,7 +2719,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		metronomeStepper = new PsychUINumericStepper(objX + 200, objY, 0.2, 0, 0, 1, 1);
 
 		objY += 50;
-		instVolumeStepper = new PsychUINumericStepper(objX, objY, 0.1, 0.6, 0, 1, 1);
+		instVolumeStepper = new PsychUINumericStepper(objX, objY, 0.1, 1, 0, 1, 1);
 		instVolumeStepper.onValueChange = updateAudioVolume;
 		playerVolumeStepper = new PsychUINumericStepper(objX + 100, objY, 0.1, 1, 0, 1, 1);
 		playerVolumeStepper.onValueChange = updateAudioVolume;
