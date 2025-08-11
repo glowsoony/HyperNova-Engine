@@ -98,7 +98,7 @@ class TitleState extends MusicBeatState
 				if (updateVersion != curVersion)
 				{
 					trace('versions arent matching!');
-					mustUpdate = true;
+					//mustUpdate = true;
 				}
 			}
 
