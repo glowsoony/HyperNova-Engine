@@ -14,7 +14,7 @@ import states.editors.content.Prompt;
 import states.editors.content.PsychJsonPrinter;
 
 @:bitmap("assets/embed/images/ui/cursorCross.png")
-class GraphicCursorCross extends BitmapData
+class PointerCursorCross extends BitmapData
 {
 }
 
@@ -110,7 +110,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 
 		addCharacter();
 
-		cameraFollowPointer = new FlxSprite(FlxGraphic.fromClass(PointerGraphic));
+		cameraFollowPointer = new FlxSprite(FlxGraphic.fromClass(PointerCursorCross));
 		cameraFollowPointer.setGraphicSize(40, 40);
 		cameraFollowPointer.updateHitbox();
 

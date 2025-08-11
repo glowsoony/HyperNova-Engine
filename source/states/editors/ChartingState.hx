@@ -267,7 +267,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		FlxG.cameras.add(camUI, false);
 
 		chartEditorSave = new FlxSave();
-		chartEditorSave.bind('chart_editor_data', CoolUtil.getSavePath(), (raw, err) -> {});
+		chartEditorSave.bind('chart_editor_data', CoolUtil.getSavePath());
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
@@ -1367,10 +1367,10 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			else if (FlxG.mouse.justMoved)
 				updateSelectionBox();
 		}
-		else if (FlxG.mouse.pressedRight && (FlxG.mouse.deltaScreenX != 0 || FlxG.mouse.deltaScreenY != 0))
+		else if (FlxG.mouse.pressedRight && (FlxG.mouse.screenX != 0 || FlxG.mouse.screenY != 0))
 		{
-			selectionBox.setPosition(FlxG.mouse.viewX, FlxG.mouse.viewY);
-			selectionStart.set(FlxG.mouse.viewX, FlxG.mouse.viewY);
+			selectionBox.setPosition(FlxG.mouse.screenX, FlxG.mouse.screenY);
+			selectionStart.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
 			selectionBox.visible = true;
 			updateSelectionBox();
 		}
@@ -2099,8 +2099,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 	function updateSelectionBox()
 	{
-		var diffX:Float = FlxG.mouse.viewX - selectionStart.x;
-		var diffY:Float = FlxG.mouse.viewY - selectionStart.y;
+		var diffX:Float = FlxG.mouse.screenX - selectionStart.x;
+		var diffY:Float = FlxG.mouse.screenY - selectionStart.y;
 		selectionBox.setPosition(selectionStart.x, selectionStart.y);
 
 		if (diffX < 0) // Fixes negative X scale

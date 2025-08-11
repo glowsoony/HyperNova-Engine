@@ -1,9 +1,10 @@
 package mikolka.stages.erect;
 
+import mikolka.compatibility.VsliceOptions;
 import mikolka.stages.cutscenes.SchoolDoof;
 import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych;
 import mikolka.stages.scripts.PicoCapableStage;
-import mikolka.compatibility.VsliceOptions;
+import openfl.utils.Assets as OpenFlAssets;
 import shaders.AdjustColorShader;
 import shaders.ColorSwap;
 import shaders.DropShadowShader;
@@ -11,11 +12,9 @@ import shaders.DropShadowShader;
 import objects.Character;
 import substates.GameOverSubstate;
 #end
-import openfl.utils.Assets as OpenFlAssets;
 
 class SchoolErect extends BaseStage
 {
-
 	override function create()
 	{
 		#if LEGACY_PSYCH PlayState.SONG.splashSkin = "pixelNoteSplash"; #end
@@ -90,82 +89,108 @@ class SchoolErect extends BaseStage
 		if (!seenCutscene && (songName.endsWith("(pico-mix)") || isStoryMode))
 		{
 			var cutscene = new SchoolDoof(songName);
-			if(songName == 'roses-(pico-mix)' || songName == "roses-erect") {
-				
+			if (songName == 'roses-(pico-mix)' || songName == "roses-erect")
+			{
 				setStartCallback(cutscene.doAngryIntro);
 			}
-			else setStartCallback(cutscene.doSchoolIntro);
+			else
+				setStartCallback(cutscene.doSchoolIntro);
 		}
 	}
+
 	var wasInit:Bool = true;
-	override function startNextDialogue(dialogueCount:Int) {
-		if(songName == "senpai-(pico-mix)"){
-			switch (dialogueCount){
-				case 1:{
-					if(wasInit) {
-						wasInit = false;
-						return;
+
+	override function startNextDialogue(dialogueCount:Int)
+	{
+		if (songName == "senpai-(pico-mix)")
+		{
+			switch (dialogueCount)
+			{
+				case 1:
+					{
+						if (wasInit)
+						{
+							wasInit = false;
+							return;
+						}
+						FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
 					}
-					FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
-				}
-				case 2: {
-					FlxG.sound.music.pause();
-				}
-				case 8: {
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
-					FlxG.sound.music.resume();
-				}
+				case 2:
+					{
+						FlxG.sound.music.pause();
+					}
+				case 8:
+					{
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+						FlxG.sound.music.resume();
+					}
 			}
 		}
-		if(songName == "senpai-erect" && dialogueCount == 2){
+		if (songName == "senpai-erect" && dialogueCount == 2)
+		{
 			FlxG.sound.music.pause();
 		}
-
 	}
-	override function gameOverStart(SubState:GameOverSubstate) {
+
+	override function gameOverStart(SubState:GameOverSubstate)
+	{
 		boyfriend.shader = null;
 		super.gameOverStart(SubState);
 	}
-	override function createPost(){
+
+	override function createPost()
+	{
 		var _song = PlayState.SONG;
-		if(PicoCapableStage.PIXEL_LIST.contains(gf.curCharacter)){
+		if (PicoCapableStage.PIXEL_LIST.contains(gf.curCharacter))
+		{
 			#if LEGACY_PSYCH
 			GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel-pico';
 			GameOverSubstate.loopSoundName = 'gameOver-pixel-pico';
 			GameOverSubstate.endSoundName = 'gameOverEnd-pixel-pico';
 			GameOverSubstate.characterName = 'pico-pixel';
 			#else
-			if(_song.gameOverSound == null || _song.gameOverSound.trim().length < 1) GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel-pico';
-			if(_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1) GameOverSubstate.loopSoundName = 'gameOver-pixel-pico';
-			if(_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1) GameOverSubstate.endSoundName = 'gameOverEnd-pixel-pico';
-			if(_song.gameOverChar == null || _song.gameOverChar.trim().length < 1) GameOverSubstate.characterName = 'pico-pixel';
+			if (_song.gameOverSound == null || _song.gameOverSound.trim().length < 1)
+				GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel-pico';
+			if (_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1)
+				GameOverSubstate.loopSoundName = 'gameOver-pixel-pico';
+			if (_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1)
+				GameOverSubstate.endSoundName = 'gameOverEnd-pixel-pico';
+			if (_song.gameOverChar == null || _song.gameOverChar.trim().length < 1)
+				GameOverSubstate.characterName = 'pico-pixel';
 			#end
 		}
-		else{
+		else
+		{
 			#if LEGACY_PSYCH
 			GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
 			GameOverSubstate.loopSoundName = 'gameOver-pixel';
 			GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
 			GameOverSubstate.characterName = 'pico-pixel-dead';
 			#else
-			if(_song.gameOverSound == null || _song.gameOverSound.trim().length < 1) GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
-			if(_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1) GameOverSubstate.loopSoundName = 'gameOver-pixel';
-			if(_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1) GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
-			if(_song.gameOverChar == null || _song.gameOverChar.trim().length < 1) GameOverSubstate.characterName = 'bf-pixel-dead';
+			if (_song.gameOverSound == null || _song.gameOverSound.trim().length < 1)
+				GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
+			if (_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1)
+				GameOverSubstate.loopSoundName = 'gameOver-pixel';
+			if (_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1)
+				GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
+			if (_song.gameOverChar == null || _song.gameOverChar.trim().length < 1)
+				GameOverSubstate.characterName = 'bf-pixel-dead';
 			#end
 		}
 
-		if(VsliceOptions.SHADERS) {
-		applyShader(boyfriend,boyfriend.curCharacter);
-		applyShader(gf,gf.curCharacter);
-		applyShader(dad,dad.curCharacter);
+		if (VsliceOptions.SHADERS)
+		{
+			applyShader(boyfriend, boyfriend.curCharacter);
+			applyShader(gf, gf.curCharacter);
+			applyShader(dad, dad.curCharacter);
 
-		if(PicoCapableStage.instance?.abotPixel != null){
-			applyShader(PicoCapableStage.instance.abotPixel.speakerTop,"speakerTop");
-			applyShader(PicoCapableStage.instance.abotPixel.speaker,"");
-			applyShader(PicoCapableStage.instance.abotPixel.eyes,"");
-		}
+			if (PicoCapableStage.instance?.abotPixel != null)
+			{
+				applyShader(PicoCapableStage.instance.abotPixel.speakerTop, "speakerTop");
+				applyShader(PicoCapableStage.instance.abotPixel.speaker, "");
+				applyShader(PicoCapableStage.instance.abotPixel.eyes, "");
+			}
 		}
 		camFollow_set(800, 500);
 		camGame.snapToTarget();

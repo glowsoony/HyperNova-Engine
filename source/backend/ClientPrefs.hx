@@ -2,6 +2,7 @@ package backend;
 
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxSave;
 import states.InitState;
 
 // Add a variable here and it will get automatically saved
@@ -102,7 +103,8 @@ import states.InitState;
 	];
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
-	public var ratingOffset:Int = 0;
+	public var ratingOffset:Float = 0;
+	public var marvelousWindow:Float = 22.5;
 	public var sickWindow:Float = 45.0;
 	public var goodWindow:Float = 90.0;
 	public var badWindow:Float = 135.0;
@@ -327,13 +329,7 @@ class ClientPrefs
 
 		// controls on a separate save file
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v3', CoolUtil.getSavePath(), (rawSave, error) ->
-		{
-			trace("Couldn't load controls. Discarding..");
-			return
-			{
-			};
-		});
+		save.bind('controls_v3', CoolUtil.getSavePath());
 		if (save != null)
 		{
 			if (save.data.keyboard != null)

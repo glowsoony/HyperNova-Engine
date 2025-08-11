@@ -56,9 +56,10 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.onChange = onChangeHitsoundVolume;
 
 		var option:Option = new Option('Rating Offset', 'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
-			'ratingOffset', INT);
+			'ratingOffset', FLOAT);
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 20;
+		option.changeValue = 0.1;
 		option.minValue = -30;
 		option.maxValue = 30;
 		addOption(option);

@@ -62,6 +62,11 @@ class PauseSubState extends MusicBeatSubstate
 
 	public static var songName:String = null;
 
+	public static var goBackToPause:Bool = false;
+	public static var goToOptions:Bool = false;
+	public static var goBack:Bool = false;
+	public static var goToModifiers:Bool = false;
+
 	public function new(inCutscene:Bool = false, type:PauseType = PauseType.CUTSCENE)
 	{
 		super();
@@ -255,6 +260,8 @@ class PauseSubState extends MusicBeatSubstate
 
 	var holdTime:Float = 0;
 	var cantUnpause:Float = 0.1;
+	var stoppedUpdatingMusic:Bool = false;
+	var unPauseTimer:FlxTimer;
 
 	override function update(elapsed:Float)
 	{

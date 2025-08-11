@@ -24,12 +24,13 @@ import mikolka.stages.EventLoader;
 import mikolka.stages.EventLoader;
 import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych;
 import mikolka.vslice.StickerSubState;
+import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.results.ResultState;
 import mikolka.vslice.results.Tallies;
 import mikolka.vslice.ui.StoryMenuState;
-import modchart.Manager; // modchart stuff
+import mikolka.vslice.ui.StoryMenuState;
 import objects.*;
 import objects.Note.EventNote;
 import objects.VideoSprite;
@@ -38,12 +39,13 @@ import openfl.events.KeyboardEvent;
 import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.Assets as OpenFlAssets;
-import mikolka.vslice.ui.StoryMenuState;
 import states.editors.CharacterEditorState;
 import states.editors.ChartingState;
 import substates.GameOverSubstate;
 import substates.PauseSubState;
-import mikolka.vslice.StickerSubState;
+#if funkin_modchart
+import modchart.Manager; // modchart stuff
+#end
 #if !flash
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
@@ -360,8 +362,10 @@ class PlayState extends MusicBeatState
 
 	var edwhakDrain:Float = 0.03; // 0.03 or more if changed
 
+	#if funkin_modchart
 	// Modchart stuff
 	public var modchartRenderer:Manager;
+	#end
 
 	var staticDeath:FlxSprite;
 	var offEffect:FlxSprite;
@@ -783,6 +787,7 @@ class PlayState extends MusicBeatState
 				playfieldRenderer.cameras = [camHUD];
 				add(playfieldRenderer);
 			}
+			#if funkin_modchart
 			else if (SONG.notITG && SONG.newModchartTool)
 			{
 				modchartRenderer = new Manager();
@@ -790,11 +795,12 @@ class PlayState extends MusicBeatState
 				add(grpNoteSplashes);
 				add(grpHoldSplashes);
 			}
-			else
-			{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes for vanilla!
-				add(grpNoteSplashes);
-				add(grpHoldSplashes);
-			}
+			#end
+		else
+		{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes for vanilla!
+			add(grpNoteSplashes);
+			add(grpHoldSplashes);
+		}
 		}
 		else
 		{
@@ -1060,10 +1066,11 @@ class PlayState extends MusicBeatState
 	public function reloadHealthBarColors()
 	{
 		if (ClientPrefs.data.vsliceLegacyBar)
-			healthBar.setColors(FlxColor.RED, FlxColor.LIME);
+			hitmansHud.healthBar.createFilledBar(FlxColor.RED, FlxColor.LIME);
 		else
-			healthBar.setColors(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
+			hitmansHud.healthBar.createFilledBar(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
 				FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
+		hitmansHud.healthBar.updateBar();
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int)
@@ -2483,12 +2490,6 @@ class PlayState extends MusicBeatState
 
 		setOnScripts('curDecStep', curDecStep);
 		setOnScripts('curDecBeat', curDecBeat);
-
-		if (botplayTxt != null && botplayTxt.visible)
-		{
-			botplaySine += 180 * elapsed;
-			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
-		}
 
 		if ((controls.PAUSE #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonP.justPressed #end#if android || FlxG.android.justReleased.BACK #end)
 			&& startedCountdown
@@ -4722,8 +4723,10 @@ class PlayState extends MusicBeatState
 			resetSubState();
 		}
 
+		#if funkin_modchart
 		if (modchartRenderer != null)
 			modchartRenderer.destroy();
+		#end
 
 		#if LUA_ALLOWED
 		for (lua in luaArray)

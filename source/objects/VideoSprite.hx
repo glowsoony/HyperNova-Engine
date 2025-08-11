@@ -152,16 +152,6 @@ class VideoSprite extends FlxSpriteGroup
 							FlxTimer.wait(0.8, () -> pauseJustClosed = false);
 							resume();
 						}
-					case RESUME: {
-						resume();
-						}
-					case NOTHING: {
-							finishCallback = null;
-						}
-					case RESTART: {
-							videoSprite.bitmap.time = 0;
-							resume();
-						}
 				}
 			});
 		}
@@ -181,9 +171,6 @@ class VideoSprite extends FlxSpriteGroup
 
 	public function resume()
 		videoSprite?.resume();
-
-	public function pause()
-		videoSprite?.pause();
 
 	public function pause()
 		videoSprite?.pause();

@@ -10,7 +10,7 @@ private class FunkinCursor extends BitmapData
 {
 }
 
-class MusicBeatState extends FlxState
+class MusicBeatState extends modcharting.ModchartMusicBeatState
 {
 	private static var currentState:MusicBeatState;
 

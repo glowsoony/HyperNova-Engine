@@ -876,7 +876,7 @@ class FunkinLua
 			game.persistentUpdate = false;
 			FlxG.camera.followLerp = 0;
 			FlxG.sound.pause();
-			PauseSubState.restartSong(skipTransition);
+			substates.PauseSubState.restartSong(skipTransition);
 			return true;
 		});
 		Lua_helper.add_callback(lua, "exitSong", function(?skipTransition:Bool = false)
