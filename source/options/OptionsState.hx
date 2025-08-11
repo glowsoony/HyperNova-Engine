@@ -4,7 +4,7 @@ import backend.StageData;
 import flixel.FlxObject;
 import mikolka.vslice.components.crash.UserErrorSubstate;
 import mikolka.vslice.components.crash.UserErrorSubstate;
-import states.MainMenuState;
+import mikolka.vslice.ui.MainMenuState;
 #if (target.threaded)
 import sys.thread.Mutex;
 import sys.thread.Thread;
