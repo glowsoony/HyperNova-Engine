@@ -15,6 +15,7 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
+import openfl.events.Event;
 import states.InitState;
 #if HSCRIPT_ALLOWED
 import crowplexus.iris.Iris;

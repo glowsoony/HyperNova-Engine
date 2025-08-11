@@ -4,7 +4,7 @@ import flixel.group.FlxGroup;
 import flixel.system.scaleModes.*;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.ui.MainMenuState;
-import states.StoryMenuState;
+import mikolka.vslice.ui.StoryMenuState;
 
 class GameplayCrashHandler
 {

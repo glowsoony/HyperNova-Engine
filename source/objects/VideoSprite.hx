@@ -153,16 +153,6 @@ class VideoSprite extends FlxSpriteGroup
 							resume();
 						}
 				}
-				case RESUME: {
-						resume();
-					}
-				case NOTHING: {
-						finishCallback = null;
-					}
-				case RESTART: {
-						videoSprite.bitmap.time = 0;
-						resume();
-					}
 			});
 		}
 		super.update(elapsed);

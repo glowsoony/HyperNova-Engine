@@ -16,6 +16,8 @@ import mikolka.stages.EventLoader;
 import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych;
 import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
+import mikolka.vslice.ui.MainMenuState;
+import mikolka.vslice.ui.StoryMenuState;
 import mobile.psychlua.Functions;
 import objects.Character;
 import objects.Note;
@@ -30,11 +32,7 @@ import psychlua.DebugLuaText;
 import psychlua.LuaUtils.LuaTweenOptions;
 import psychlua.LuaUtils;
 import psychlua.ModchartSprite;
-import mikolka.vslice.ui.MainMenuState;
-import mikolka.vslice.ui.StoryMenuState;
 import substates.GameOverSubstate;
-import substates.PauseSubState;
-import mikolka.vslice.StickerSubState;
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
 #end

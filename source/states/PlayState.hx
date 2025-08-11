@@ -28,6 +28,7 @@ import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.results.ResultState;
 import mikolka.vslice.results.Tallies;
+import mikolka.vslice.ui.StoryMenuState;
 import modchart.Manager; // modchart stuff
 import objects.*;
 import objects.Note.EventNote;
@@ -37,12 +38,10 @@ import openfl.events.KeyboardEvent;
 import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.Assets as OpenFlAssets;
-import states.StoryMenuState;
 import states.editors.CharacterEditorState;
 import states.editors.ChartingState;
 import substates.GameOverSubstate;
 import substates.PauseSubState;
-import substates.StickerSubState;
 #if !flash
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
