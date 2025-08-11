@@ -38,18 +38,12 @@ import openfl.events.KeyboardEvent;
 import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.Assets as OpenFlAssets;
-<<<<<<< Updated upstream
-=======
 import mikolka.vslice.ui.StoryMenuState;
->>>>>>> Stashed changes
 import states.editors.CharacterEditorState;
 import states.editors.ChartingState;
 import substates.GameOverSubstate;
 import substates.PauseSubState;
-<<<<<<< Updated upstream
-=======
 import mikolka.vslice.StickerSubState;
->>>>>>> Stashed changes
 #if !flash
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
