@@ -25,7 +25,9 @@ import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase import flixel.ui.FlxBar;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
@@ -50,7 +52,6 @@ import modcharting.*;
 import objects.Alphabet;
 import objects.BGSprite;
 import openfl.Lib;
-import shaders.flixel.system.FlxShader;
 import states.LoadingState;
 import states.MainMenuState;
 import states.PlayState;
@@ -59,7 +60,6 @@ import states.stages.objects.*;
 
 using StringTools;
 
-import flixel.tweens.FlxTween;
 // Discord API
 #if DISCORD_ALLOWED
 import backend.Discord;
