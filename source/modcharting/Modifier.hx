@@ -464,6 +464,27 @@ class ModifierMath
 			+ ((lane % NoteMovement.keyCount) * 0.2)
 			+ (curPos * (0.225 * offset)) * ((spacing * 10) / FlxG.height)) * (speed * 0.2)) * Note.swagWidth * (0.5 * size));
 	}
+
+	/**
+	 * Performs a modulo operation to calculate the remainder of `a` divided by `b`.
+	 *
+	 * The definition of "remainder" varies by implementation;
+	 * this one is similar to GLSL or Python in that it uses Euclidean division, which always returns positive,
+	 * while Haxe's `%` operator uses signed truncated division.
+	 *
+	 * For example, `-5 % 3` returns `-2` while `FlxMath.mod(-5, 3)` returns `1`.
+	 *
+	 * @param a The dividend.
+	 * @param b The divisor.
+	 * @return `a mod b`.
+	 *
+	 * SOURCE: https://github.com/HaxeFlixel/flixel/pull/3341/files
+	 */
+	public static inline function mod(a:Float, b:Float):Float
+	{
+		b = Math.abs(b);
+		return a - b * Math.floor(a / b);
+	}
 }
 
 // adding drunk and tipsy for all axis because i can
@@ -478,6 +499,7 @@ class ModifierMath
 //         noteMath(noteData, lane, 0, pf); //just reuse same thing
 //     }
 // }
+/**
 class DrunkXModifier extends Modifier
 {
 	override function setupSubValues()
@@ -4057,31 +4079,31 @@ class CosecantSkewYModifier extends Modifier
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
 }
+**/
+// class ShakyNotesModifier extends Modifier
+// {
+// 	override function setupSubValues()
+// 	{
+// 		subValues.set('speed', new ModifierSubValue(1.0));
+// 	}
 
-class ShakyNotesModifier extends Modifier
-{
-	override function setupSubValues()
-	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-	}
+// 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+// 	{
+// 		noteData.x += FlxMath.fastSin(500)
+// 			+ currentValue * (Math.cos(Conductor.songPosition * 4 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
+// 				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
 
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		noteData.x += FlxMath.fastSin(500)
-			+ currentValue * (Math.cos(Conductor.songPosition * 4 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+// 		noteData.y += FlxMath.fastSin(500)
+// 			+ currentValue * (Math.cos(Conductor.songPosition * 8 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
+// 				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
+// 	}
 
-		noteData.y += FlxMath.fastSin(500)
-			+ currentValue * (Math.cos(Conductor.songPosition * 8 * 0.2) + ((lane % NoteMovement.keyCount) * 0.2) - 0.002) * (Math.sin(100
-				- (120 * subValues.get('speed').value * 0.4))) /** (BeatXModifier.getShift(noteData, lane, curPos, pf) / 2)*/;
-	}
-
-	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
-	{
-		noteMath(noteData, lane, 0, pf);
-	}
-}
-
+// 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+// 	{
+// 		noteMath(noteData, lane, 0, pf);
+// 	}
+// }
+/*
 class ShakeNotesModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -5553,6 +5575,7 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 		return 1;
 	}
 }
+*/
 /*
 	class MegaMindModifier extend Modifier
 	trace("

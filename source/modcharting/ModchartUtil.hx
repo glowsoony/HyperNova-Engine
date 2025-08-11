@@ -442,6 +442,34 @@ class ModchartUtil
 		return totalTime;
 	}
 
+	inline public static function rotatePivot(vec:Vector3D, rotation:Float, w:Float, h:Float, type:String = "x"):Vector3D
+	{
+		var angle:Float = rotation;
+
+		if (angle == 0) return vec;
+
+		switch (type)
+		{
+			case "z":
+				var pivotPoint:Vector2 = new Vector2(w/2, h/2);
+				var output:Vector2 = rotateAround(pivotPoint, new Vector2(vec.x, vec.y), angle);
+				vec.x = output.x;
+				vec.y = output.y;
+			case "y":
+				var pivotPoint:Vector2 = new Vector2(w/2, 0);
+				var output:Vector2 = rotateAround(pivotPoint, new Vector2(vec.z, vec.x), angle);
+				vec.x = output.x;
+				vec.z = output.y;
+			case "x":
+				var pivotPoint:Vector2 = new Vector2(0, h/2);
+				var output:Vector2 = rotateAround(pivotPoint, new Vector2(vec.z, vec.y), angle);
+				vec.z = output.x;
+				vec.y = output.y;
+		}
+
+		return vec;
+	}
+
 	public static var ROTATION_ORDER:RotationOrder = X_Y_Z;
 	@:pure @:noDebug
 	inline public static function rotate3DVector(vec:Vector3D, angleX:Float, angleY:Float, angleZ:Float):Vector3D

@@ -168,8 +168,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel"/>
-	<haxelib name="flixel-addons" version="3.3.2"/>
-	<haxelib name="tjson" version="1.4.0"/>
+	<haxelib name="flixel-addons"/>
+	<haxelib name="tjson"/>
 	<haxelib name="FlxPartialSound" version="git"/>
 	<haxelib name="grig.audio" />
 	<haxelib name="funkin.vis" />
@@ -178,6 +178,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="compiletime" />
 
 	<define name="PSYCH" />
+	<!-- <haxeflag name="macro" value="include('modcharting.modifiers')" /> -->
 
 	<!-- el adapter de pslice tiene unas cositas extra xd -->
 	<haxedef name="FM_ENGINE" value="PSLICE"/>

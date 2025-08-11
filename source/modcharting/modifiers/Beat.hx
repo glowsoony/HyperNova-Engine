@@ -31,11 +31,13 @@ import objects.Note;
 
 	[EXTRA & REWORK] Beat Helper class:
 	-   Beat helper class has the basics of Beat with lot of new subValues.
-	-   Has 4 subValues:
+	-   Has 6 subValues:
 		+   speed (changes Beat's speed)
 		+   mult (changes Beat's intensity (value on 0 makes beat do nothing))
 		+ 	offset (changes Beat's movement offset)
 		+	alternate (changes Beat's method, if value is less than 0.5 it will only move at one direction (default value = 1))
+		+	fAccelTime (changes the acceleration time)
+		+	fTotalTime (changes the total time)
 	-   Beat helper class can be called via custom mods (so you can create any custom BeatMod, such as idk, BeatDadX. yet you are the one who defines how to use it).
 		+ Methods (2):
 			1. Use ModifiersMath.Beat(values) and set it to whatever you want to modify.
@@ -47,23 +49,25 @@ class Beat extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('offset', new ModifierSubValue(0.0));
-		subValues.set('alternate', new ModifierSubValue(1.0));
+		setSubMod("speed", 1.0);
+		setSubMod("mult", 1.0);
+		setSubMod("offset", 0.0);
+		setSubMod("alternate", 1.0);
+		setSubMod("fAccelTime", 0.2);
+		setSubMod("fTotalTime", 0.5);
 	}
 
 	function beatMath(curPos:Float):Float
 	{
-		var speed:Float = subValues.get("speed").value;
-		var mult:Float = subValues.get("mult").value;
-		var offset:Float = subValues.get("offset").value;
-		var alternate:Bool = (subValues.get("alternate").value >= 0.5);
+		var speed:Float = getSubMod("speed");
+		var mult:Float = getSubMod("mult");
+		var offset:Float = getSubMod("offset");
+		var alternate:Bool = (getSubMod("alternate") >= 0.5);
 
 		var mathToUse:Float = 0.0;
 
-		var fAccelTime = 0.2;
-		var fTotalTime = 0.5;
+		var fAccelTime = getSubMod("fAccelTime");
+		var fTotalTime = getSubMod("fTotalTime");
 
 		/* If the song is really fast, slow down the rate, but speed up the
 		 * acceleration to compensate or it'll look weird. */
@@ -156,7 +160,7 @@ class BeatAngleModifier extends Beat
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += beatMath(curPos);
+		noteData.angle += beatMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

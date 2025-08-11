@@ -15,16 +15,28 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] Attenuate Improvements:
-	-   Added a helper instead of copy and pasted code for the modifiers.
+	-   Now instead of copy paste the math over and over, Attenuate has a main helper class with all math, making it easier to use Attenuate.
 
-	[UPDATE] AttenuateScale: (X,Y Included)
-	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
+	[NEW] AttenuateAngleX:
+	-	Modifier added to allow modifying AngleX with Attenuate without needing a custom mod.
+
+	[NEW] AttenuateAngleY:
+	-	Modifier added to allow modifying AngleY with Attenuate without needing a custom mod.
+
+	[EXTRA & REWORK] Attenuate Helper class:
+	-   Attenuate helper class has the basics of Attenuate.
+	-   Attenuate helper class can be called via custom mods (so you can create any custom AttenuateMod, such as idk, AttenuateDadX. yet you are the one who defines how to use it).
+		+ Methods (2):
+			1. Use ModifiersMath.Attenuate(values) and set it to whatever you want to modify.
+			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.Attenuate)
+				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+				check how to make a customMod (both hx and lua) for better information.
  */
-class AttenuateModifer extends Modifier
+class Attenuate extends Modifier
 {
 	public function attenuateMath(curPos:Float, lane:Int, ?endMult:Float = 0.5):Float
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instace)) ? -1 : 1;
+		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 		var nd = lane % NoteMovement.keyCount;
 		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount * -1 * 0.5, NoteMovement.keyCount * 0.5);
 
@@ -39,7 +51,7 @@ class AttenuateModifer extends Modifier
 	}
 }
 
-class AttenuateXModifier extends Modifier
+class AttenuateXModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -47,7 +59,7 @@ class AttenuateXModifier extends Modifier
 	}
 }
 
-class AttenuateYModifier extends Modifier
+class AttenuateYModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -55,7 +67,7 @@ class AttenuateYModifier extends Modifier
 	}
 }
 
-class AttenuateZModifier extends Modifier
+class AttenuateZModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -63,15 +75,15 @@ class AttenuateZModifier extends Modifier
 	}
 }
 
-class AttenuateAngleModifier extends Modifier
+class AttenuateAngleModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += currentValue * attenuateMath(curPos, lane);
+		noteData.angle += currentValue * attenuateMath(curPos, lane);
 	}
 }
 
-class AttenuateAngleXModifier extends Modifier
+class AttenuateAngleXModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -79,7 +91,7 @@ class AttenuateAngleXModifier extends Modifier
 	}
 }
 
-class AttenuateAngleYModifier extends Modifier
+class AttenuateAngleYModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -87,7 +99,7 @@ class AttenuateAngleYModifier extends Modifier
 	}
 }
 
-class AttenuateScaleModifier extends Modifier
+class AttenuateScaleModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -96,7 +108,7 @@ class AttenuateScaleModifier extends Modifier
 	}
 }
 
-class AttenuateScaleXModifier extends Modifier
+class AttenuateScaleXModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -104,7 +116,7 @@ class AttenuateScaleXModifier extends Modifier
 	}
 }
 
-class AttenuateScaleYModifier extends Modifier
+class AttenuateScaleYModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -112,7 +124,7 @@ class AttenuateScaleYModifier extends Modifier
 	}
 }
 
-class AttenuateSkewModifier extends Modifier
+class AttenuateSkewModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -121,7 +133,7 @@ class AttenuateSkewModifier extends Modifier
 	}
 }
 
-class AttenuateSkewXModifier extends Modifier
+class AttenuateSkewXModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -129,7 +141,7 @@ class AttenuateSkewXModifier extends Modifier
 	}
 }
 
-class AttenuateSkewYModifier extends Modifier
+class AttenuateSkewYModifier extends Attenuate
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

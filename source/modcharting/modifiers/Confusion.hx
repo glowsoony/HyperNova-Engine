@@ -60,17 +60,17 @@ class AngleModifier extends Modifier // note angle
 {
 	override function setupSubValues()
 	{
-		subValues.set('force', new ModifierSubValue(1.0));
+		setSubMod("force", 1.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
-		if (subValues.get('force').value >= 0.5)
-			noteData.angleZ += currentValue;
+		if (getSubMod("force") >= 0.5)
+			noteData.angle += currentValue;
 		else
-			noteData.angleZ += currentValue * scrollSwitch; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
+			noteData.angle += currentValue * scrollSwitch; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -109,17 +109,17 @@ class ConfusionOffsetModifier extends Modifier // note angle
 {
 	override function setupSubValues()
 	{
-		subValues.set('force', new ModifierSubValue(1.0));
+		setSubMod("force", 1.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
-		if (subValues.get('force').value >= 0.5)
-			noteData.angleZ += currentValue * FlxAngle.TO_DEG;
+		if (getSubMod("force") >= 0.5)
+			noteData.angle += currentValue * FlxAngle.TO_DEG;
 		else
-			noteData.angleZ += currentValue * FlxAngle.TO_DEG * scrollSwitch; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
+			noteData.angle += currentValue * FlxAngle.TO_DEG * scrollSwitch; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -158,19 +158,19 @@ class ConfusionModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('forced', new ModifierSubValue(1.0));
+		setSubMod("forced", 1.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 		var mathToUse = 0.0;
-		if (subValues.get('forced').value >= 0.5)
+		if (getSubMod("forced") >= 0.5)
 			mathToUse = Modifier.beat;
 		else
 			mathToUse = Modifier.beat * scrollSwitch;
 
-		noteData.angleZ += mathToUse * currentValue * FlxAngle.TO_DEG; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
+		noteData.angle += mathToUse * currentValue * FlxAngle.TO_DEG; // forced as default now to fix upscroll and downscroll modcharts that uses angle (no need for z and x, just angle and y)
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -183,7 +183,7 @@ class ConfusionXModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('useOld', new ModifierSubValue(0.0));
+		setSubMod("useOld", 0.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -196,7 +196,7 @@ class ConfusionXModifier extends Modifier
 
 		result = mathToUse * currentValue * FlxAngle.TO_DEG;
 
-		if (subValues.get('useOld').value >= 0.5)
+		if (getSubMod("useOld") >= 0.5)
 			noteData.scaleX *= FlxMath.fastCos(result * (Math.PI / 180));
 		else
 			noteData.angleY += result;
@@ -212,7 +212,7 @@ class ConfusionYModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('useOld', new ModifierSubValue(0.0));
+		setSubMod("useOld", 0.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -225,7 +225,7 @@ class ConfusionYModifier extends Modifier
 
 		result = mathToUse * currentValue * FlxAngle.TO_DEG;
 
-		if (subValues.get('useOld').value >= 0.5)
+		if (getSubMod("useOld") >= 0.5)
 			noteData.scaleY *= FlxMath.fastCos(result * (Math.PI / 180));
 		else
 			noteData.angleX += result;
@@ -241,15 +241,15 @@ class DizzyModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('forced', new ModifierSubValue(0.0));
+		setSubMod("forced", 0.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		if (subValues.get('forced').value >= 0.5)
-			noteData.angleZ += currentValue * (Conductor.songPosition * 0.001);
+		if (getSubMod("forced") >= 0.5)
+			noteData.angle += currentValue * (Conductor.songPosition * 0.001);
 		else
-			noteData.angleZ += currentValue * (curPos / 2.0);
+			noteData.angle += currentValue * (curPos / 2.0);
 	}
 }
 
@@ -257,22 +257,22 @@ class TwirlModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('forced', new ModifierSubValue(0.0));
-		subValues.set('useOld', new ModifierSubValue(0.0));
+		setSubMod("forced", 0.0);
+		setSubMod("useOld", 0.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var mathToUse = 0.0;
 		var result = 0.0;
-		if (subValues.get('forced').value >= 0.5)
+		if (getSubMod("forced") >= 0.5)
 			mathToUse = Conductor.songPosition * 0.001;
 		else
 			mathToUse = curPos / 2.0;
 
 		result = mathToUse * currentValue;
 
-		if (subValues.get('useOld').value >= 0.5)
+		if (getSubMod("useOld") >= 0.5)
 			noteData.scaleX *= FlxMath.fastCos(result * (Math.PI / 180));
 		else
 			noteData.angleY += result;
@@ -283,22 +283,22 @@ class RollModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('forced', new ModifierSubValue(0.0));
-		subValues.set('useOld', new ModifierSubValue(0.0));
+		setSubMod("forced", 0.0);
+		setSubMod("useOld", 0.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var mathToUse = 0.0;
 		var result = 0.0;
-		if (subValues.get('forced').value >= 0.5)
+		if (getSubMod("forced") >= 0.5)
 			mathToUse = Conductor.songPosition * 0.001;
 		else
 			mathToUse = curPos / 2.0;
 
 		result = mathToUse * currentValue;
 
-		if (subValues.get('useOld').value >= 0.5)
+		if (getSubMod("useOld") >= 0.5)
 			noteData.scaleY *= FlxMath.fastCos(result * (Math.PI / 180));
 		else
 			noteData.angleX += result;

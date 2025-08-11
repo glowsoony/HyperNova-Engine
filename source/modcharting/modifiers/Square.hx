@@ -21,18 +21,18 @@ import modcharting.Modifier;
 	[UPDATE] Square: (X,Y Included)
 	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
  */
-class SquareModifier extends Modifier
+class Square extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', new ModifierSubValue(1.0));
-		subValues.set('yoffset', new ModifierSubValue(0.0));
-		subValues.set('xoffset', new ModifierSubValue(0.0));
+		setSubMod("mult", 1.0);
+		setSubMod("yoffset", 0.0);
+		setSubMod("xoffset", 0.0);
 	}
 
 	public function squareMath(lane:Int, curPos:Float):Float
 	{
-		var mult:Float = (subValues.get('mult').value / (NoteMovement.arrowSizes[lane] * 2));
+		var mult:Float = (getSubMod("mult") / (NoteMovement.arrowSizes[lane] * 2));
 		var timeOffset:Float = subValues.get('yoffset').value;
 		var xOffset:Float = subValues.get('xoffset').value;
 		var xVal:Float = FlxMath.fastSin(((curPos * 0.45) + timeOffset) * Math.PI * mult);
@@ -41,7 +41,7 @@ class SquareModifier extends Modifier
 	}
 }
 
-class SquareXModifier extends SquareModifier
+class SquareXModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -49,7 +49,7 @@ class SquareXModifier extends SquareModifier
 	}
 }
 
-class SquareYModifier extends SquareModifier
+class SquareYModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -57,7 +57,7 @@ class SquareYModifier extends SquareModifier
 	}
 }
 
-class SquareZModifier extends SquareModifier
+class SquareZModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -65,15 +65,15 @@ class SquareZModifier extends SquareModifier
 	}
 }
 
-class SquareAngleModifier extends SquareModifier
+class SquareAngleModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += squareMath(lane, curPos) * currentValue;
+		noteData.angle += squareMath(lane, curPos) * currentValue;
 	}
 }
 
-class SquareAngleXModifier extends SquareModifier
+class SquareAngleXModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -81,7 +81,7 @@ class SquareAngleXModifier extends SquareModifier
 	}
 }
 
-class SquareAngleYModifier extends SquareModifier
+class SquareAngleYModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -89,7 +89,7 @@ class SquareAngleYModifier extends SquareModifier
 	}
 }
 
-class SquareScaleModifier extends SquareModifier
+class SquareScaleModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -98,7 +98,7 @@ class SquareScaleModifier extends SquareModifier
 	}
 }
 
-class SquareScaleXModifier extends SquareModifier
+class SquareScaleXModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -106,7 +106,7 @@ class SquareScaleXModifier extends SquareModifier
 	}
 }
 
-class SquareScaleYModifier extends SquareModifier
+class SquareScaleYModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -114,7 +114,7 @@ class SquareScaleYModifier extends SquareModifier
 	}
 }
 
-class SquareSkewModifier extends SquareModifier
+class SquareSkewModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -123,7 +123,7 @@ class SquareSkewModifier extends SquareModifier
 	}
 }
 
-class SquareSkewXModifier extends SquareModifier
+class SquareSkewXModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -131,7 +131,7 @@ class SquareSkewXModifier extends SquareModifier
 	}
 }
 
-class SquareSkewYModifier extends SquareModifier
+class SquareSkewYModifier extends Square
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

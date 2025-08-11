@@ -42,14 +42,14 @@ class Bounce extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('useAlt', new ModifierSubValue(0.0));
+		setSubMod("speed", 1.0);
+		setSubMod("useAlt", 0.0);
 	}
 
 	function bounce(curPos:Float):Float
 	{
-		var speed:Float = subValues.get("speed").value;
-		var usesAlt:Bool = (subValues.get("useAlt").value >= 0.5);
+		var speed:Float = getSubMod("speed");
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 
 		var mathToUse:Float = 0.0;
 
@@ -63,8 +63,8 @@ class Bounce extends Modifier
 
 	function tanBounce(curPos:Float):Float
 	{
-		var speed:Float = subValues.get("speed").value;
-		var usesAlt:Bool = (subValues.get("useAlt").value >= 0.5);
+		var speed:Float = getSubMod("speed");
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 
 		var mathToUse:Float = 0.0;
 
@@ -86,8 +86,8 @@ class BounceXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.x += bounce(0); // Make sure this only happens if using cos
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -100,8 +100,8 @@ class BounceYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.y += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -114,8 +114,8 @@ class BounceZModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.z += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -123,13 +123,13 @@ class BounceAngleModifier extends Bounce
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += bounce(curPos);
+		noteData.angle += bounce(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleZ += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -142,8 +142,8 @@ class BounceAngleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleX += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -156,8 +156,8 @@ class BounceAngleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleY += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -171,10 +171,8 @@ class BounceScaleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += bounce(curPos) * 0.01;
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += bounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -187,8 +185,8 @@ class BounceScaleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += bounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -201,8 +199,8 @@ class BounceScaleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += bounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -216,10 +214,8 @@ class BounceSkewModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += bounce(0);
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -232,8 +228,8 @@ class BounceSkewXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -246,8 +242,8 @@ class BounceSkewYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += bounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -260,8 +256,8 @@ class TanBounceXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.x += tanBounce(0); // Make sure this only happens if using cosec
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -274,8 +270,8 @@ class TanBounceYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.y += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -288,8 +284,8 @@ class TanBounceZModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.z += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -297,13 +293,13 @@ class TanBounceAngleModifier extends Bounce
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += tanBounce(curPos);
+		noteData.angle += tanBounce(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleZ += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -316,8 +312,8 @@ class TanBounceAngleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleX += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -330,8 +326,8 @@ class TanBounceAngleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleY += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -345,10 +341,8 @@ class TanBounceScaleModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += tanBounce(0) * 0.01;
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += tanBounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -361,8 +355,8 @@ class TanBounceScaleXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += tanBounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -375,8 +369,8 @@ class TanBounceScaleYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += tanBounce(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -390,10 +384,8 @@ class TanBounceSkewModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += tanBounce(0);
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -406,8 +398,8 @@ class TanBounceSkewXModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -420,7 +412,7 @@ class TanBounceSkewYModifier extends Bounce
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += tanBounce(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }

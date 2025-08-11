@@ -15,27 +15,56 @@ import modcharting.Modifier;
 
 /*
 	[EXTRA] SawTooth Improvements:
-	-   Added a helper instead of copy and pasted code for the modifiers.
-	-   Changed the math to be hazard's
+	-   Now instead of copy paste the math over and over, SawTooth has a main helper class with all math, making it easier to use SawTooth.
 
-	[UPDATE] SawTootahScale: (X,Y Included)
-	-   Now scale mods can stack (before, its behavior was like we have 2 mods but one its 0 then no mods other than that one works, now it's additive.)
+	[EXTRA & REWORK] SawTooth Helper class:
+	-   SawTooth helper class has the basics of SawTooth with 1 subValue.
+	-   Has 1 subValue:
+		+   mult (Changes SawTooth's intensity (value on 0 makes SawTooth do nothing))
+		+ Methods (2):
+			1. Use ModifiersMath.SawTooth(values) and set it to whatever you want to modify.
+			2. Create a custom class (call it whatever u want (better if ends on "Modifier")) and extend it to this path (modcharting.modifiers.SawTooth)
+				then call it inside any customMod (yourPath/yourModifier.hx) on any of these (songName/customMods/yourCustomMod.hx) OR (songName/yourLua.lua)
+				check how to make a customMod (both hx and lua) for better information.
+
+	[NEW]
+	- SawToothAngleX, SawToothAngleY. Prespective Angle Mods.
  */
-class SawToothModifier extends Modifier
+class SawTooth extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('mult', new ModifierSubValue(1.0));
+		setSubMod('mult', 1.0);
 	}
 
-	// Sawtooth math
+	/**
+	 * Performs a modulo operation to calculate the remainder of `a` divided by `b`.
+	 *
+	 * The definition of "remainder" varies by implementation;
+	 * this one is similar to GLSL or Python in that it uses Euclidean division, which always returns positive,
+	 * while Haxe's `%` operator uses signed truncated division.
+	 *
+	 * For example, `-5 % 3` returns `-2` while `FlxMath.mod(-5, 3)` returns `1`.
+	 *
+	 * @param a The dividend.
+	 * @param b The divisor.
+	 * @return `a mod b`.
+	 *
+	 * SOURCE: https://github.com/HaxeFlixel/flixel/pull/3341/files
+	 */
+	public static inline function mod(a:Float, b:Float):Float
+	{
+		b = Math.abs(b);
+		return a - b * Math.floor(a / b);
+	}
+
 	public function sawToothMath(lane:Int, curPos:Float)
 	{
-		return Modifier.mod(curPos * 0.45, NoteMovement.arrowSizes[lane] * subValues.get('mult').value);
+		return mod(curPos * 0.45, NoteMovement.arrowSizes[lane] * getSubMod('mult'));
 	}
 }
 
-class SawToothXModifier extends SawToothModifier
+class SawToothXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -43,7 +72,7 @@ class SawToothXModifier extends SawToothModifier
 	}
 }
 
-class SawToothYModifier extends SawToothModifier
+class SawToothYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -51,7 +80,7 @@ class SawToothYModifier extends SawToothModifier
 	}
 }
 
-class SawToothZModifier extends SawToothModifier
+class SawToothZModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -59,15 +88,15 @@ class SawToothZModifier extends SawToothModifier
 	}
 }
 
-class SawToothAngleModifier extends SawToothModifier
+class SawToothAngleModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += sawToothMath(lane, curPos) * currentValue;
+		noteData.angle += sawToothMath(lane, curPos) * currentValue;
 	}
 }
 
-class SawToothAngleXModifier extends SawToothModifier
+class SawToothAngleXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -75,7 +104,7 @@ class SawToothAngleXModifier extends SawToothModifier
 	}
 }
 
-class SawToothAngleYModifier extends SawToothModifier
+class SawToothAngleYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -83,7 +112,7 @@ class SawToothAngleYModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleModifier extends SawToothModifier
+class SawToothScaleModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -92,7 +121,7 @@ class SawToothScaleModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleXModifier extends SawToothModifier
+class SawToothScaleXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -100,7 +129,7 @@ class SawToothScaleXModifier extends SawToothModifier
 	}
 }
 
-class SawToothScaleYModifier extends SawToothModifier
+class SawToothScaleYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -108,7 +137,7 @@ class SawToothScaleYModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewModifier extends SawToothModifier
+class SawToothSkewModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -117,7 +146,7 @@ class SawToothSkewModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewXModifier extends SawToothModifier
+class SawToothSkewXModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
@@ -125,7 +154,7 @@ class SawToothSkewXModifier extends SawToothModifier
 	}
 }
 
-class SawToothSkewYModifier extends SawToothModifier
+class SawToothSkewYModifier extends SawTooth
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{

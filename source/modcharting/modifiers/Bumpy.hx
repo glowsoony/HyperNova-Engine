@@ -36,18 +36,18 @@ class Bumpy extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('useAlt', new ModifierSubValue(0.0));
-		subValues.set('oldMath', new ModifierSubValue(0.0));
+		setSubMod("speed", 1.0);
+		setSubMod("useAlt", 0.0);
+		setSubMod("oldMath", 0.0);
 	}
 
 	function bumpyMath(curPos:Float):Float
 	{
 		var mathToUse:Float = 0.0;
 		var scrollSpeed:Float = renderer.getCorrectScrollSpeed();
-		var speed:Float = subValues.get("speed").value;
-		var oldMath:Bool = (subValues.get("oldMath").value >= 0.5);
-		var usesAlt:Bool = (subValues.get("useAlt").value >= 0.5);
+		var speed:Float = getSubMod("speed");
+		var oldMath:Bool = (getSubMod("oldMath") >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 
 		if (oldMath)
 		{
@@ -66,13 +66,13 @@ class Bumpy extends Modifier
 		return currentValue * mathToUse;
 	}
 
-	function tanBumpyMath(curPos:Float, speed:Float):Float
+	function tanBumpyMath(curPos:Float):Float
 	{
 		var mathToUse:Float = 0.0;
 		var scrollSpeed:Float = renderer.getCorrectScrollSpeed();
-		var speed:Float = subValues.get("speed").value;
-		var oldMath:Bool = (subValues.get("oldMath").value >= 0.5);
-		var usesAlt:Bool = (subValues.get("useAlt").value >= 0.5);
+		var speed:Float = getSubMod("speed");
+		var oldMath:Bool = (getSubMod("oldMath") >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 
 		if (oldMath)
 		{
@@ -101,8 +101,8 @@ class BumpyModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.z += bumpyMath(0); // allows movement on notes ONLY when using alt (cos/cosec)
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -115,8 +115,8 @@ class BumpyXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.x += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -129,8 +129,8 @@ class BumpyYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.y += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -138,13 +138,13 @@ class BumpyAngleModifier extends Bumpy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += bumpyMath(curPos);
+		noteData.angle += bumpyMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleZ += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -157,8 +157,8 @@ class BumpyAngleXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleX += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -171,8 +171,8 @@ class BumpyAngleYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleY += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -186,10 +186,8 @@ class BumpyScaleModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += bumpyMath(0) * 0.01;
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += bumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -202,8 +200,8 @@ class BumpyScaleXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += bumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -216,8 +214,8 @@ class BumpyScaleYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += bumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -231,10 +229,8 @@ class BumpySkewModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += bumpyMath(0);
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -247,8 +243,8 @@ class BumpySkewXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -261,8 +257,8 @@ class BumpySkewYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += bumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -275,8 +271,8 @@ class TanBumpyModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.z += tanBumpyMath(0); // allows movement on notes ONLY when using alt (cos/cosec)
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -289,8 +285,8 @@ class TanBumpyXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.x += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -303,8 +299,8 @@ class TanBumpyYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.y += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -312,13 +308,13 @@ class TanBumpyAngleModifier extends Bumpy
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += tanBumpyMath(curPos);
+		noteData.angle += tanBumpyMath(curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleZ += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -331,8 +327,8 @@ class TanBumpyAngleXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleX += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -345,8 +341,8 @@ class TanBumpyAngleYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.angleY += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -360,10 +356,8 @@ class TanBumpyScaleModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += tanBumpyMath(0) * 0.01;
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += tanBumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -376,8 +370,8 @@ class TanBumpyScaleXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleX += tanBumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -390,8 +384,8 @@ class TanBumpyScaleYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.scaleY += tanBumpyMath(0) * 0.01;
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -405,10 +399,8 @@ class TanBumpySkewModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += tanBumpyMath(0);
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -421,8 +413,8 @@ class TanBumpySkewXModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewX += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -435,7 +427,7 @@ class TanBumpySkewYModifier extends Bumpy
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		if (subValues.get("useAlt").value >= 0.5)
-			noteData.skewY += tanBumpyMath(0);
+		if (getSubMod("useAlt") >= 0.5)
+			noteMath(noteData, lane, 0, pf);
 	}
 }

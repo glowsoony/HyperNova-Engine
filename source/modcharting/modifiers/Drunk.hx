@@ -26,7 +26,7 @@ import objects.Note;
 	[EXTRA & REWORK] Drunk Helper class:
 	-   Drunk helper class has the basics of Drunk with lot of new subValues (for both Drunk and TanDrunk).
 	-   Added 5 subValues:
-		+   Period (changes drunk's period)
+		+   desync (changes drunk's desync)
 		+   Offset (changes drunk's offset)
 		+   Size (changes how big/small drunk goes)
 		+   UseAlt (changes it's math, if drunk (uses sin) it will now use cos, if tanDrunk (uses tangent) it will now use cosecant).
@@ -48,25 +48,25 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 {
 	override function setupSubValues()
 	{
-		subValues.set('period', new ModifierSubValue(1.0));
-		subValues.set('offset', new ModifierSubValue(1.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
-		subValues.set('size', new ModifierSubValue(1.0));
-		subValues.set('useAlt', new ModifierSubValue(0.0));
-		subValues.set('timertype', new ModifierSubValue(0.0));
+		setSubMod("speed", 1.0);
+		setSubMod("size", 1.0);
+		setSubMod("desync", 1.0);
+		setSubMod("offset", 1.0);
+		setSubMod("useAlt", 0.0);
+		setSubMod("timertype", 0.0);
 	}
 
 	function tanDrunkMath(lane:Int, curPos:Float):Float
 	{
-		var time:Float = (subValues.get('timertype').value >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001);
-		time *= subValues.get('speed').value / 2.0;
-		time += subValues.get('offset').value;
+		var time:Float = (getSubMod('timertype') >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001);
+		time *= getSubMod('speed') / 2.0;
+		time += getSubMod('offset');
 
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var screenHeight:Float = FlxG.height;
-		var drunk_desync:Float = subValues.get('period').value * 0.1;
+		var drunk_desync:Float = getSubMod("desync") * 0.2;
 		var returnValue:Float = 0.0;
-		var mult:Float = subValues.get('size').value / 2.0;
+		var mult:Float = getSubMod("size")/2;
 		if (!usesAlt)
 			returnValue = currentValue * (Math.tan((time) + (((lane) % NoteMovement.keyCount) * drunk_desync) +
 				(curPos * 0.45) * (10.0 / screenHeight) * mult)) * (Note.swagWidth * 0.5);
@@ -79,15 +79,15 @@ class Drunk extends Modifier // My idea is clever, make this more simple to use
 
 	function drunkMath(lane:Int, curPos:Float):Float
 	{
-		var time:Float = (subValues.get('timertype').value >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001);
-		time *= subValues.get('speed').value;
-		time += subValues.get('offset').value;
+		var time:Float = (getSubMod('timertype') >= 0.5 ? Modifier.beat : Conductor.songPosition * 0.001);
+		time *= getSubMod('speed');
+		time += getSubMod('offset');
 
-		var usesAlt:Bool = (subValues.get('useAlt').value >= 0.5);
+		var usesAlt:Bool = (getSubMod("useAlt") >= 0.5);
 		var screenHeight:Float = FlxG.height;
-		var drunk_desync:Float = subValues.get('period').value;
+		var drunk_desync:Float = getSubMod("desync") * 0.2;
 		var returnValue:Float = 0.0;
-		var mult:Float = subValues.get('size').value;
+		var mult:Float = getSubMod("size")/2;
 
 		if (!usesAlt)
 			returnValue = currentValue * (FlxMath.fastSin((time) + (((lane) % NoteMovement.keyCount) * drunk_desync)
@@ -143,7 +143,7 @@ class DrunkAngleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += drunkMath(lane, curPos);
+		noteData.angle += drunkMath(lane, curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -301,7 +301,7 @@ class TanDrunkAngleModifier extends Drunk
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleZ += tanDrunkMath(lane, curPos);
+		noteData.angle += tanDrunkMath(lane, curPos);
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

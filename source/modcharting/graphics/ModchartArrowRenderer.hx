@@ -1,11 +1,6 @@
 package modcharting.graphics;
 
-
-//TODO: need to make this thing render into MT lol
-
-
-import modcharting*;
-
+// TODO: need to make this thing render into MT lol
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -13,15 +8,15 @@ import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import haxe.ds.Vector as NativeVector;
+// import modchart.engine.modifiers.ModifierGroup.ModifierOutput;
+import modcharting*;
 import modcharting.utils.ModchartRenderer.FMDrawInstruction;
 import modcharting.utils.ModchartRenderer;
-// import modchart.engine.modifiers.ModifierGroup.ModifierOutput;
 import openfl.Vector;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.Shape;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-
 
 final __matrix:Matrix = new Matrix();
 final rotationVector = new Vector3();
@@ -31,8 +26,10 @@ final helperVector = new Vector3();
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
-	inline private function getGraphicVertices(planeWidth:Float, planeHeight:Float, flipX:Bool, flipY:Bool) {
+class ModchartArrowRenderer extends ModchartRenderer<FlxSprite>
+{
+	inline private function getGraphicVertices(planeWidth:Float, planeHeight:Float, flipX:Bool, flipY:Bool)
+	{
 		var x1 = flipX ? planeWidth : -planeWidth;
 		var x2 = flipX ? -planeWidth : planeWidth;
 		var y1 = flipY ? planeHeight : -planeHeight;
@@ -54,7 +51,8 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 		];
 	}
 
-	override public function prepare(arrow:FlxSprite, noteData:NotePositionData, instance:ModchartMusicBeatState) {
+	override public function prepare(arrow:FlxSprite, noteData:NotePositionData, instance:ModchartMusicBeatState)
+	{
 		if (arrow.alpha <= 0)
 			return;
 
@@ -82,7 +80,8 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 		// 	isTapArrow: Adapter.instance.isTapNote(arrow)
 		// };
 
-		arrowPosition.setTo(NoteMovement.defaultStrumX[noteData.lane] + NoteMovement.arrowSize, NoteMovement.defaultStrumY[arrowData.lane] + NoteMovement.arrowSize, 0);
+		arrowPosition.setTo(NoteMovement.defaultStrumX[noteData.lane] + NoteMovement.arrowSize,
+			NoteMovement.defaultStrumY[arrowData.lane] + NoteMovement.arrowSize, 0);
 		// arrowPosition.setTo(Adapter.instance.getDefaultReceptorX(arrowData.lane, arrowData.player) + Manager.ARROW_SIZEDIV2,
 		// 	Adapter.instance.getDefaultReceptorY(arrowData.lane, arrowData.player) + Manager.ARROW_SIZEDIV2, 0);
 
@@ -117,15 +116,16 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 		var projectionZ:haxe.ds.Vector<Float> = new haxe.ds.Vector(Math.ceil(planeVertices.length / 2));
 
 		var vertPointer = 0;
-		@:privateAccess do {
+		@:privateAccess do
+		{
 			rotationVector.setTo(planeVertices[vertPointer], planeVertices[vertPointer + 1], 0);
 
 			// The result of the vert rotation
-			var rotation = ModchartUtil.rotate3DVector(rotationVector, noteData.angleX, noteData.angleY,
-				ModchartUtil.getFrameAngle(arrow) + noteData.angleZ);
+			var rotation = ModchartUtil.rotate3DVector(rotationVector, noteData.angleX, noteData.angleY, ModchartUtil.getFrameAngle(arrow) + noteData.angle);
 
 			// apply skewness
-			if (noteData.skewX != 0 || noteData.skewY != 0) {
+			if (noteData.skewX != 0 || noteData.skewY != 0)
+			{
 				__matrix.identity();
 
 				__matrix.b = FlxMath.fastSin(noteData.skewY * FlxAngle.TO_RAD) / FlxMath.fastCos(noteData.skewY * FlxAngle.TO_RAD);
@@ -152,7 +152,8 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 			projectionZ[Math.floor(vertPointer / 2)] = Math.max(0.0001, projection.z);
 
 			vertPointer = vertPointer + 2;
-		} while (vertPointer < planeVertices.length);
+		}
+		while (vertPointer < planeVertices.length);
 
         // @formatter:off
 		// this is confusing af
@@ -195,11 +196,13 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 		count++;
 	}
 
-	override public function shift() {
+	override public function shift()
+	{
 		__drawInstruction(queue[postCount++]);
 	}
 
-	private function __drawInstruction(instruction:FMDrawInstruction) {
+	private function __drawInstruction(instruction:FMDrawInstruction)
+	{
 		if (instruction == null)
 			return;
 
@@ -207,7 +210,8 @@ class ModchartArrowRenderer extends ModchartRenderer<FlxSprite> {
 		final cameras = item._cameras != null ? item._cameras : Adapter.instance.getArrowCamera();
 
 		@:privateAccess
-		for (camera in cameras) {
+		for (camera in cameras)
+		{
 			final cTransform = instruction.colorData[0];
 			cTransform.alphaMultiplier *= camera.alpha;
 

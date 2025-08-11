@@ -102,17 +102,17 @@ class StealthColorModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('r', new ModifierSubValue(255.0));
-		subValues.set('g', new ModifierSubValue(255.0));
-		subValues.set('b', new ModifierSubValue(255.0));
+		setSubMod("r", 255.0);
+		setSubMod("g", 255.0);
+		setSubMod("b", 255.0);
 		currentValue = 1.0;
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var red = subValues.get('r').value / 255; // so i can get exact values instead of 0.7668676767676768
-		var green = subValues.get('g').value / 255;
-		var blue = subValues.get('b').value / 255;
+		var red = getSubMod("r") / 255; // so i can get exact values instead of 0.7668676767676768
+		var green = getSubMod("g") / 255;
+		var blue = getSubMod("b") / 255;
 
 		noteData.glowRed *= red;
 		noteData.glowGreen *= green;
@@ -130,17 +130,17 @@ class DarkColorModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('r', new ModifierSubValue(255.0));
-		subValues.set('g', new ModifierSubValue(255.0));
-		subValues.set('b', new ModifierSubValue(255.0));
+		setSubMod("r", 255.0);
+		setSubMod("g", 255.0);
+		setSubMod("b", 255.0);
 		currentValue = 1.0;
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		var red = subValues.get('r').value / 255; // so i can get exact values instead of 0.7668676767676768
-		var green = subValues.get('g').value / 255;
-		var blue = subValues.get('b').value / 255;
+		var red = getSubMod("r") / 255; // so i can get exact values instead of 0.7668676767676768
+		var green = getSubMod("g") / 255;
+		var blue = getSubMod("b") / 255;
 
 		noteData.glowRed *= red;
 		noteData.glowGreen *= green;
@@ -158,17 +158,16 @@ class FlashColorModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('r', new ModifierSubValue(255.0));
-		subValues.set('g', new ModifierSubValue(255.0));
-		subValues.set('b', new ModifierSubValue(255.0));
+		setSubMod("r", 255.0);
+		setSubMod("g", 255.0);
+		setSubMod("b", 255.0);
 		currentValue = 1.0;
 	}
-
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
-		var red = subValues.get('r').value / 255; // so i can get exact values instead of 0.7668676767676768
-		var green = subValues.get('g').value / 255;
-		var blue = subValues.get('b').value / 255;
+		var red = getSubMod("r") / 255; // so i can get exact values instead of 0.7668676767676768
+		var green = getSubMod("g") / 255;
+		var blue = getSubMod("b") / 255;
 
 		noteData.glowRed *= red;
 		noteData.glowGreen *= green;
@@ -189,25 +188,25 @@ class FlashColorModifier extends Modifier
 
 class SuddenModifier extends Modifier {
 	override function setupSubValues() {
-		subValues.set('noglow', new ModifierSubValue(1.0)); // by default 1
-		subValues.set('start', new ModifierSubValue(5.0));
-		subValues.set('end', new ModifierSubValue(3.0));
-		subValues.set('offset', new ModifierSubValue(0.0));
+		setSubMod("noglow", 1.0);
+		setSubMod("start", 5.0);
+		setSubMod("end", 3.0);
+		setSubMod("offset", 0.0);
 	}
     override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
     {
-        var a:Float = FlxMath.remapToRange(curPos, (subValues.get('start').value * -100) + (subValues.get('offset').value * -100),
-			(subValues.get('end').value * -100) + (subValues.get('offset').value * -100), 1, 0);
+        var a:Float = FlxMath.remapToRange(curPos, (getSubMod("start") * -100) + (getSubMod("offset") * -100),
+			(getSubMod("end") * -100) + (getSubMod("offset") * -100), 1, 0);
 		a = FlxMath.bound(a, 0, 1);
 
-		if (subValues.get('noglow').value >= 1.0) {
+		if (getSubMod("noglow") >= 1.0) {
 			noteData.alpha -= a * currentValue;
 			return;
 		}
 
 		a *= currentValue;
 
-		if (subValues.get('noglow').value < 0.5) {
+		if (getSubMod("noglow") < 0.5) {
 			var stealthGlow:Float = a * 2;
 			noteData.stealthGlow += FlxMath.bound(stealthGlow, 0, 1); // clamp
 		}
@@ -219,24 +218,24 @@ class SuddenModifier extends Modifier {
 
 class HiddenModifier extends Modifier {
 	override function setupSubValues() {
-		subValues.set('noglow', new ModifierSubValue(1.0)); // by default 1
-		subValues.set('start', new ModifierSubValue(5.0));
-		subValues.set('end', new ModifierSubValue(3.0));
-		subValues.set('offset', new ModifierSubValue(0.0));
+		setSubMod("noglow", 1.0);
+		setSubMod("start", 5.0);
+		setSubMod("end", 3.0);
+		setSubMod("offset", 0.0);
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int) {
-		var a:Float = FlxMath.remapToRange(curPos, (subValues.get('start').value * -100) + (subValues.get('offset').value * -100),
-			(subValues.get('end').value * -100) + (subValues.get('offset').value * -100), 0, 1);
+		var a:Float = FlxMath.remapToRange(curPos, (getSubMod('start') * -100) + (getSubMod('offset') * -100),
+			(getSubMod('end') * -100) + (getSubMod('offset') * -100), 0, 1);
 		a = FlxMath.bound(a, 0, 1);
 
-		if (subValues.get('noglow').value >= 1.0) {
+		if (getSubMod('noglow') >= 1.0) {
 			noteData.alpha -= a * currentValue;
 			return;
 		}
 
 		a *= currentValue;
 
-		if (subValues.get('noglow').value < 0.5) {
+		if (getSubMod('noglow') < 0.5) {
 			var stealthGlow:Float = a * 2;
 			noteData.stealthGlow += FlxMath.bound(stealthGlow, 0, 1); // clamp
 		}
@@ -254,45 +253,45 @@ class HiddenModifier extends Modifier {
 
 class VanishModifier extends Modifier {
 	override function setupSubValues() {
-		subValues.set('noglow', new ModifierSubValue(1.0)); // by default 1
-		subValues.set('start', new ModifierSubValue(4.75));
-		subValues.set('end', new ModifierSubValue(1.25));
-		subValues.set('offset', new ModifierSubValue(0.0));
-		subValues.set('size', new ModifierSubValue(1.95));
+		setSubMod("noglow", 1.0);
+		setSubMod("start", 5.0);
+		setSubMod("end", 3.0);
+		setSubMod("offset", 0.0);
+		setSubMod("size", 1.95);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int) {
-		var midPoint:Float = (subValues.get('start').value * -100) + (subValues.get('offset').value * -100);
+		var midPoint:Float = (getSubMod('start') * -100) + (getSubMod('offset') * -100);
 		midPoint /= 2;
 
-		var sizeThingy:Float = (subValues.get('size').value * 100) / 2;
+		var sizeThingy:Float = (getSubMod('size') * 100) / 2;
 
-		var a:Float = FlxMath.remapToRange(curPos, (subValues.get('start').value * -100)
-			+ (subValues.get('offset').value * -100),
+		var a:Float = FlxMath.remapToRange(curPos, (getSubMod('start') * -100)
+			+ (getSubMod('offset') * -100),
 			midPoint
 			+ sizeThingy
-			+ (subValues.get('offset').value * -100), 0, 1);
+			+ (getSubMod('offset') * -100), 0, 1);
 
 		a = FlxMath.bound(a, 0, 1);
 
 		var b:Float = FlxMath.remapToRange(curPos, midPoint
 			- sizeThingy
-			+ (subValues.get('offset').value * -100),
-			(subValues.get('end').value * -100)
-			+ (subValues.get('offset').value * -100), 0, 1);
+			+ (getSubMod('offset') * -100),
+			(getSubMod('end') * -100)
+			+ (getSubMod('offset') * -100), 0, 1);
 
 		b = FlxMath.bound(b, 0, 1);
 
 		var result:Float = a - b;
 
-		if (subValues.get('noglow').value >= 1.0) {
+		if (getSubMod('noglow') >= 1.0) {
 			noteData.alpha -= result * currentValue;
 			return;
 		}
 
 		result *= currentValue;
 
-		if (subValues.get('noglow').value < 0.5) {
+		if (getSubMod('noglow') < 0.5) {
 			var stealthGlow:Float = result * 2;
 			noteData.stealthGlow += FlxMath.bound(stealthGlow, 0, 1); // clamp
 		}
@@ -304,23 +303,23 @@ class VanishModifier extends Modifier {
 
 class BlinkModifier extends Modifier {
 	override function setupSubValues() {
-		subValues.set('noglow', new ModifierSubValue(1.0)); // by default 1
-		subValues.set('offset', new ModifierSubValue(0.0));
-		subValues.set('speed', new ModifierSubValue(1.0));
+		setSubMod("noglow", 1.0);
+		setSubMod("offset", 0.0);
+		setSubMod("speed", 1.0);
 	}
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int) {
-		var a:Float = FlxMath.fastSin((Modifier.beat + (subValues.get('offset').value * -100)) * subValues.get('speed').value * Math.PI) * 2;
+		var a:Float = FlxMath.fastSin((Modifier.beat + (getSubMod('offset') * -100)) * getSubMod('speed') * Math.PI) * 2;
 		a = FlxMath.bound(a, 0, 1);
 
-		if (subValues.get('noglow').value >= 1.0) {
+		if (getSubMod('noglow') >= 1.0) {
 			noteData.alpha -= a * currentValue;
 			return;
 		}
 
 		a *= currentValue;
 
-		if (subValues.get('noglow').value < 0.5) {
+		if (getSubMod('noglow') < 0.5) {
 			var stealthGlow:Float = a * 2;
 			noteData.stealthGlow += FlxMath.bound(stealthGlow, 0, 1); // clamp
 		}
