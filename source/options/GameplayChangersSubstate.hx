@@ -7,6 +7,7 @@ import options.Option.OptionType;
 class GameplayChangersSubstate extends MusicBeatSubstate
 {
 	private var curSelected:Int = 0;
+	private var curSelectedPartial:Float = 0;
 	private var optionsArray:Array<Dynamic> = [];
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
@@ -161,10 +162,32 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 		#if TOUCH_CONTROLS_ALLOWED
+		var button = new TouchZone(90, 335, 1050, 100, FlxColor.PURPLE);
+		button.camera = optionsCam;
+		var scroll = new ScrollableObject(-0.008, 100, 0, FlxG.width - 200, FlxG.height, button);
+		scroll.camera = optionsCam;
+		scroll.onPartialScroll.add(delta -> changeSelection(delta, false));
+		scroll.onFullScroll.add(delta ->
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		});
+		scroll.onFullScrollSnap.add(() -> changeSelection(0, true));
+		scroll.onTap.add(() ->
+		{
+			// copy paste because I am stupid.
+			if (curOption.type != BOOL)
+				return;
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			curOption.setValue((curOption.getValue() == true) ? false : true);
+			curOption.change();
+			reloadCheckboxes();
+		});
+		add(scroll);
+		add(button);
 		addTouchPad('LEFT_FULL', 'A_B_C');
 		addTouchPadCamera(false);
 		#end
-		changeSelection();
+		changeSelection(0, true);
 		reloadCheckboxes();
 
 		if (isInPause)
@@ -181,10 +204,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		if (controls.UI_UP_P)
-			changeSelection(-1);
-
+		{
+			changeSelection(-1, true);
+		}
 		if (controls.UI_DOWN_P)
-			changeSelection(1);
+		{
+			changeSelection(1, true);
+		}
 
 		if (controls.BACK)
 		{
@@ -387,14 +413,27 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		holdTime = 0;
 	}
 
-	function changeSelection(change:Int = 0)
+	function changeSelection(delta:Float, usePrecision:Bool = false)
 	{
-		curSelected = FlxMath.wrap(curSelected + change, 0, optionsArray.length - 1);
+		if (usePrecision)
+		{
+			if (delta != 0)
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			curSelected = FlxMath.wrap(curSelected + Std.int(delta), 0, optionsArray.length - 1);
+			curSelectedPartial = curSelected;
+		}
+		else
+		{
+			curSelectedPartial = FlxMath.bound(curSelectedPartial + delta, 0, optionsArray.length - 1);
+			if (curSelected != Math.round(curSelectedPartial))
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			curSelected = Math.round(curSelectedPartial);
+		}
 		for (num => item in grpOptions.members)
 		{
-			item.targetY = num - curSelected;
+			item.targetY = num - curSelectedPartial;
 			item.alpha = 0.6;
-			if (item.targetY == 0)
+			if (num == curSelected)
 				item.alpha = 1;
 		}
 		for (text in grpTexts)
@@ -403,7 +442,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			if (text.ID == curSelected)
 				text.alpha = 1;
 		}
-		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	function reloadCheckboxes()

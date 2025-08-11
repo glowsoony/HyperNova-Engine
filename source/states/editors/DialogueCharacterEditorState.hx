@@ -1,5 +1,7 @@
 package states.editors;
 
+import mikolka.stages.cutscenes.dialogueBox.DialogueCharacter.DialogueCharacterFile;
+import mikolka.stages.cutscenes.dialogueBox.DialogueCharacter.DialogueAnimArray;
 import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -8,9 +10,6 @@ import haxe.Json;
 import lime.system.Clipboard;
 
 import objects.TypedAlphabet;
-
-import cutscenes.DialogueBoxPsych;
-import cutscenes.DialogueCharacter;
 
 import states.editors.content.Prompt;
 
@@ -432,8 +431,7 @@ class DialogueCharacterEditorState extends MusicBeatState implements PsychUIEven
 			case 'center':
 				anim = 'center';
 		}
-		box.animation.play(anim, true);
-		DialogueBoxPsych.updateBoxOffsets(box);
+		box.animation.play(anim, true); // too lazy to add offsets back
 	}
 
 	public function UIEvent(id:String, sender:Dynamic) {
@@ -698,7 +696,7 @@ class DialogueCharacterEditorState extends MusicBeatState implements PsychUIEven
 		if(_file.__path != null) fullPath = _file.__path;
 
 		if(fullPath != null) {
-			var rawJson:String = File.getContent(fullPath);
+			var rawJson:String = NativeFileSystem.getContent(fullPath);
 			if(rawJson != null) {
 				var loadedChar:DialogueCharacterFile = cast Json.parse(rawJson);
 				if(loadedChar.dialogue_pos != null) //Make sure it's really a dialogue character

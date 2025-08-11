@@ -1,9 +1,7 @@
 package backend;
 
 import flixel.input.gamepad.FlxGamepadInputID;
-import flixel.input.keyboard.FlxKey;
-import flixel.util.FlxSave;
-import states.TitleState;
+import states.InitState;
 
 // Add a variable here and it will get automatically saved
 @:structInit class SaveVariables
@@ -16,7 +14,7 @@ import states.TitleState;
 	public var screensaver:Bool = false;
 	public var wideScreen:Bool = false;
 	#if android
-	public var storageType:String = "EXTERNAL_DATA";
+	public var storageType:String = "EXTERNAL";
 	#end
 	public var hitboxType:String = "Gradient";
 	public var popUpRating:Bool = true;
@@ -32,6 +30,7 @@ import states.TitleState;
 	public var showFPS:Bool = true;
 	public var flashing:Bool = true;
 	public var autoPause:Bool = true;
+	public var fpsRework:Bool = false;
 	public var antialiasing:Bool = true;
 	public var noteSkin:String = 'Default';
 	public var splashSkin:String = 'Psych';
@@ -41,14 +40,20 @@ import states.TitleState;
 	public var lowQuality:Bool = false;
 	public var shaders:Bool = true;
 	public var cacheOnGPU:Bool = #if !switch false #else true #end; // From Stilic
+	public var cacheOnCPU:Bool = #if android false #else true #end;
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
 	public var hideHud:Bool = false;
+
 	public var vsliceFreeplayColors:Bool = true;
 	public var vsliceResults:Bool = true;
 	public var vsliceSpecialCards:Bool = true;
 	public var vsliceSmoothBar:Bool = true;
+	public var loggingType:String = "None";
+	public var vsliceLegacyBar:Bool = false;
+	public var vsliceNaughtyness:Bool = #if mobile false #else true #end;
 	public var vsliceForceNewTag:Bool = false;
+
 	public var noteOffset:Int = 0;
 	public var arrowRGB:Array<Array<FlxColor>> = [
 		[0xFFC24B99, 0xFFFFFFFF, 0xFF3C1F56],
@@ -96,13 +101,11 @@ import states.TitleState;
 	];
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
-	public var ratingOffset:Float = 0;
-	public var marvelousWindow:Float = 22.5;
-	public var sickWindow:Float = 45;
-	public var goodWindow:Float = 90;
-	public var badWindow:Float = 135;
-	public var shitWindow:Float = 180;
-	public var safeFrames:Float = 10;
+	public var ratingOffset:Int = 0;
+	public var sickWindow:Float = 45.0;
+	public var goodWindow:Float = 90.0;
+	public var badWindow:Float = 135.0;
+	public var safeFrames:Float = 10.0;
 	public var guitarHeroSustains:Bool = true;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;
@@ -215,7 +218,7 @@ class ClientPrefs
 		'bar_right' => [NONE],
 		'accept' => [A],
 		'back' => [B],
-		'pause' => [#if android NONE #else P #end],
+		'pause' => [P],
 		'screenshot' => [NONE],
 		'reset' => [NONE]
 	];
@@ -323,7 +326,13 @@ class ClientPrefs
 
 		// controls on a separate save file
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v3', CoolUtil.getSavePath());
+		save.bind('controls_v3', CoolUtil.getSavePath(), (rawSave, error) ->
+		{
+			trace("Couldn't load controls. Discarding..");
+			return
+			{
+			};
+		});
 		if (save != null)
 		{
 			if (save.data.keyboard != null)
@@ -360,18 +369,18 @@ class ClientPrefs
 
 	public static function reloadVolumeKeys()
 	{
-		TitleState.muteKeys = keyBinds.get('volume_mute').copy();
-		TitleState.volumeDownKeys = keyBinds.get('volume_down').copy();
-		TitleState.volumeUpKeys = keyBinds.get('volume_up').copy();
+		InitState.muteKeys = keyBinds.get('volume_mute').copy();
+		InitState.volumeDownKeys = keyBinds.get('volume_down').copy();
+		InitState.volumeUpKeys = keyBinds.get('volume_up').copy();
 		toggleVolumeKeys(true);
 	}
 
 	public static function toggleVolumeKeys(?turnOn:Bool = true)
 	{
 		final emptyArray = [];
-		FlxG.sound.muteKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.muteKeys : emptyArray;
-		FlxG.sound.volumeDownKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeDownKeys : emptyArray;
-		FlxG.sound.volumeUpKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeUpKeys : emptyArray;
+		FlxG.sound.muteKeys = (!Controls.instance.mobileC && turnOn) ? InitState.muteKeys : emptyArray;
+		FlxG.sound.volumeDownKeys = (!Controls.instance.mobileC && turnOn) ? InitState.volumeDownKeys : emptyArray;
+		FlxG.sound.volumeUpKeys = (!Controls.instance.mobileC && turnOn) ? InitState.volumeUpKeys : emptyArray;
 	}
 
 	public static function get(key:String, isDefault:Bool = false):Dynamic

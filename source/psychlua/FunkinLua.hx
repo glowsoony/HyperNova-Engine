@@ -14,11 +14,16 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import haxe.Json;
 import mikolka.stages.EventLoader;
+import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mobile.psychlua.Functions;
 import objects.Character;
+import objects.Character;
+import objects.Note;
 import objects.Note;
 import objects.NoteSplash;
+import objects.NoteSplash;
+import objects.StrumNote;
 import objects.StrumNote;
 import openfl.Lib;
 import openfl.display.BitmapData;
@@ -27,11 +32,15 @@ import openfl.filters.ShaderFilter;
 import openfl.utils.Assets;
 import psychlua.DebugLuaText;
 import psychlua.LuaUtils.LuaTweenOptions;
+import psychlua.LuaUtils.LuaTweenOptions;
+import psychlua.LuaUtils;
 import psychlua.LuaUtils;
 import psychlua.ModchartSprite;
 import states.MainMenuState;
 import states.StoryMenuState;
 import substates.GameOverSubstate;
+import substates.GameOverSubstate;
+import substates.PauseSubState;
 import substates.PauseSubState;
 import substates.StickerSubState;
 #if (!flash && sys)
@@ -1494,7 +1503,7 @@ class FunkinLua
 			#if TRANSLATIONS_ALLOWED
 			path = Paths.getPath('data/$songPath/${dialogueFile}_${ClientPrefs.data.language}.json', TEXT);
 			#if MODS_ALLOWED
-			if (!FileSystem.exists(path))
+			if (!NativeFileSystem.exists(path))
 			#else
 			if (!Assets.exists(path, TEXT))
 			#end
@@ -1504,7 +1513,7 @@ class FunkinLua
 			luaTrace('startDialogue: Trying to load dialogue: ' + path);
 
 			#if MODS_ALLOWED
-			if (FileSystem.exists(path))
+			if (NativeFileSystem.exists(path))
 			#else
 			if (Assets.exists(path, TEXT))
 			#end
@@ -2316,10 +2325,11 @@ class FunkinLua
 
 		try
 		{
-			var isString:Bool = !FileSystem.exists(scriptName);
+			var realName = NativeFileSystem.getPathLike(scriptName);
+			var isString = realName == null;
 			var result:Dynamic = null;
 			if (!isString)
-				result = LuaL.dofile(lua, scriptName);
+				result = LuaL.dofile(lua, realName);
 			else
 				result = LuaL.dostring(lua, scriptName);
 
@@ -2346,9 +2356,8 @@ class FunkinLua
 		trace('lua file loaded succesfully:' + scriptName);
 
 		call('onCreate', []);
-	}
+	} // main
 
-	// main
 	public var lastCalledFunction:String = '';
 
 	public static var lastCalledScript:FunkinLua = null;
@@ -2542,7 +2551,7 @@ class FunkinLua
 			scriptFile += ext;
 		var path:String = Paths.getPath(scriptFile, TEXT);
 		#if MODS_ALLOWED
-		if (FileSystem.exists(path))
+		if (NativeFileSystem.exists(path))
 		#else
 		if (Assets.exists(path, TEXT))
 		#end
@@ -2550,7 +2559,7 @@ class FunkinLua
 			return path;
 		}
 		#if MODS_ALLOWED
-		else if (FileSystem.exists(scriptFile))
+		else if (NativeFileSystem.exists(scriptFile))
 		#else
 		else if (Assets.exists(scriptFile, TEXT))
 		#end
@@ -2620,22 +2629,22 @@ class FunkinLua
 
 		for (folder in foldersToCheck)
 		{
-			if (FileSystem.exists(folder))
+			if (NativeFileSystem.exists(folder))
 			{
 				var frag:String = folder + name + '.frag';
 				var vert:String = folder + name + '.vert';
 				var found:Bool = false;
-				if (FileSystem.exists(frag))
+				if (NativeFileSystem.exists(frag))
 				{
-					frag = File.getContent(frag);
+					frag = NativeFileSystem.getContent(frag);
 					found = true;
 				}
 				else
 					frag = null;
 
-				if (FileSystem.exists(vert))
+				if (NativeFileSystem.exists(vert))
 				{
-					vert = File.getContent(vert);
+					vert = NativeFileSystem.getContent(vert);
 					found = true;
 				}
 				else

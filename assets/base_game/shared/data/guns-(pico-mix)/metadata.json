@@ -1,8 +1,11 @@
 {
-	"songRating": 13,
-	"albumId": "expansion2",
+	"songRating": 5,
+	"albumId": "volume4",
 	"freeplayCharacter": "pico",
+	"freeplayWeekName": "week 7",
 	"freeplaySongLength": 140.432426,
 	"freeplayPrevEnd": 20,
+	"altInstrumentalSongs": "guns",
+	"allowErectVariants": true,
 	"freeplayPrevStart": 0
 }

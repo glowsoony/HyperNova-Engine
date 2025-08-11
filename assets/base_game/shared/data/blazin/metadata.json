@@ -4,5 +4,8 @@
 	"freeplayCharacter": "pico",
 	"freeplaySongLength": 122.666667,
 	"freeplayPrevEnd": 20,
-	"freeplayPrevStart": 0
+	"altInstrumentalSongs": "",
+	"freeplayWeekName": "weekend 1",
+	"freeplayPrevStart": 0,
+	"allowErectVariants": true
 }

@@ -5,15 +5,20 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.gamepad.FlxGamepadManager;
 import flixel.input.keyboard.FlxKey;
+import mobile.objects.TouchZone;
 import mobile.options.MobileOptionsSubState;
 import objects.AttachedText;
+import objects.AttachedText;
 import objects.CheckboxThingie;
+import objects.CheckboxThingie;
+import options.Option;
 import options.Option;
 
 class BaseOptionsMenu extends MusicBeatSubstate
 {
 	private var curOption:Option = null;
 	private var curSelected:Int = 0;
+	private var curSelectedPartial:Float = 0;
 	private var optionsArray:Array<Option>;
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
@@ -106,11 +111,26 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 
-		changeSelection();
+		changeSelection(0, true);
 		reloadCheckboxes();
 
 		#if TOUCH_CONTROLS_ALLOWED
 		addTouchPad('LEFT_FULL', 'A_B_C');
+
+		var button = new TouchZone(85, 300, 1070, 100, FlxColor.PURPLE);
+
+		var scroll = new ScrollableObject(-0.008, 100, 0, FlxG.width - 200, FlxG.height, button);
+		scroll.onPartialScroll.add(delta -> changeSelection(delta, false));
+		// scroll.onFullScroll.add(delta ->
+		// {
+		// });
+		scroll.onFullScrollSnap.add(() -> changeSelection(0, true));
+		scroll.onTap.add(() ->
+		{
+			onAcceptPress();
+		});
+		add(scroll);
+		add(button);
 		#end
 	}
 
@@ -144,11 +164,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 		if (controls.UI_UP_P)
 		{
-			changeSelection(-1);
+			changeSelection(-1, true);
 		}
 		if (controls.UI_DOWN_P)
 		{
-			changeSelection(1);
+			changeSelection(1, true);
 		}
 
 		if (controls.BACK)
@@ -161,43 +181,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		{
 			switch (curOption.type)
 			{
-				case BOOL:
+				case BOOL | KEYBIND:
 					if (controls.ACCEPT)
-					{
-						FlxG.sound.play(Paths.sound('scrollMenu'));
-						curOption.setValue((curOption.getValue() == true) ? false : true);
-						curOption.change();
-						reloadCheckboxes();
-					}
-
-				case KEYBIND:
-					if (controls.ACCEPT)
-					{
-						bindingBlack = new FlxSprite().makeGraphic(1, 1, FlxColor.WHITE);
-						bindingBlack.scale.set(FlxG.width, FlxG.height);
-						bindingBlack.updateHitbox();
-						bindingBlack.alpha = 0;
-						FlxTween.tween(bindingBlack, {alpha: 0.6}, 0.35, {ease: FlxEase.linear});
-						add(bindingBlack);
-
-						bindingText = new Alphabet(FlxG.width / 2, 160, Language.getPhrase('controls_rebinding', 'Rebinding {1}', [curOption.name]), false);
-						bindingText.alignment = CENTERED;
-						add(bindingText);
-
-						final escape:String = (controls.mobileC) ? "B" : "ESC";
-						final backspace:String = (controls.mobileC) ? "C" : "Backspace";
-
-						bindingText2 = new Alphabet(FlxG.width / 2, 340,
-							Language.getPhrase('controls_rebinding2', 'Hold {1} to Cancel\nHold {2} to Delete', [escape, backspace]), true);
-						bindingText2.alignment = CENTERED;
-						add(bindingText2);
-
-						bindingKey = true;
-						holdingEsc = 0;
-						ClientPrefs.toggleVolumeKeys(false);
-						FlxG.sound.play(Paths.sound('scrollMenu'));
-					}
-
+						onAcceptPress();
 				default:
 					if (controls.UI_LEFT || controls.UI_RIGHT)
 					{
@@ -313,6 +299,45 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if (nextAccept > 0)
 		{
 			nextAccept -= 1;
+		}
+	}
+
+	function onAcceptPress()
+	{
+		switch (curOption.type)
+		{
+			case BOOL:
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+				curOption.setValue((curOption.getValue() == true) ? false : true);
+				curOption.change();
+				reloadCheckboxes();
+
+			case KEYBIND:
+				bindingBlack = new FlxSprite().makeGraphic(1, 1, FlxColor.WHITE);
+				bindingBlack.scale.set(FlxG.width, FlxG.height);
+				bindingBlack.updateHitbox();
+				bindingBlack.alpha = 0;
+				FlxTween.tween(bindingBlack, {alpha: 0.6}, 0.35, {ease: FlxEase.linear});
+				add(bindingBlack);
+
+				bindingText = new Alphabet(FlxG.width / 2, 160, Language.getPhrase('controls_rebinding', 'Rebinding {1}', [curOption.name]), false);
+				bindingText.alignment = CENTERED;
+				add(bindingText);
+
+				final escape:String = (controls.mobileC) ? "B" : "ESC";
+				final backspace:String = (controls.mobileC) ? "C" : "Backspace";
+
+				bindingText2 = new Alphabet(FlxG.width / 2, 340,
+					Language.getPhrase('controls_rebinding2', 'Hold {1} to Cancel\nHold {2} to Delete', [escape, backspace]), true);
+				bindingText2.alignment = CENTERED;
+				add(bindingText2);
+
+				bindingKey = true;
+				holdingEsc = 0;
+				ClientPrefs.toggleVolumeKeys(false);
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+			default:
+				return;
 		}
 	}
 
@@ -512,19 +537,30 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		option.text = text.replace('%v', val).replace('%d', def);
 	}
 
-	function changeSelection(change:Int = 0)
+	function changeSelection(delta:Float, usePrecision:Bool = false)
 	{
-		curSelected = FlxMath.wrap(curSelected + change, 0, optionsArray.length - 1);
-
+		if (usePrecision)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			curSelected = FlxMath.wrap(curSelected + Std.int(delta), 0, optionsArray.length - 1);
+			curSelectedPartial = curSelected;
+		}
+		else
+		{
+			curSelectedPartial = FlxMath.bound(curSelectedPartial + delta, 0, optionsArray.length - 1);
+			if (curSelected != Math.round(curSelectedPartial))
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+			curSelected = Math.round(curSelectedPartial);
+		}
 		descText.text = optionsArray[curSelected].description;
 		descText.screenCenter(Y);
 		descText.y += 270;
 
 		for (num => item in grpOptions.members)
 		{
-			item.targetY = num - curSelected;
+			item.targetY = num - curSelectedPartial;
 			item.alpha = 0.6;
-			if (item.targetY == 0)
+			if (num == curSelected)
 				item.alpha = 1;
 		}
 		for (text in grpTexts)
@@ -539,7 +575,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		descBox.updateHitbox();
 
 		curOption = optionsArray[curSelected]; // shorter lol
-		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	function reloadCheckboxes()

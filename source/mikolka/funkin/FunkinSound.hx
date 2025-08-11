@@ -88,7 +88,9 @@ class FunkinSound extends FlxSound
 				instPath = 'assets/songs/${Paths.formatToSongPath(key)}/Inst.${Paths.SOUND_EXT}';
 				#if MODS_ALLOWED
 				var modsInstPath = Paths.modFolders('songs/${Paths.formatToSongPath(key)}/Inst.${Paths.SOUND_EXT}');
-				if(FileSystem.exists(modsInstPath)) instPath = modsInstPath;
+				var real_modSngPath = NativeFileSystem.getPathLike(modsInstPath);
+				if(real_modSngPath != null) instPath = real_modSngPath;
+
 				#end
 				
 				var future = FlxPartialSound.partialLoadFromFile(instPath,params.partialParams.start,params.partialParams.end);
@@ -103,7 +105,7 @@ class FunkinSound extends FlxSound
 							var fp = cast (FlxG.state.subState,FreeplayState);
 
 							var cap = fp.grpCapsules.members[fp.curSelected];
-							if(cap.songData == null || cap.songData.songId != key || fp.busy) return;
+							if(cap.songData == null || cap.songData.getNativeSongId() != key || fp.busy) return;
 						}
 						
 						trace("Playing preview!");

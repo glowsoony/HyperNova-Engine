@@ -1,7 +1,6 @@
 package mikolka.compatibility;
 
 import openfl.filters.BitmapFilter;
-import flixel.system.FlxSound;
 import flixel.util.FlxSort;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
@@ -16,12 +15,24 @@ class ModsHelper {
     public inline static function loadModDir(directory:String) {
 		Mods.currentModDirectory = directory;
 	}
+	public static function setDirectoryFromWeek(?data:backend.WeekData = null) {
+		loadModDir('');
+		if(data != null && data.folder != null && data.folder.length > 0) {
+			loadModDir(data.folder);
+		}
+	}
 	public inline static function getActiveMod():String {
 		return Mods.currentModDirectory;
 	}
+	public inline static function resetActiveMods() {
+		#if MODS_ALLOWED
+		Mods.pushGlobalMods();
+		#end
+		Mods.loadTopMod();
+	}
 	public static function getModsWithPlayersRegistry():Array<String> {
 		#if MODS_ALLOWED
-		return Mods.parseList().enabled.filter(s ->FileSystem.exists(Paths.mods(s)+'/registry/players'));
+		return Mods.parseList().enabled.filter(s ->NativeFileSystem.exists(Paths.mods(s)+'/registry/players'));
 		#else
 		return [];
 		#end
@@ -56,16 +67,16 @@ class ModsHelper {
 	public inline static function collectVideos():String{
 		var dirsToList = new Array<String>();
 		dirsToList.push('assets/videos/commercials/');
-		if(FileSystem.exists('mods/videos/commercials'))dirsToList.push('mods/videos/commercials/');
+		if(NativeFileSystem.exists('mods/videos/commercials'))dirsToList.push('mods/videos/commercials/');
 		Mods.loadTopMod();
 		var modsToSearch = Mods.getGlobalMods();
 		modsToSearch.pushUnique(Mods.currentModDirectory);
-		modsToSearch = modsToSearch.filter(s -> FileSystem.exists('mods/$s/videos/commercials')).map(s -> 'mods/$s/videos/commercials');
+		modsToSearch = modsToSearch.filter(s -> NativeFileSystem.exists('mods/$s/videos/commercials')).map(s -> 'mods/$s/videos/commercials');
 		
 		dirsToList = dirsToList.concat(modsToSearch);
 		var commercialsToSelect = new Array<String>();
 		for(potencialComercials in dirsToList){
-		  for (file in FileSystem.readDirectory(potencialComercials).filter(s -> s.endsWith(".mp4"))) {
+		  for (file in NativeFileSystem.readDirectory(potencialComercials).filter(s -> s.endsWith(".mp4"))) {
 			commercialsToSelect.push(potencialComercials + '/'+file);
 		  }
 		}

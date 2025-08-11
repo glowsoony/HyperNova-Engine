@@ -1,6 +1,7 @@
 package states;
 
 import backend.Highscore;
+import backend.PsychCamera;
 import backend.Rating;
 import backend.Song;
 import backend.StageData;
@@ -17,10 +18,13 @@ import flixel.util.FlxStringUtil;
 import haxe.Json;
 import lime.math.Matrix3;
 import lime.utils.Assets;
-import mikolka.JoinedLuaVariables;
+import mikolka.compatibility.VsliceOptions;
 import mikolka.funkin.Scoring;
 import mikolka.funkin.custom.FunkinTools;
 import mikolka.stages.EventLoader;
+import mikolka.stages.EventLoader;
+import mikolka.vslice.StickerSubState;
+import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.results.ResultState;
 import mikolka.vslice.results.Tallies;
@@ -47,14 +51,16 @@ import shaders.ErrorHandlerShader.ErrorHandledRuntimeShader;
 #if LUA_ALLOWED
 import psychlua.*;
 #else
-import psychlua.HScript;
 import psychlua.LuaUtils;
 #end
 #if HSCRIPT_ALLOWED
 import crowplexus.hscript.Expr.Error as IrisError;
 import crowplexus.hscript.Printer;
 import crowplexus.iris.Iris;
+import crowplexus.iris.Iris;
 import psychlua.HScript.HScriptInfos;
+import psychlua.HScript.HScriptInfos;
+import psychlua.HScript;
 #end
 
 typedef ThreadBeatList =
@@ -291,8 +297,6 @@ class PlayState extends MusicBeatState
 	public var defaultCamZoom:Float = 1.05;
 	public var defaultStageZoom:Float = 1.05;
 
-	private static var zoomTween:FlxTween;
-
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -448,7 +452,6 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		this.variables = new JoinedLuaVariables();
 		// trace('Playback Rate: ' + playbackRate);
 		_lastLoadedModDirectory = Mods.currentModDirectory;
 		Paths.clearUnusedMemory();
@@ -512,8 +515,8 @@ class PlayState extends MusicBeatState
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = initPsychCamera();
-		camHUD = new FlxCamera();
-		camOther = new FlxCamera();
+		camHUD = new PsychCamera();
+		camOther = new PsychCamera();
 		luaTpadCam = new FlxCamera();
 		camInterfaz = new FlxCamera();
 		camVisuals = new FlxCamera();
@@ -629,7 +632,7 @@ class PlayState extends MusicBeatState
 				SONG.gfVersion = 'gf'; // Fix for the Chart Editor
 			gf = new Character(0, 0, SONG.gfVersion);
 			startCharacterPos(gf);
-			gfGroup.scrollFactor.set(0.95, 0.95);
+			gfGroup.scrollFactor.set(1, 1);
 			gfGroup.add(gf);
 		}
 
@@ -931,7 +934,7 @@ class PlayState extends MusicBeatState
 		var holdSplash:SustainSplash = new SustainSplash();
 		holdSplash.alpha = 0.0001;
 
-		#if (!android && TOUCH_CONTROLS_ALLOWED)
+		#if (TOUCH_CONTROLS_ALLOWED)
 		addTouchPad('NONE', 'P');
 		addTouchPadCamera();
 		#end
@@ -1049,9 +1052,18 @@ class PlayState extends MusicBeatState
 		});
 		luaDebugGroup.add(newText);
 
-		Sys.println(text);
+		trace(text);
 	}
 	#end
+
+	public function reloadHealthBarColors()
+	{
+		if (ClientPrefs.data.vsliceLegacyBar)
+			healthBar.setColors(FlxColor.RED, FlxColor.LIME);
+		else
+			healthBar.setColors(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
+				FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
+	}
 
 	public function addCharacterToList(newCharacter:String, type:Int)
 	{
@@ -1083,7 +1095,7 @@ class PlayState extends MusicBeatState
 				if (gf != null && !gfMap.exists(newCharacter))
 				{
 					var newGf:Character = new Character(0, 0, newCharacter);
-					newGf.scrollFactor.set(0.95, 0.95);
+					newGf.scrollFactor.set(1, 1);
 					gfMap.set(newCharacter, newGf);
 					gfGroup.add(newGf);
 					startCharacterPos(newGf);
@@ -1101,7 +1113,7 @@ class PlayState extends MusicBeatState
 		var luaFile:String = 'characters/$name.lua';
 		#if MODS_ALLOWED
 		var replacePath:String = Paths.modFolders(luaFile);
-		if (FileSystem.exists(replacePath))
+		if (NativeFileSystem.exists(replacePath))
 		{
 			luaFile = replacePath;
 			doPush = true;
@@ -1109,7 +1121,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			luaFile = Paths.getSharedPath(luaFile);
-			if (FileSystem.exists(luaFile))
+			if (NativeFileSystem.exists(luaFile))
 				doPush = true;
 		}
 		#else
@@ -1139,7 +1151,7 @@ class PlayState extends MusicBeatState
 		var scriptFile:String = 'characters/' + name + '.hx';
 		#if MODS_ALLOWED
 		var replacePath:String = Paths.modFolders(scriptFile);
-		if (FileSystem.exists(replacePath))
+		if (NativeFileSystem.exists(replacePath))
 		{
 			scriptFile = replacePath;
 			doPush = true;
@@ -1148,7 +1160,7 @@ class PlayState extends MusicBeatState
 		#end
 		{
 			scriptFile = Paths.getSharedPath(scriptFile);
-			if (FileSystem.exists(scriptFile))
+			if (NativeFileSystem.exists(scriptFile))
 				doPush = true;
 		}
 
@@ -1171,7 +1183,7 @@ class PlayState extends MusicBeatState
 		if (gfCheck && char.curCharacter.startsWith('gf'))
 		{ // IF DAD IS GIRLFRIEND, HE GOES TO HER POSITION
 			char.setPosition(GF_X, GF_Y);
-			char.scrollFactor.set(0.95, 0.95);
+			char.scrollFactor.set(1, 1);
 			char.danceEveryNumBeats = 2;
 		}
 		char.x += char.positionArray[0];
@@ -1190,7 +1202,7 @@ class PlayState extends MusicBeatState
 		var fileName:String = Paths.video(name);
 
 		#if sys
-		if (FileSystem.exists(fileName))
+		if (NativeFileSystem.exists(fileName))
 		#else
 		if (OpenFlAssets.exists(fileName))
 		#end
@@ -1269,7 +1281,7 @@ class PlayState extends MusicBeatState
 		if (dialogueFile.dialogue.length > 0)
 		{
 			inCutscene = true;
-			psychDialogue = new DialogueBoxPsych(dialogueFile, song);
+			psychDialogue = new DialogueBoxPsych(dialogueFile, song); // TODO
 			psychDialogue.scrollFactor.set();
 			if (endingSong)
 			{
@@ -1570,6 +1582,8 @@ class PlayState extends MusicBeatState
 	// cool right? -Crow
 	public dynamic function updateScore(miss:Bool = false, scoreBop:Bool = true)
 	{
+		if (ClientPrefs.data.vsliceLegacyBar)
+			scoreBop = false;
 		var ret:Dynamic = callOnScripts('preUpdateScore', [miss], true);
 		if (ret == LuaUtils.Function_Stop)
 			return;
@@ -1657,13 +1671,16 @@ class PlayState extends MusicBeatState
 
 	public function startNextDialogue()
 	{
-		dialogueCount++;
+		@:privateAccess
+		dialogueCount = psychDialogue.currentText;
 		callOnScripts('onNextDialogue', [dialogueCount]);
+		stagesFunc(function(stage:BaseStage) stage.startNextDialogue(dialogueCount));
 	}
 
 	public function skipDialogue()
 	{
 		callOnScripts('onSkipDialogue', [dialogueCount]);
+		stagesFunc(function(stage:BaseStage) stage.onSkipDialogue(dialogueCount));
 	}
 
 	public var songTime:Float = 0;
@@ -2468,7 +2485,15 @@ class PlayState extends MusicBeatState
 		setOnScripts('curDecStep', curDecStep);
 		setOnScripts('curDecBeat', curDecBeat);
 
-		if ((controls.PAUSE /*|| !Main.focused*/ #if android || FlxG.android.justReleased.BACK #end) && startedCountdown && canPause)
+		if (botplayTxt != null && botplayTxt.visible)
+		{
+			botplaySine += 180 * elapsed;
+			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
+		}
+
+		if ((controls.PAUSE #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonP.justPressed #end#if android || FlxG.android.justReleased.BACK #end)
+			&& startedCountdown
+			&& canPause)
 		{
 			var ret:Dynamic = callOnScripts('onPause', null, true);
 			if (ret != LuaUtils.Function_Stop)
@@ -2501,7 +2526,7 @@ class PlayState extends MusicBeatState
 				// 	antiCheat();
 				// }
 				// else
-					openModchartEditor();
+				openModchartEditor();
 			}
 		}
 
@@ -2914,7 +2939,7 @@ class PlayState extends MusicBeatState
 				persistentDraw = false;
 				FlxTimer.globalManager.clear();
 				FlxTween.globalManager.clear();
-				FlxG.camera.setFilters([]);
+				FlxG.camera.filters = [];
 
 				if (GameOverSubstate.deathDelay > 0)
 				{
@@ -3178,6 +3203,7 @@ class PlayState extends MusicBeatState
 							}
 
 							var lastAlpha:Float = boyfriend.alpha;
+							boyfriend.shader = null; // ? remove the shader
 							boyfriend.alpha = 0.00001;
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
@@ -3204,6 +3230,7 @@ class PlayState extends MusicBeatState
 
 							var wasGf:Bool = dad.curCharacter.startsWith('gf-') || dad.curCharacter == 'gf';
 							var lastAlpha:Float = dad.alpha;
+							dad.shader = null; // ? remove the shader
 							dad.alpha = 0.00001;
 							dad = dadMap.get(value2);
 							if (!dad.curCharacter.startsWith('gf-') && dad.curCharacter != 'gf')
@@ -3233,6 +3260,7 @@ class PlayState extends MusicBeatState
 								}
 
 								var lastAlpha:Float = gf.alpha;
+								gf.shader = null; // ? remove the shader
 								gf.alpha = 0.00001;
 								gf = gfMap.get(value2);
 								gf.alpha = lastAlpha;
@@ -3262,26 +3290,7 @@ class PlayState extends MusicBeatState
 							}
 						});
 				}
-			case 'Vslice Scroll Speed':
-				if (songSpeedType != "constant")
-				{
-					if (flValue1 == null)
-						flValue1 = 1;
-					if (flValue2 == null)
-						flValue2 = 0;
 
-					var newValue:Float = ClientPrefs.getGameplaySetting('scrollspeed') * flValue1;
-					if (flValue2 <= 0)
-						songSpeed = newValue;
-					else
-						songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, flValue2 / playbackRate, {
-							ease: FlxEase.quadInOut,
-							onComplete: function(twn:FlxTween)
-							{
-								songSpeedTween = null;
-							}
-						});
-				}
 			case 'Set Property':
 				try
 				{
@@ -3324,47 +3333,6 @@ class PlayState extends MusicBeatState
 				if (flValue2 == null)
 					flValue2 = 1;
 				FlxG.sound.play(Paths.sound(value1), flValue2);
-			case 'SetCameraBop': // P-slice event notes
-				var val1 = Std.parseFloat(value1);
-				var val2 = Std.parseFloat(value2);
-				camZoomingMult = !Math.isNaN(val2) ? val2 : 1;
-				camZoomingFrequency = !Math.isNaN(val1) ? val1 : 4;
-			case 'ZoomCamera': // defaultCamZoom
-				var keyValues = value1.split(",");
-				if (keyValues.length != 2)
-				{
-					trace("INVALID EVENT VALUE");
-					return;
-				}
-				var floaties = keyValues.map(s -> Std.parseFloat(s));
-				if (mikolka.funkin.utils.ArrayTools.findIndex(floaties, s -> Math.isNaN(s)) != -1)
-				{
-					trace("INVALID FLOATIES");
-					return;
-				}
-				var easeFunc = LuaUtils.getTweenEaseByString(value2);
-				if (zoomTween != null)
-					zoomTween.cancel();
-				var targetZoom = floaties[1] * defaultStageZoom;
-				zoomTween = FlxTween.tween(this, {defaultCamZoom: targetZoom}, (Conductor.stepCrochet / 1000) * floaties[0], {
-					onStart: (x) ->
-					{
-						// camZooming = false;
-						camZoomingDecay = 7;
-					},
-					ease: easeFunc,
-					onComplete: (x) ->
-					{
-						defaultCamZoom = targetZoom;
-						camZoomingDecay = 1;
-						// camZooming = true;
-						zoomTween = null;
-					}
-				});
-			case "Set CheckPoint":
-				onCheckPoint(strumTime, (value1.toLowerCase() == "hide"));
-			case "Sustain Divider":
-				sustainDivider = Std.parseFloat(value1);
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.eventCalled(eventName, value1, value2, flValue1, flValue2, strumTime));
@@ -3609,7 +3577,7 @@ class PlayState extends MusicBeatState
 
 					canResync = false;
 					LoadingState.prepareToSong();
-					LoadingState.loadAndSwitchState(new PlayState(), false, false);
+					LoadingState.loadAndSwitchState(new PlayState(), false);
 				}
 			}
 			else
@@ -3897,6 +3865,10 @@ class PlayState extends MusicBeatState
 		if (cpuControlled || paused || inCutscene || key < 0 || key >= playerStrums.length || !generatedMusic || endingSong || boyfriend.stunned)
 			return;
 
+		#if MOBILE_CONTROLS_ALLOWED
+		if (touchPad?.buttonP.justPressed)
+			return;
+		#end
 		var ret:Dynamic = callOnScripts('onKeyPressPre', [key]);
 		if (ret == LuaUtils.Function_Stop)
 			return;
@@ -4532,6 +4504,11 @@ class PlayState extends MusicBeatState
 					combo = 9999;
 				popUpScore(note);
 			}
+			else if (!guitarHeroSustains)
+			{ // ? Legacy scoring for sustains
+				songScore += 125;
+				updateScoreText();
+			}
 			var gainHealth:Bool = true; // prevent health gain, *if* sustains are treated as a singular note
 			if (guitarHeroSustains && note.isSustainNote)
 				gainHealth = false;
@@ -4774,7 +4751,7 @@ class PlayState extends MusicBeatState
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 
-		FlxG.camera.setFilters([]);
+		FlxG.camera.filters = [];
 
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
 		FlxG.animationTimeScale = 1;
@@ -4857,7 +4834,7 @@ class PlayState extends MusicBeatState
 			// trace('BEAT HIT: ' + curBeat + ', LAST HIT: ' + lastBeatHit);
 			return;
 		}
-
+		// ? Camera zoom - V-Slice condition (based on zoom freq)
 		if (camZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.data.camZooms && (curBeat % camZoomingFrequency) == 0)
 		{
 			FlxG.camera.zoom += 0.015 * camZoomingMult;
@@ -4907,6 +4884,14 @@ class PlayState extends MusicBeatState
 			if (generatedMusic && !endingSong && !isCameraOnForcedPos)
 				moveCameraSection();
 
+			// ? Camera zoom - Psych condition (based on section length)
+			var vsliceCondition = (curBeat % camZoomingFrequency) == 0;
+			if (camZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.data.camZooms && !vsliceCondition)
+			{
+				FlxG.camera.zoom += 0.015 * camZoomingMult;
+				camHUD.zoom += 0.03 * camZoomingMult;
+			}
+
 			if (SONG.notes[curSection].changeBPM)
 			{
 				Conductor.bpm = SONG.notes[curSection].bpm;
@@ -4929,10 +4914,10 @@ class PlayState extends MusicBeatState
 	{
 		#if MODS_ALLOWED
 		var luaToLoad:String = Paths.modFolders(luaFile);
-		if (!FileSystem.exists(luaToLoad))
+		if (!NativeFileSystem.exists(luaToLoad))
 			luaToLoad = Paths.getSharedPath(luaFile);
 
-		if (FileSystem.exists(luaToLoad))
+		if (NativeFileSystem.exists(luaToLoad))
 		#elseif sys
 		var luaToLoad:String = Paths.getSharedPath(luaFile);
 		if (OpenFlAssets.exists(luaToLoad))
@@ -4954,13 +4939,13 @@ class PlayState extends MusicBeatState
 	{
 		#if MODS_ALLOWED
 		var scriptToLoad:String = Paths.modFolders(scriptFile);
-		if (!FileSystem.exists(scriptToLoad))
+		if (!NativeFileSystem.exists(scriptToLoad))
 			scriptToLoad = Paths.getSharedPath(scriptFile);
 		#else
 		var scriptToLoad:String = Paths.getSharedPath(scriptFile);
 		#end
 
-		if (FileSystem.exists(scriptToLoad))
+		if (NativeFileSystem.exists(scriptToLoad))
 		{
 			if (Iris.instances.exists(scriptToLoad))
 				return false;
@@ -5300,17 +5285,17 @@ class PlayState extends MusicBeatState
 			var frag:String = folder + name + '.frag';
 			var vert:String = folder + name + '.vert';
 			var found:Bool = false;
-			if (FileSystem.exists(frag))
+			if (NativeFileSystem.exists(frag))
 			{
-				frag = File.getContent(frag);
+				frag = NativeFileSystem.getContent(frag);
 				found = true;
 			}
 			else
 				frag = null;
 
-			if (FileSystem.exists(vert))
+			if (NativeFileSystem.exists(vert))
 			{
-				vert = File.getContent(vert);
+				vert = NativeFileSystem.getContent(vert);
 				found = true;
 			}
 			else

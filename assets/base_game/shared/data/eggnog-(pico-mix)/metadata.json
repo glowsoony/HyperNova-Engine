@@ -1,8 +1,11 @@
 {
-	"songRating": 2,
-	"albumId": "expansion2",
+	"songRating": 5,
+	"albumId": "volume4",
 	"freeplayCharacter": "pico",
+	"freeplayWeekName": "week 5",
 	"freeplaySongLength": 96.031247,
 	"freeplayPrevEnd": 20,
+	"altInstrumentalSongs": "eggnog",
+	"allowErectVariants": true,
 	"freeplayPrevStart": 0
 }

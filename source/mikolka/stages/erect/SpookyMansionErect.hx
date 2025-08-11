@@ -1,6 +1,6 @@
 package mikolka.stages.erect;
 
-import mikolka.stages.objects.PicoCapableStage;
+import mikolka.stages.scripts.PicoCapableStage;
 import mikolka.compatibility.VsliceOptions;
 import shaders.RainShader;
 #if !LEGACY_PSYCH
@@ -24,10 +24,8 @@ class SpookyMansionErect extends BaseStage
 	var gfGhost:Character;
 	var dadGhost:Character;
 
-	var nene:PicoCapableStage;
-	public function new(nene:PicoCapableStage) {
+	public function new() {
 		super();
-		this.nene = nene;
 	}
 	override function create()
 	{
@@ -162,7 +160,7 @@ class SpookyMansionErect extends BaseStage
 					gf.playAnim('scared', true);
 				if (VsliceOptions.FLASHBANG)
 				{
-					nene.ABot_plink();
+					PicoCapableStage.instance?.ABot_plink();
 					boyfriend.alpha = 0;
 					dad.alpha = 0;
 					gf.alpha = 0;
@@ -205,12 +203,13 @@ class SpookyMansionErect extends BaseStage
 	{
 		
 		var bfName = PlayState.instance.boyfriend.curCharacter.split("-")[0]; 
+		var dadName = PlayState.instance.dad.curCharacter.split("-")[0]; 
 		if(bfName == "pico") bfName = "pico-playable";
 
 		var gfMode = PlayState.instance.gf.curCharacter.split("-")[0];
 		gfGhost = new Character(game.gf.x, game.gf.y, gfMode);
-		//if (gfMode == 'nene')
-			//gfGhost.y -= 190;
+		// if (gfMode == 'nene')
+		// 	gfGhost.y -= 200;
 		game.add(gfGhost);
 		gfGhost.dance();
 		
@@ -218,7 +217,7 @@ class SpookyMansionErect extends BaseStage
 		game.add(boyfriendGhost);
 		boyfriendGhost.dance();
 
-		dadGhost = new Character(game.dad.x, game.dad.y, 'spooky', true);
+		dadGhost = new Character(game.dad.x, game.dad.y, dadName, true);
 		dadGhost.flipX = false;
 		game.add(dadGhost);
 		dadGhost.dance();

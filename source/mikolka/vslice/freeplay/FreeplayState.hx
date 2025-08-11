@@ -1,10 +1,12 @@
 package mikolka.vslice.freeplay;
 
+import flixel.math.FlxRect;
+import mikolka.vslice.ui.MainMenuState;
+import mikolka.vslice.freeplay.backcards.LuaCard;
 import mikolka.vslice.freeplay.obj.CapsuleOptionsMenu;
-import mikolka.compatibility.FunkinControls;
+import mikolka.compatibility.funkin.FunkinControls;
 import mikolka.vslice.charSelect.CharSelectSubState;
 import openfl.filters.ShaderFilter;
-import mikolka.vslice.freeplay.backcards.PicoCard;
 import mikolka.vslice.freeplay.backcards.NewCharacterCard;
 import mikolka.vslice.freeplay.backcards.PicoCard;
 import mikolka.funkin.freeplay.FreeplayStyleRegistry;
@@ -15,12 +17,11 @@ import mikolka.vslice.freeplay.backcards.BackingCard;
 import mikolka.vslice.freeplay.DJBoyfriend.FreeplayDJ;
 import mikolka.compatibility.ModsHelper;
 import mikolka.compatibility.VsliceOptions;
-import mikolka.compatibility.FunkinCamera;
+import mikolka.compatibility.funkin.FunkinCamera;
 import mikolka.vslice.freeplay.pslice.BPMCache;
-import mikolka.vslice.freeplay.pslice.FreeplayColorTweener;
-import mikolka.compatibility.FreeplaySongData;
-import mikolka.compatibility.FreeplayHelpers;
-import mikolka.compatibility.FunkinPath as Paths;
+import mikolka.compatibility.freeplay.FreeplaySongData;
+import mikolka.compatibility.freeplay.FreeplayHelpers;
+import mikolka.compatibility.funkin.FunkinPath as Paths;
 import mikolka.funkin.custom.VsliceSubState as MusicBeatSubstate;
 import openfl.utils.AssetCache;
 import mikolka.funkin.AtlasText;
@@ -29,19 +30,15 @@ import shaders.HSVShader;
 import shaders.StrokeShader;
 import shaders.AngleMask;
 import mikolka.funkin.IntervalShake;
-import substates.StickerSubState;
+import mikolka.vslice.StickerSubState;
 import mikolka.funkin.Scoring.ScoringRank;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.input.touch.FlxTouch;
-import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import openfl.display.BlendMode;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -147,6 +144,8 @@ class FreeplayState extends MusicBeatSubstate
 	var diffIdsTotal:Array<String> = ['easy', "normal", "hard"]; // ? forcing this diff order
 
 	var curSelected:Int = 0;
+	// This below track drag for the mobile
+	var curSelectedFractal:Float = 0;
 	var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
 	var fp:FreeplayScore;
@@ -176,7 +175,6 @@ class FreeplayState extends MusicBeatSubstate
 	var curPlaying:Bool = false;
 
 	var dj:Null<FreeplayDJ> = null;
-	var djTouchHitbox:FlxSprite = new FlxSprite(78, 308);
 
 	var ostName:FlxText;
 	var albumRoll:AlbumRoll;
@@ -267,6 +265,7 @@ class FreeplayState extends MusicBeatSubstate
 	override function create():Void
 	{
 		// ? Psych might've reloaded the mod list. Make sure we select current character's mod for the style
+		SongMenuItem.reloadGlobalItemData();
 		var saveBox = VsliceOptions.LAST_MOD;
 		if (ModsHelper.isModDirEnabled(saveBox.mod_dir))
 			ModsHelper.loadModDir(saveBox.mod_dir);
@@ -276,6 +275,12 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			switch (currentCharacterId)
 			{
+				case (VsliceOptions.LOW_QUALITY) => true:
+					backingCard = null;
+				#if (!LEGACY_PSYCH && HSCRIPT_ALLOWED)
+				case (LuaCard.hasCustomCard(currentCharacterId)) => true:
+					backingCard = new LuaCard(currentCharacter,currentCharacterId,stickerSubState == null);
+				#end
 				case(PlayerRegistry.instance.hasNewCharacter()) => true:
 					backingCard = new NewCharacterCard(currentCharacter);
 				case 'bf':
@@ -306,7 +311,7 @@ class FreeplayState extends MusicBeatSubstate
 		ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
 		charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
-		bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
+		bgDad = new FlxSprite((backingCard?.pinkBack.width ?? 0) * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
 
 		BPMCache.instance.clearCache(); // for good measure
 		// ? end of init
@@ -391,25 +396,24 @@ class FreeplayState extends MusicBeatSubstate
 		if (currentCharacter?.getFreeplayDJData() != null)
 		{
 			ModsHelper.loadModDir(VsliceOptions.LAST_MOD.mod_dir); // ? make sure to load a mod dir of this character!
-			dj = new FreeplayDJ(640, 366, currentCharacter);
-			exitMovers.set([dj], {
-				x: -dj.width * 1.6,
-				speed: 0.5
-			});
-			add(dj);
-			exitMoversCharSel.set([dj], {
-				y: -175,
-				speed: 0.8,
-				wait: 0.1
-			});
+			//? Low quality. why we need him again?
+			if(!VsliceOptions.LOW_QUALITY){
+				dj = new FreeplayDJ(640, 366, currentCharacter);
+				exitMovers.set([dj], {
+					x: -dj.width * 1.6,
+					speed: 0.5
+				});
+				add(dj);
+				exitMoversCharSel.set([dj], {
+					y: -175,
+					speed: 0.8,
+					wait: 0.1
+				});
+			}
 		}
 
-		djTouchHitbox = djTouchHitbox.makeGraphic(250, 250, FlxColor.TRANSPARENT);
-		djTouchHitbox.cameras = dj.cameras;
-		djTouchHitbox.active = false;
-		add(djTouchHitbox);
 
-		bgDad.shader = angleMaskShader;
+		if (!VsliceOptions.LOW_QUALITY) bgDad.shader = angleMaskShader;
 		bgDad.visible = false;
 
 		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width, 0, Paths.image("back"));
@@ -417,7 +421,9 @@ class FreeplayState extends MusicBeatSubstate
 		add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
 		// this makes the texture sizes consistent, for the angle shader
-		bgDad.setGraphicSize(0, FlxG.height);
+		//? For low qualiit it's the entire background
+		if (VsliceOptions.LOW_QUALITY) bgDad.setGraphicSize(FlxG.width, FlxG.height);
+		else bgDad.setGraphicSize(0, FlxG.height);
 		blackOverlayBullshitLOLXD.setGraphicSize(0, FlxG.height);
 
 		bgDad.updateHitbox();
@@ -437,7 +443,7 @@ class FreeplayState extends MusicBeatSubstate
 
 		add(bgDad);
 		// ? changed offset
-		FlxTween.tween(blackOverlayBullshitLOLXD, {x: (backingCard.pinkBack.width * 0.74)}, 0.7, {ease: FlxEase.quintOut});
+		FlxTween.tween(blackOverlayBullshitLOLXD, {x: ((backingCard?.pinkBack.width ?? 0) * 0.74)}, 0.7, {ease: FlxEase.quintOut});
 
 		blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
@@ -523,7 +529,7 @@ class FreeplayState extends MusicBeatSubstate
 		charSelectHint.alignment = CENTER;
 		charSelectHint.font = "5by7";
 		charSelectHint.color = 0xFF5F5F5F;
-		charSelectHint.text = controls.mobileC ? 'Touch on the DJ to change characters' : 'Press [ TAB ] to change characters'; // ?! ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)}
+		charSelectHint.text = controls.mobileC ? 'Touch [ X ] to change characters' : 'Press [ ${FunkinControls.FREEPLAY_CHAR_name()} ] to change characters'; // ?! ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)}
 		charSelectHint.y -= 100;
 		FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
 
@@ -605,6 +611,7 @@ class FreeplayState extends MusicBeatSubstate
 			{
 				FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 				curSelected = 1;
+				curSelectedFractal = 1;
 				changeSelection();
 			}
 		};
@@ -632,10 +639,9 @@ class FreeplayState extends MusicBeatSubstate
 		add(fnfFreeplay);
 		add(ostName);
 
-		if (PlayerRegistry.instance.hasNewCharacter() == true)
-		{
+		#if (BASE_GAME_FILES || MODS_ALLOWED)
 			add(charSelectHint);
-		}
+		#end
 
 		// be careful not to "add()" things in here unless it's to a group that's already added to the state
 		// otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
@@ -721,7 +727,7 @@ class FreeplayState extends MusicBeatSubstate
 		}
 		else
 		{
-			onDJIntroDone();
+			FlxTimer.wait(0.5,() -> onDJIntroDone());
 		}
 		currentDifficulty = rememberedDifficulty; // ? use last difficulty to create this list
 		generateSongList(null, false);
@@ -753,7 +759,7 @@ class FreeplayState extends MusicBeatSubstate
 		}
 
 		#if TOUCH_CONTROLS_ALLOWED
-		addTouchPad('UP_DOWN', 'A_B_F_X_Y');
+		addTouchPad('UP_DOWN', 'A_B_C_X_Y_F');
 		addTouchPadCamera();
 		if (prepForNewRank)
 		{
@@ -777,6 +783,30 @@ class FreeplayState extends MusicBeatSubstate
 				}
 			});
 		}
+		#if !LEGACY_PSYCH
+
+		var button = new TouchZone(420,260  ,450,95);
+		button.cameras = [funnyCam];
+
+		var scroll = new ScrollableObject(-0.01,150,100,FlxG.width-400,FlxG.height,button);
+		scroll.cameras = [funnyCam];
+		scroll.onPartialScroll.add(delta -> {
+			if(busy) return;
+			changeSelectionFractal(delta);
+		});
+		scroll.onFullScrollSnap.add(() -> changeSelectionFractal(curSelected-curSelectedFractal));
+		scroll.onFullScroll.add(delta -> {
+			if(busy) return;
+			changeSelection(delta,false);
+		});
+		scroll.onTap.add(() ->{
+			if(busy) return;
+			var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
+			daSongCapsule.onConfirm();
+		});
+		add(scroll);
+		add(button);
+		#end
 		#end
 
 		if (fromCharSelect == true)
@@ -798,6 +828,10 @@ class FreeplayState extends MusicBeatSubstate
 	 */
 	public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, onlyIfChanged:Bool = true):Void
 	{
+		#if freeplay_profile
+		trace('Generating song list');
+		var timeStart = Sys.time();
+		#end
 		var tempSongs:Array<Null<FreeplaySongData>> = songs;
 
 		if (filterStuff != null)
@@ -836,8 +870,7 @@ class FreeplayState extends MusicBeatSubstate
 
 		currentFilteredSongs = tempSongs;
 		curSelected = 0;
-
-		var hsvShader:HSVShader = new HSVShader();
+		curSelectedFractal = 0;
 
 		var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 		randomCapsule.init(FlxG.width, 0, null, styleData);
@@ -850,9 +883,11 @@ class FreeplayState extends MusicBeatSubstate
 		randomCapsule.alpha = 0;
 		randomCapsule.songText.visible = false;
 		randomCapsule.favIcon.visible = false;
+		randomCapsule.txtWeek.text = "Random";
 		randomCapsule.favIconBlurred.visible = false;
 		randomCapsule.ranking.visible = false;
 		randomCapsule.blurredRanking.visible = false;
+		randomCapsule.hsvShader = SongMenuItem.static_hsvShader;
 		if (fromCharSelect == false)
 		{
 			randomCapsule.initJumpIn(0, force);
@@ -861,7 +896,6 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			randomCapsule.forcePosition();
 		}
-		randomCapsule.hsvShader = hsvShader;
 		grpCapsules.add(randomCapsule);
 
 		for (i in 0...tempSongs.length)
@@ -884,7 +918,7 @@ class FreeplayState extends MusicBeatSubstate
 			funnyMenu.songText.visible = false;
 			funnyMenu.favIcon.visible = tempSong.isFav;
 			funnyMenu.favIconBlurred.visible = tempSong.isFav;
-			funnyMenu.hsvShader = hsvShader;
+			funnyMenu.hsvShader = SongMenuItem.static_hsvShader;
 
 			funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
 			funnyMenu.checkClip();
@@ -899,6 +933,10 @@ class FreeplayState extends MusicBeatSubstate
 
 		changeSelection();
 		changeDiff(0, true);
+		#if freeplay_profile
+		trace('Initing songs took ${Sys.time()-timeStart}');
+		//var timeStart = Sys.time();
+		#end
 	}
 
 	/**
@@ -1280,10 +1318,14 @@ class FreeplayState extends MusicBeatSubstate
 		
 		controls.isInSubstate = true;
 		#if TOUCH_CONTROLS_ALLOWED
+		#if LEGACY_PSYCH
+		MusicBeatSubstate.instance = this;
+		#else
 		backend.MusicBeatSubstate.instance = this;
+		#end
 		persistentUpdate = true;
 		removeTouchPad();
-		addTouchPad('UP_DOWN', 'A_B_F_X_Y');
+		addTouchPad('UP_DOWN', 'A_B_C_X_Y_F');
 		addTouchPadCamera();
 		#end
 	}
@@ -1447,7 +1489,11 @@ class FreeplayState extends MusicBeatSubstate
 			}
 			#if TOUCH_CONTROLS_ALLOWED
 			touchPad.alpha = 0;
+			#if LEGACY_PSYCH
+			FlxTween.tween(touchPad, {alpha: ClientPrefs.controlsAlpha}, 0.8, {ease: FlxEase.backIn});
+			#else
 			FlxTween.tween(touchPad, {alpha: ClientPrefs.data.controlsAlpha}, 0.8, {ease: FlxEase.backIn});
+			#end
 			#end
 		}
 	}
@@ -1518,12 +1564,11 @@ class FreeplayState extends MusicBeatSubstate
 
 		if (!busy)
 		{
-			if ((FunkinControls.FREEPLAY_CHAR
-				|| (TouchUtil.overlapsComplex(djTouchHitbox) && TouchUtil.justReleased && !SwipeUtil.swipeAny)))
+			if (FunkinControls.FREEPLAY_CHAR #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonX.justPressed #end)
 			{
 				tryOpenCharSelect();
 			} //? Those are new too
-			else if (FlxG.keys.justPressed.CONTROL #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonX.justPressed #end)
+			else if (FlxG.keys.justPressed.CONTROL #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonC.justPressed #end)
 			{
 				persistentUpdate = false;
 				#if TOUCH_CONTROLS_ALLOWED
@@ -1531,7 +1576,7 @@ class FreeplayState extends MusicBeatSubstate
 				#end
 				FreeplayHelpers.openGameplayChanges(this);
 			}
-			else if (controls.RESET #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonY.justPressed #end && curSelected != 0)
+			else if ((controls.RESET #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonY.justPressed #end) && curSelected != 0)
 			{
 				persistentUpdate = false;
 				var curSng = grpCapsules.members[curSelected];
@@ -1609,7 +1654,16 @@ class FreeplayState extends MusicBeatSubstate
 				}
 			}
 		}
-
+		//TODO We should bind those to global controls
+		if (FlxG.keys.justPressed.HOME && !busy)
+		{
+			changeSelection(-curSelected);
+		}
+		
+		if (FlxG.keys.justPressed.END && !busy)
+		{
+			changeSelection(grpCapsules.countLiving() - curSelected - 1);
+		}
 		lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
 		lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
@@ -1884,10 +1938,10 @@ class FreeplayState extends MusicBeatSubstate
 			// ? changed how this loads score
 			daSong.currentDifficulty = currentDifficulty;
 			var diffId = daSong.loadAndGetDiffId(); // 12
-			var songScore:Int = Highscore.getScore(daSong.songId,
+			var songScore:Int = Highscore.getScore(daSong.getNativeSongId(),
 				diffId); // Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, suffixedDifficulty);
 			intendedScore = songScore ?? 0;
-			intendedCompletion = Highscore.getRating(daSong.songId, diffId);
+			intendedCompletion = Highscore.getRating(daSong.getNativeSongId(), diffId);
 			rememberedDifficulty = currentDifficulty;
 		}
 		else
@@ -2021,6 +2075,7 @@ class FreeplayState extends MusicBeatSubstate
 
 		// Seeing if I can do an animation...
 		curSelected = grpCapsules.members.indexOf(targetSong);
+		curSelectedFractal = curSelected;
 		changeSelection(0); // Trigger an update.
 
 		// Act like we hit Confirm on that song.
@@ -2146,6 +2201,7 @@ class FreeplayState extends MusicBeatSubstate
 
 			if (curSelected == -1)
 				curSelected = 0;
+			curSelectedFractal = curSelected;
 		}
 
 		if (rememberedDifficulty != null)
@@ -2153,20 +2209,55 @@ class FreeplayState extends MusicBeatSubstate
 			currentDifficulty = rememberedDifficulty;
 		}
 	}
+	//TODO
 
-	function changeSelection(change:Int = 0):Void
+
+	function changeSelectionFractal(change:Float){
+		curSelectedFractal = FlxMath.bound(curSelectedFractal + change, 0, grpCapsules.countLiving() - 1);
+		for (index => capsule in grpCapsules.members)
+			{
+				index += 1;
+	
+				capsule.selected = index == curSelected + 1;
+	
+				capsule.targetPos.y = capsule.intendedY(index - curSelectedFractal);
+				capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelectedFractal)));
+	
+				if (index < curSelected)
+					capsule.targetPos.y -= 100; // another 100 for good measure
+			}
+	}
+	function changeSelection(change:Int = 0,updateCardPosition:Bool = true):Void
 	{
 		var prevSelected:Int = curSelected;
-
+		if(updateCardPosition) curSelectedFractal = curSelected;
 		curSelected += change;
 
-		if (!prepForNewRank && curSelected != prevSelected)
+		//? Added code here to handle drag changes
+		if (curSelected < 0)
+			if(updateCardPosition) {
+				curSelected = grpCapsules.countLiving() - 1;
+				change = 0;
+				curSelectedFractal = curSelected;
+			}
+			else {
+				curSelected = prevSelected;
+				return;
+			}
+		if (curSelected >= grpCapsules.countLiving())
+			if (updateCardPosition) {
+				curSelected = 0;
+				change = 0;
+				curSelectedFractal = 0;
+			}
+			else {
+				curSelected = prevSelected;
+				return;
+			}
+		
+		if (!prepForNewRank && curSelected != prevSelected && change != 0)
 			FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
-		if (curSelected < 0)
-			curSelected = grpCapsules.countLiving() - 1;
-		if (curSelected >= grpCapsules.countLiving())
-			curSelected = 0;
 
 		var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
 		if (daSongCapsule.songData != null)
@@ -2188,19 +2279,7 @@ class FreeplayState extends MusicBeatSubstate
 			rememberedDifficulty = Constants.DEFAULT_DIFFICULTY;
 			albumRoll.albumId = null;
 		}
-
-		for (index => capsule in grpCapsules.members)
-		{
-			index += 1;
-
-			capsule.selected = index == curSelected + 1;
-
-			capsule.targetPos.y = capsule.intendedY(index - curSelected);
-			capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
-
-			if (index < curSelected)
-				capsule.targetPos.y -= 100; // another 100 for good measure
-		}
+		if(updateCardPosition) changeSelectionFractal(change);
 
 		if (grpCapsules.countLiving() > 0 && !prepForNewRank)
 		{
@@ -2222,7 +2301,7 @@ class FreeplayState extends MusicBeatSubstate
 		if (daSongCapsule == null)
 			daSongCapsule = grpCapsules.members[curSelected];
 
-		if (curSelected == 0)
+		if (curSelected == 0 || daSongCapsule.songData == null)
 		{
 			FunkinSound.playMusic('freeplayRandom', {
 				startingVolume: 0.0,
@@ -2239,7 +2318,7 @@ class FreeplayState extends MusicBeatSubstate
 			// ? psych dir setting
 			var songData = daSongCapsule.songData;
 			ModsHelper.loadModDir(songData.folder);
-			FunkinSound.playMusic(daSongCapsule.songData.songId, {
+			FunkinSound.playMusic(daSongCapsule.songData.getNativeSongId(), {
 				startingVolume: 0.0,
 				overrideExisting: true,
 				restartTrack: false,
@@ -2253,7 +2332,7 @@ class FreeplayState extends MusicBeatSubstate
 				onLoad: function()
 				{
 					// ? onLoad doesn't start plaing music automatically here
-					var endVolume = dj.playingCartoon ? 0.1 : FADE_IN_END_VOLUME;
+					var endVolume = dj?.playingCartoon ? 0.1 : FADE_IN_END_VOLUME;
 					FlxG.sound.music.fadeIn(FADE_IN_DURATION, FADE_IN_START_VOLUME, endVolume);
 					// ? set BPMs
 					var newBPM = daSongCapsule.songData.songStartingBpm;

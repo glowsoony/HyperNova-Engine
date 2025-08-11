@@ -2,9 +2,7 @@ package options;
 
 import backend.StageData;
 import flixel.addons.display.shapes.FlxShapeCircle;
-import mikolka.stages.standard.StageWeek1 as BackgroundStage;
-import objects.Bar;
-import objects.Character;
+import mikolka.stages.erect.MainStageErect as BackgroundStage;
 
 class NoteOffsetState extends MusicBeatState
 {
@@ -385,6 +383,11 @@ class NoteOffsetState extends MusicBeatState
 				holdTime += elapsed;
 				if (controls.UI_LEFT)
 					mult = -1;
+			}
+			if (controls.UI_LEFT_R || controls.UI_RIGHT_R)
+			{
+				holdTime = 0;
+				updateNoteDelay();
 			}
 
 			if (holdTime > 0.5)

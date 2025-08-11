@@ -6,6 +6,7 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup;
 import objects.Character;
 import objects.Note;
+import substates.GameOverSubstate;
 
 enum Countdown
 {
@@ -108,6 +109,10 @@ class BaseStage extends FlxBasic
 	{
 	}
 
+	public function gameOverStart(SubState:GameOverSubstate)
+	{
+	}
+
 	public function openSubState(SubState:FlxSubState)
 	{
 	}
@@ -122,6 +127,15 @@ class BaseStage extends FlxBasic
 	}
 
 	public function eventPushedUnique(event:EventNote)
+	{
+	}
+
+	// Dialogue
+	public function startNextDialogue(dialogueCount:Int)
+	{
+	}
+
+	public function onSkipDialogue(dialogueCount:Int)
 	{
 	}
 
@@ -303,7 +317,7 @@ class BaseStage extends FlxBasic
 	inline private function get_camFollow():FlxObject
 		return game.camFollow;
 
-	inline private function camFollow_set(x:Float, y:Float)
+	inline public function camFollow_set(x:Float, y:Float)
 	{
 		camFollow.setPosition(x, y);
 	}

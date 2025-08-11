@@ -1,57 +1,42 @@
 package;
 
-#if HSCRIPT_ALLOWED
-import crowplexus.iris.Iris;
-import psychlua.HScript.HScriptInfos;
-#end
 import backend.crashHandler.*;
 import flixel.FlxGame;
 import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
 import haxe.io.Path;
 import lime.app.Application;
+import lime.app.Application;
 import mikolka.GameBorder;
 import mikolka.vslice.components.MemoryCounter;
+import mikolka.vslice.components.crash.Logger;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
-import openfl.events.Event;
-import states.TitleState;
-#if COPYSTATE_ALLOWED
-import states.CopyState;
+import states.InitState;
+#if HSCRIPT_ALLOWED
+import crowplexus.iris.Iris;
+import psychlua.HScript.HScriptInfos;
+#end
+#if (linux || mac)
+import lime.graphics.Image;
 #end
 #if mobile
 import mobile.backend.MobileScaleMode;
 #end
-#if (linux && !debug)
-import lime.graphics.Image;
 
+#if (linux && !debug)
 @:cppInclude('./external/gamemode_client.h')
 @:cppFileCode('#define GAMEMODE_AUTO')
 #end
-#if windows
-@:buildXml('
-<target id="haxe">
-	<lib name="wininet.lib" if="windows" />
-	<lib name="dwmapi.lib" if="windows" />
-</target>
-')
-@:cppFileCode('
-	#define GAMEMODE_AUTO
-#include <windows.h>
-#include <winuser.h>
-#pragma comment(lib, "Shell32.lib")
-extern "C" HRESULT WINAPI SetCurrentProcessExplicitAppUserModelID(PCWSTR AppID);
-')
-#end
 class Main extends Sprite
 {
-	var game = {
+	public static final game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
-		initialState: TitleState, // initial game state
+		initialState: InitState, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
 		skipSplash: true, // if the default flixel splash screen should be skipped
@@ -61,6 +46,55 @@ class Main extends Sprite
 	public static var fpsVar:FPS;
 	public static var memoryCounter:MemoryCounter;
 	public static final platform:String = #if mobile "Phones" #else "PCs" #end;
+
+	// Game pre-flixel init code
+	// ? This runs before we attempt to precache things
+	public static function loadGameEarly()
+	{
+		#if (linux || mac) // fix the app icon not showing up on the Linux Panel
+		var icon = lime.graphics.Image.fromFile("icon.png");
+		Lib.current.stage.window.setIcon(icon);
+		#end
+
+		#if TITLE_SCREEN_EASTER_EGG
+		if (Date.now().getMonth() == 0 && Date.now().getDate() == 14)
+			Lib.current.stage.window.title = "Friday Night Funkin': Mikolka's Engine";
+		#end
+
+		// This requests file access on android (otherwise we will crash later)
+		#if android
+		StorageUtil.requestPermissions();
+		#end
+
+		#if mobile
+		Sys.setCwd(StorageUtil.getStorageDirectory());
+		#end
+
+		#if sys
+		Logger.startLogging();
+		trace("CWD IS " + StorageUtil.getStorageDirectory());
+		#end
+		backend.CrashHandler.init();
+		trace("Crash handler is up!");
+
+		// This initialises mods
+		try
+		{
+			trace("Pushing global mods");
+			#if LUA_ALLOWED
+			Mods.pushGlobalMods();
+			#end
+			trace("Pushing top mod");
+			Mods.loadTopMod();
+		}
+		catch (x:Exception)
+			trace("Something went wrong with mod code: " + x.message);
+
+		#if hxvlc
+		trace("Starting hxvlc..");
+		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
+		#end
+	}
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -72,21 +106,6 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-		#if mobile
-		#if android
-		StorageUtil.requestPermissions();
-		#end
-		Sys.setCwd(StorageUtil.getStorageDirectory());
-		#end
-		CrashHandler.initCrashHandler();
-
-		#if windows
-		// DPI Scaling fix for windows
-		// this shouldn't be needed for other systems
-		// Credit to YoshiCrafter29 for finding this function
-		untyped __cpp__("SetProcessDPIAware();");
-		#end
-
 		if (stage != null)
 		{
 			init();
@@ -95,9 +114,8 @@ class Main extends Sprite
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
-		#if hxvlc
-		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
-		#end
+
+		trace("Main done it's code");
 	}
 
 	private function init(?E:Event):Void
@@ -112,6 +130,7 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		trace("Starting game setup");
 		#if (openfl <= "9.2.0")
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
@@ -128,16 +147,32 @@ class Main extends Sprite
 			game.zoom = 1.0;
 		#end
 
-		#if LUA_ALLOWED
-		Mods.pushGlobalMods();
-		#end
-		Mods.loadTopMod();
+		trace("Initializing save .sol");
+		FlxG.save.bind('funkin', CoolUtil.getSavePath(), (rawSave, error) ->
+		{
+			trace("Couldn't load main save. Attempting to extract");
+			try
+			{
+				var badSave = File.write(StorageUtil.getStorageDirectory() + "/funkin.sol.bad");
+				badSave.writeString(rawSave);
+				badSave.close();
+				trace("Extracted bad save to funkin.sol.bad. Creating new save..");
+			}
+			catch (x)
+			{
+				trace(x);
+				trace("Failed to backup. Discarding..");
+			}
+			return
+			{
+			};
+		});
 
-		FlxG.save.bind('funkin', CoolUtil.getSavePath());
-
+		trace("Loading scores..");
 		Highscore.load();
 
 		#if HSCRIPT_ALLOWED
+		trace("Hooking up the Iris log functions");
 		Iris.warn = function(x, ?pos:haxe.PosInfos)
 		{
 			Iris.logLevel(WARN, x, pos);
@@ -206,20 +241,23 @@ class Main extends Sprite
 		}
 		#end
 
-		#if LUA_ALLOWED Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call)); #end
+		#if LUA_ALLOWED
+		trace("Hooking up Lua");
+		Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call));
+		#end
+
+		trace("Loading controls");
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
 
 		#if mobile
-		FlxG.signals.postGameStart.addOnce(() ->
-		{
-			FlxG.scaleMode = new MobileScaleMode();
-		});
+		FlxG.signals.postGameStart.addOnce(() -> FlxG.scaleMode = new MobileScaleMode());
 		#end
 
-		var gameObject = new FlxGame(game.width, game.height, #if COPYSTATE_ALLOWED !CopyState.checkExistingFiles() ? CopyState : #end game.initialState,
-			#if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen);
+		trace("Loading game objest...");
+		var gameObject = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
+			game.skipSplash, game.startFullscreen);
 		// FlxG.game._customSoundTray wants just the class, it calls new from
 		// create() in there, which gets called when it's added to stage
 		// which is why it needs to be added before addChild(game) here
@@ -228,17 +266,21 @@ class Main extends Sprite
 
 		addChild(gameObject);
 
+		trace("Finishing up..");
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
 		#if mobile
 		FlxG.game.addChild(fpsVar);
 		#else
+		#if !debug
 		var border = new GameBorder();
 		addChild(border);
 		Lib.current.stage.window.onResize.add(border.updateGameSize);
+		#end
 		addChild(fpsVar);
 		#end
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+
 		if (fpsVar != null)
 		{
 			fpsVar.visible = ClientPrefs.data.showFPS;
@@ -258,7 +300,7 @@ class Main extends Sprite
 		}
 		#end
 
-		#if debug
+		#if (debug)
 		flixel.addons.studio.FlxStudio.create();
 		#end
 
@@ -279,11 +321,11 @@ class Main extends Sprite
 		DiscordClient.prepare();
 		#end
 
-		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
-
 		#if mobile
+		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
 		lime.system.System.allowScreenTimeout = ClientPrefs.data.screensaver;
 		FlxG.scaleMode = new MobileScaleMode();
+		Application.current.window.vsync = ClientPrefs.data.vsync;
 		#end
 
 		// shader coords fix

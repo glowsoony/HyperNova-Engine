@@ -2,7 +2,10 @@
 	"songRating": 2,
 	"albumId": "volume1",
 	"freeplayCharacter": "",
+	"freeplayWeekName": "week 5",
 	"freeplaySongLength": 112.8,
 	"freeplayPrevEnd": 20,
+	"altInstrumentalSongs": "cocoa (Pico Mix)",
+	"allowErectVariants": true,
 	"freeplayPrevStart": 0
 }

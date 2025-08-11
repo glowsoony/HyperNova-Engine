@@ -126,6 +126,15 @@ class ExtraFunctions
 					return PlayState.instance.controls.NOTE_UP_P;
 				case 'right':
 					return PlayState.instance.controls.NOTE_RIGHT_P;
+				case "space":
+					var space = Reflect.getProperty(FlxG.keys.justPressed, 'SPACE');
+					var mobileShit:Bool = false;
+					#if TOUCH_CONTROLS_ALLOWED
+					if (Controls.instance.mobileC)
+						if (MusicBeatState.getState().hitbox != null)
+							mobileShit = MusicBeatState.getState().hitbox.buttonExtra.justReleased;
+					#end
+					return space || mobileShit;
 				default:
 					return PlayState.instance.controls.justPressed(name);
 			}
@@ -144,6 +153,15 @@ class ExtraFunctions
 					return PlayState.instance.controls.NOTE_UP;
 				case 'right':
 					return PlayState.instance.controls.NOTE_RIGHT;
+				case "space":
+					var space = Reflect.getProperty(FlxG.keys.pressed, 'SPACE');
+					var mobileShit:Bool = false;
+					#if TOUCH_CONTROLS_ALLOWED
+					if (Controls.instance.mobileC)
+						if (MusicBeatState.getState().hitbox != null)
+							mobileShit = MusicBeatState.getState().hitbox.buttonExtra.justReleased;
+					#end
+					return space || mobileShit;
 				default:
 					return PlayState.instance.controls.pressed(name);
 			}
@@ -164,6 +182,15 @@ class ExtraFunctions
 					return PlayState.instance.controls.NOTE_RIGHT_R;
 				default:
 					return PlayState.instance.controls.justReleased(name);
+				case "space":
+					var space = Reflect.getProperty(FlxG.keys.justReleased, 'SPACE');
+					var mobileShit:Bool = false;
+					#if TOUCH_CONTROLS_ALLOWED
+					if (Controls.instance.mobileC)
+						if (MusicBeatState.getState().hitbox != null)
+							mobileShit = MusicBeatState.getState().hitbox.buttonExtra.justReleased;
+					#end
+					return space || mobileShit;
 			}
 			return false;
 		});
@@ -232,9 +259,9 @@ class ExtraFunctions
 		{
 			#if MODS_ALLOWED
 			if (absolute)
-				return FileSystem.exists(filename);
+				return NativeFileSystem.exists(filename);
 
-			return FileSystem.exists(Paths.getPath(filename, TEXT));
+			return NativeFileSystem.exists(Paths.getPath(filename, TEXT));
 			#else
 			if (absolute)
 				return Assets.exists(filename, TEXT);
@@ -268,9 +295,9 @@ class ExtraFunctions
 				var lePath:String = path;
 				if (!absolute)
 					lePath = Paths.getPath(path, TEXT, !ignoreModFolders);
-				if (FileSystem.exists(lePath))
+				if (NativeFileSystem.exists(lePath))
 				{
-					FileSystem.deleteFile(lePath);
+					NativeFileSystem.deleteFile(lePath);
 					return true;
 				}
 			}
@@ -288,7 +315,7 @@ class ExtraFunctions
 		{
 			var list:Array<String> = [];
 			#if sys
-			if (FileSystem.exists(folder))
+			if (NativeFileSystem.exists(folder))
 			{
 				for (folder in NativeFileSystem.readDirectory(folder))
 				{

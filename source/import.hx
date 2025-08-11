@@ -1,13 +1,4 @@
-#if !macro
-// Discord API
-#if DISCORD_ALLOWED
-import backend.Discord;
-#end
-// Psych
-#if LUA_ALLOWED
-import llua.*;
-import llua.Lua;
-#end
+z#if !macro
 // import HazardAFT as AFT_capture;
 import backend.BaseStage;
 import backend.ClientPrefs;
@@ -32,19 +23,25 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
+import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.ui.FlxBar;
+import flixel.tweens.FlxEase import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
+import haxe.Exception;
 import lime.app.Application;
 import lime.system.System;
 import mikolka.funkin.*;
 import mikolka.funkin.custom.*;
+import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
 import mikolka.funkin.players.*;
 import mikolka.funkin.utils.*;
+import mikolka.stages.cutscenes.dialogueBox.*;
+import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych.DialogueFile;
+import mikolka.stages.cutscenes.dialogueBox.styles.*;
+import mikolka.vslice.ui.*;
+import mobile.backend.StorageUtil;
 import mobile.backend.StorageUtil;
 import mobile.backend.SwipeUtil;
 import mobile.backend.TouchUtil;
@@ -62,6 +59,16 @@ import states.stages.objects.*;
 
 using StringTools;
 
+import flixel.tweens.FlxTween;
+// Discord API
+#if DISCORD_ALLOWED
+import backend.Discord;
+#end
+// Psych
+#if LUA_ALLOWED
+import llua.*;
+import llua.Lua;
+#end
 #if ACHIEVEMENTS_ALLOWED
 import backend.Achievements;
 #end
@@ -69,9 +76,8 @@ import backend.Achievements;
 #if TOUCH_CONTROLS_ALLOWED
 import mobile.backend.MobileData;
 import mobile.input.MobileInputManager;
-import mobile.objects.Hitbox;
-import mobile.objects.TouchButton;
-import mobile.objects.TouchPad;
+import mobile.objects.ScrollableObject;
+import mobile.objects.TouchZone;
 #end
 // Android
 #if android
@@ -92,6 +98,7 @@ import sys.io.*;
 import js.html.*;
 #end
 // P-Slice
+// P-Slice Dialouges
 // Stage imports (for compatibility)
 #if flxanimate
 import flxanimate.*;
@@ -100,5 +107,4 @@ import flxanimate.PsychFlxAnimate as FlxAnimate;
 
 // Mod libs
 // Flixel
-// Modcharting
 #end

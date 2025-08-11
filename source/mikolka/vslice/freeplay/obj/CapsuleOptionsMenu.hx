@@ -64,7 +64,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       return;
     }
     @:privateAccess
-    if (parent.controls.BACK && !busy)
+    if ((parent.controls.BACK #if TOUCH_CONTROLS_ALLOWED || parent.touchPad?.buttonB.justPressed #end)&& !busy)
     {
       busy = true;
       close();
@@ -102,7 +102,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
     }
 
-    if (parent.getControls().ACCEPT && !busy)
+    if ((parent.getControls().ACCEPT #if TOUCH_CONTROLS_ALLOWED || parent.touchPad?.buttonA.justPressed #end) && !busy)
     {
       busy = true;
       onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
@@ -111,12 +111,20 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 
   public function close():Void
   {
+    #if LEGACY_PSYCH
+    capsuleMenuBG.animation.play('open', true, true);
+    FlxTimer.wait(0.2,() ->{
+      parent.cleanupCapsuleOptionsMenu();
+      queueDestroy = true;
+    });
+    #else
     // Play in reverse.
     capsuleMenuBG.animation.play('open', true, true);
     capsuleMenuBG.animation.finishCallback = function(_) {
       parent.cleanupCapsuleOptionsMenu();
       queueDestroy = true;
     };
+    #end
   }
 
   /**

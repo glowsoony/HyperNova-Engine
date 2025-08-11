@@ -1,7 +1,7 @@
 package mikolka.vslice.freeplay.backcards;
 
 import flixel.addons.display.FlxBackdrop;
-import mikolka.compatibility.FreeplayHelpers;
+import mikolka.compatibility.freeplay.FreeplayHelpers;
 import flixel.math.FlxMath;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
@@ -10,7 +10,7 @@ import flixel.util.FlxSpriteUtil;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 
-import mikolka.compatibility.FunkinPath as Paths;
+import mikolka.compatibility.funkin.FunkinPath as Paths;
 
 class PicoCard extends BackingCard
 {
@@ -139,7 +139,7 @@ class PicoCard extends BackingCard
     glow.visible = false;
     glowDark.visible = false;
 
-    confirmAtlas = new FlxAtlasSprite(5, 55, Paths.animateAtlas("freeplay/backingCards/pico/pico-confirm"));
+    confirmAtlas = new FlxAtlasSprite(5, 55, "freeplay/backingCards/pico/pico-confirm");
     confirmAtlas.visible = false;
     add(confirmAtlas);
 
