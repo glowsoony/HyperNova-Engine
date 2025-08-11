@@ -184,8 +184,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxedef name="FM_ENGINE" value="PSLICE"/>
 	<haxedef name="FM_ENGINE_VERSION" value="1.0"/>
 
-	<!--<haxelib name="funkin-modchart" />
-	<haxeflag name="macro" value="modchart.backend.macros.Macro.includeFiles()"/>-->
+	<haxelib name="funkin-modchart" />
+	<haxeflag name="--macro" value="modchart.backend.macros.Macro.includeFiles()"/>
 
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
