@@ -1,5 +1,4 @@
 #if !macro
-// import HazardAFT as AFT_capture;
 import backend.BaseStage;
 import backend.ClientPrefs;
 import backend.Conductor;
@@ -26,13 +25,12 @@ import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
 import haxe.Exception;
-import lime.app.Application;
-import lime.system.System;
 import mikolka.funkin.*;
 import mikolka.funkin.custom.*;
 import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
@@ -43,18 +41,14 @@ import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych.DialogueFile;
 import mikolka.stages.cutscenes.dialogueBox.styles.*;
 import mikolka.vslice.ui.*;
 import mobile.backend.StorageUtil;
-import mobile.backend.StorageUtil;
 import mobile.backend.SwipeUtil;
 import mobile.backend.TouchUtil;
 import mobile.input.MobileInputID;
 import modcharting.*;
 import objects.Alphabet;
 import objects.BGSprite;
-import openfl.Lib;
 import states.LoadingState;
-import states.MainMenuState;
 import states.PlayState;
-import states.StoryMenuState;
 import states.stages.objects.*;
 
 using StringTools;
@@ -75,7 +69,10 @@ import backend.Achievements;
 #if TOUCH_CONTROLS_ALLOWED
 import mobile.backend.MobileData;
 import mobile.input.MobileInputManager;
+import mobile.objects.Hitbox;
 import mobile.objects.ScrollableObject;
+import mobile.objects.TouchButton;
+import mobile.objects.TouchPad;
 import mobile.objects.TouchZone;
 #end
 // Android
