@@ -1,4 +1,4 @@
-z#if !macro
+#if !macro
 // import HazardAFT as AFT_capture;
 import backend.BaseStage;
 import backend.ClientPrefs;
@@ -25,7 +25,8 @@ import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase import flixel.ui.FlxBar;
+import flixel.tweens.FlxEase;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
