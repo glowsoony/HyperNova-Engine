@@ -1,6 +1,7 @@
 package backend;
 
 import flixel.input.gamepad.FlxGamepadInputID;
+import flixel.input.keyboard.FlxKey;
 import states.InitState;
 
 // Add a variable here and it will get automatically saved
