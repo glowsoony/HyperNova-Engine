@@ -13,6 +13,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import haxe.Json;
 import mikolka.stages.EventLoader;
+import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych;
 import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mobile.psychlua.Functions;

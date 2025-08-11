@@ -3,12 +3,12 @@ package objects;
 import flixel.group.FlxGroup;
 import flixel.ui.FlxBar;
 import flixel.util.FlxStringUtil;
-import states.FreeplayState;
+import mikolka.vslice.freeplay.FreeplayState;
 
 /**
  * Music player used for Freeplay
  */
-@:access(states.FreeplayState)
+@:access(mikolka.vslice.freeplay.FreeplayState)
 class MusicPlayer extends FlxGroup
 {
 	public var instance:FreeplayState;

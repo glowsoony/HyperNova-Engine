@@ -14,11 +14,11 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import mikolka.vslice.ui.MainMenuState;
 import openfl.Lib;
 import openfl.text.AntiAliasType;
 import options.OptionsMenu;
 import states.LoadingState;
-import states.MainMenuState;
 import states.StoryMenuState;
 
 using StringTools;

@@ -6,7 +6,6 @@ import backend.Rating;
 import backend.Song;
 import backend.StageData;
 import backend.WeekData;
-import cutscenes.DialogueBoxPsych;
 import flixel.FlxBasic;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -23,6 +22,7 @@ import mikolka.funkin.Scoring;
 import mikolka.funkin.custom.FunkinTools;
 import mikolka.stages.EventLoader;
 import mikolka.stages.EventLoader;
+import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych;
 import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
 import mikolka.vslice.freeplay.FreeplayState;
@@ -2346,7 +2346,6 @@ class PlayState extends MusicBeatState
 	// 		resetRPC(Conductor.songPosition > 0.0);
 	// 	}
 	// }
-
 	// override public function onFocusLost():Void
 	// {
 	// 	super.onFocusLost();
@@ -2356,7 +2355,6 @@ class PlayState extends MusicBeatState
 	// 	}
 	// }
 	#end
-
 	// Updating Discord Rich Presence.
 	public var autoUpdateRPC:Bool = true; // performance setting for custom RPC things
 
