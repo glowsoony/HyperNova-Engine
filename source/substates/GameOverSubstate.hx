@@ -1,6 +1,5 @@
 package substates;
 
-import mikolka.stages.objects.PicoCapableStage;
 import mikolka.vslice.freeplay.FreeplayState;
 import backend.WeekData;
 
@@ -9,12 +8,13 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 
-import states.StoryMenuState;
-import substates.StickerSubState;
+
+import mikolka.vslice.StickerSubState;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Character;
+	public var onCoolDeath:Void -> Void;
 	var camFollow:FlxObject;
 
 	var stagePostfix:String = "";
@@ -29,6 +29,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new(?playStateBoyfriend:Character = null)
 	{
 		controls.isInSubstate = true;
+		onCoolDeath = () -> coolStartDeath();
 		if(playStateBoyfriend != null && playStateBoyfriend.curCharacter == characterName) //Avoids spawning a second boyfriend cuz animate atlas is laggy
 		{
 			this.boyfriend = playStateBoyfriend;
@@ -90,13 +91,11 @@ class GameOverSubstate extends MusicBeatSubstate
 		
 		PlayState.instance.setOnScripts('inGameOver', true);
 		PlayState.instance.callOnScripts('onGameOverStart', []);
+		PlayState.instance.stagesFunc((stage) -> stage.gameOverStart(this));
 		FlxG.sound.music.loadEmbedded(Paths.music(loopSoundName), true);
 
-		//? pico code
-		PicoCapableStage.playPicoDeath(this);
-
 		#if TOUCH_CONTROLS_ALLOWED
-		addTouchPad('NONE', 'A_B');
+		addTouchPad('NONE', 'B');
 		addTouchPadCamera();
 		#end
 
@@ -123,7 +122,11 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if(!isEnding)
 		{
+			#if TOUCH_CONTROLS_ALLOWED
+			if (controls.ACCEPT || (TouchUtil.justPressed && !touchPad.buttonB.justPressed))
+			#else
 			if (controls.ACCEPT)
+			#end
 			{
 				endBullshit();
 			}
@@ -151,24 +154,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			else if (justPlayedLoop)
 			{
-				switch(PlayState.SONG.stage)
-				{
-					case 'tank':
-						coolStartDeath(0.2);
-						
-						var exclude:Array<Int> = [];
-						//if(!ClientPrefs.cursing) exclude = [1, 3, 8, 13, 17, 21];
-	
-						FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude)), 1, false, null, true, function() {
-							if(!isEnding)
-							{
-								FlxG.sound.music.fadeIn(0.2, 1, 4);
-							}
-						});
-
-					default:
-						coolStartDeath();
-				}
+				onCoolDeath();
 			}
 			
 			if (FlxG.sound.music.playing)

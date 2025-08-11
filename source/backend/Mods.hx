@@ -54,12 +54,12 @@ class Mods
 		var list:Array<String> = [];
 		#if MODS_ALLOWED
 		var modsFolder:String = Paths.mods();
-		if (FileSystem.exists(modsFolder))
+		if (NativeFileSystem.exists(modsFolder))
 		{
 			for (folder in NativeFileSystem.readDirectory(modsFolder))
 			{
 				var path = haxe.io.Path.join([modsFolder, folder]);
-				if (FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder.toLowerCase()) && !list.contains(folder))
+				if (NativeFileSystem.isDirectory(path) && !ignoreModFolders.contains(folder.toLowerCase()) && !list.contains(folder))
 					list.push(folder);
 			}
 		}
@@ -103,6 +103,7 @@ class Mods
 		if (NativeFileSystem.exists(path + fileToFind))
 			foldersToCheck.push(path + fileToFind);
 
+		// Week folder
 		if (Paths.currentLevel != null && Paths.currentLevel != path)
 		{
 			var pth:String = Paths.getFolderPath(fileToFind, Paths.currentLevel);
@@ -117,35 +118,21 @@ class Mods
 			for (mod in Mods.getGlobalMods())
 			{
 				var folder:String = Paths.mods(mod + '/' + fileToFind);
-				if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
+				if (NativeFileSystem.exists(folder) && !foldersToCheck.contains(folder))
 					foldersToCheck.push(folder);
 			}
 
 			// Then "PsychEngine/mods/" main folder
 			var folder:String = Paths.mods(fileToFind);
-			if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
+			if (NativeFileSystem.exists(folder) && !foldersToCheck.contains(folder))
 				foldersToCheck.push(Paths.mods(fileToFind));
 
 			// And lastly, the loaded mod's folder
 			if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
 			{
 				var folder:String = Paths.mods(Mods.currentModDirectory + '/' + fileToFind);
-				if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
+				if (NativeFileSystem.exists(folder) && !foldersToCheck.contains(folder))
 					foldersToCheck.push(folder);
-				#if linux
-				else
-				{
-					@:privateAccess
-					folder = Paths.findFile(fileToFind);
-					if (folder != null)
-					{
-						if (FileSystem.isDirectory(folder))
-							folder += '/';
-						if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
-							foldersToCheck.push(folder);
-					}
-				}
-				#end
 			}
 		}
 		#end
@@ -159,15 +146,11 @@ class Mods
 			folder = Mods.currentModDirectory;
 
 		var path = Paths.mods(folder + '/pack.json');
-		if (FileSystem.exists(path))
+		if (NativeFileSystem.exists(path))
 		{
 			try
 			{
-				#if sys
-				var rawJson:String = File.getContent(path);
-				#else
-				var rawJson:String = Assets.getText(path);
-				#end
+				var rawJson:String = NativeFileSystem.getContent(path);
 				if (rawJson != null && rawJson.length > 0)
 					return tjson.TJSON.parse(rawJson);
 			}
@@ -191,7 +174,7 @@ class Mods
 		#if MODS_ALLOWED
 		try
 		{
-			for (mod in CoolUtil.coolTextFile(Sys.getCwd() + 'modsList.txt'))
+			for (mod in CoolUtil.coolTextFile('modsList.txt'))
 			{
 				// trace('Mod: $mod');
 				if (mod.trim().length < 1)
@@ -221,13 +204,13 @@ class Mods
 		var added:Array<String> = [];
 		try
 		{
-			for (mod in CoolUtil.coolTextFile(Sys.getCwd() + 'modsList.txt'))
+			for (mod in CoolUtil.coolTextFile('modsList.txt'))
 			{
 				var dat:Array<String> = mod.split("|");
 				var folder:String = dat[0];
 				if (folder.trim().length > 0
-					&& FileSystem.exists(Paths.mods(folder))
-					&& FileSystem.isDirectory(Paths.mods(folder))
+					&& NativeFileSystem.exists(Paths.mods(folder))
+					&& NativeFileSystem.isDirectory(Paths.mods(folder))
 					&& !added.contains(folder))
 				{
 					added.push(folder);
@@ -244,8 +227,8 @@ class Mods
 		for (folder in getModDirectories())
 		{
 			if (folder.trim().length > 0
-				&& FileSystem.exists(Paths.mods(folder))
-				&& FileSystem.isDirectory(Paths.mods(folder))
+				&& NativeFileSystem.exists(Paths.mods(folder))
+				&& NativeFileSystem.isDirectory(Paths.mods(folder))
 				&& !ignoreModFolders.contains(folder.toLowerCase())
 				&& !added.contains(folder))
 			{
@@ -264,7 +247,7 @@ class Mods
 			fileStr += values[0] + '|' + (values[1] ? '1' : '0');
 		}
 
-		File.saveContent(Sys.getCwd() + 'modsList.txt', fileStr);
+		File.saveContent(#if android StorageUtil.getStorageDirectory() + #else Sys.getCwd() + #end 'modsList.txt', fileStr);
 		updatedOnState = true;
 		// trace('Saved modsList.txt');
 		#end

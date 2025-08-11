@@ -108,7 +108,7 @@ class HScript extends Iris
 			var f:String = file.replace('\\', '/');
 			if (f.contains('/') && !f.contains('\n'))
 			{
-				scriptThing = File.getContent(f);
+				scriptThing = NativeFileSystem.getContent(f);
 				scriptName = f;
 			}
 		}
@@ -157,7 +157,7 @@ class HScript extends Iris
 		set('Type', Type);
 		#if sys
 		set('File', File);
-		set('FileSystem', FileSystem);
+		set('NativeFileSystem', NativeFileSystem);
 		#end
 		set('FlxG', flixel.FlxG);
 		set('FlxMath', flixel.math.FlxMath);

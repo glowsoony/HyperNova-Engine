@@ -9,8 +9,8 @@
     },
     {
       "button": "buttonB",
-      "graphic": "b",
-      "x": 1032,
+      "graphic": "back",
+      "x": 1156,
       "y": 596,
       "color": "0xFFCB00"
     }

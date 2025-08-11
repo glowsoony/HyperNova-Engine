@@ -59,7 +59,7 @@ class VideoSprite extends FlxSpriteGroup
 
 		// callbacks
 		if (!shouldLoop)
-			videoSprite.bitmap.onEndReached.add(destroy);
+			videoSprite.bitmap.onEndReached.add(finishVideo);
 		#if hxvlc
 		videoSprite.bitmap.onFormatSetup.add(function()
 		#else
@@ -98,8 +98,7 @@ class VideoSprite extends FlxSpriteGroup
 			cover.destroy();
 		}
 
-		if (finishCallback != null)
-			finishCallback();
+		finishCallback = null;
 		onSkip = null;
 
 		if (FlxG.state != null)
@@ -124,16 +123,15 @@ class VideoSprite extends FlxSpriteGroup
 			FlxG.state.persistentUpdate = false;
 			FlxG.state.persistentDraw = true;
 			pause();
-			// game.paused = true;
+			game.paused = true;
 			var pauseState = new PauseSubState(true, VIDEO);
 			pauseState.cutscene_allowSkipping = canSkip;
 			pauseState.cutscene_hardReset = false;
+			pauseJustClosed = true; // solely to prevent double-pausing
 			game.openSubState(pauseState);
 
 			game.subStateClosed.addOnce(s ->
 			{ // TODO
-				pauseJustClosed = true;
-				FlxTimer.wait(0.1, () -> pauseJustClosed = false);
 				switch (pauseState.specialAction)
 				{
 					case SKIP: {
@@ -144,22 +142,48 @@ class VideoSprite extends FlxSpriteGroup
 						}
 					case RESUME: {
 							resume();
+							FlxTimer.wait(0.4, () -> pauseJustClosed = false);
 						}
 					case NOTHING: {
 							finishCallback = null;
 						}
 					case RESTART: {
 							videoSprite.bitmap.time = 0;
+							FlxTimer.wait(0.8, () -> pauseJustClosed = false);
 							resume();
 						}
 				}
+				case RESUME: {
+						resume();
+					}
+				case NOTHING: {
+						finishCallback = null;
+					}
+				case RESTART: {
+						videoSprite.bitmap.time = 0;
+						resume();
+					}
 			});
 		}
 		super.update(elapsed);
 	}
 
+	function finishVideo()
+	{
+		if (!alreadyDestroyed)
+		{
+			if (finishCallback != null)
+				finishCallback();
+
+			destroy();
+		}
+	}
+
 	public function resume()
 		videoSprite?.resume();
+
+	public function pause()
+		videoSprite?.pause();
 
 	public function pause()
 		videoSprite?.pause();
@@ -170,6 +194,11 @@ class VideoSprite extends FlxSpriteGroup
 		videoSprite.play();
 		#else
 		videoSprite.play(videoName, doWeLoop);
+		if (FlxG.autoPause)
+		{
+			FlxG.signals.focusGained.remove(videoSprite.resume);
+			FlxG.signals.focusLost.remove(videoSprite.pause);
+		}
 		#end
 	}
 	#end

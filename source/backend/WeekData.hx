@@ -132,13 +132,13 @@ class WeekData
 		for (i in 0...directories.length)
 		{
 			var directory:String = directories[i] + 'weeks/';
-			if (FileSystem.exists(directory))
+			if (NativeFileSystem.exists(directory))
 			{
 				var listOfWeeks:Array<String> = CoolUtil.coolTextFile(directory + 'weekList.txt');
 				for (daWeek in listOfWeeks)
 				{
 					var path:String = directory + daWeek + '.json';
-					if (FileSystem.exists(path))
+					if (NativeFileSystem.exists(path))
 					{
 						addWeek(daWeek, path, directories[i], i, originalLength);
 					}
@@ -147,7 +147,7 @@ class WeekData
 				for (file in NativeFileSystem.readDirectory(directory))
 				{
 					var path = haxe.io.Path.join([directory, file]);
-					if (!FileSystem.isDirectory(path) && file.endsWith('.json'))
+					if (!NativeFileSystem.isDirectory(path) && file.endsWith('.json'))
 					{
 						addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength);
 					}
@@ -183,17 +183,11 @@ class WeekData
 	private static function getWeekFile(path:String):WeekFile
 	{
 		var rawJson:String = null;
-		#if MODS_ALLOWED
-		if (FileSystem.exists(path))
+
+		if (NativeFileSystem.exists(path))
 		{
-			rawJson = File.getContent(path);
+			rawJson = NativeFileSystem.getContent(path);
 		}
-		#else
-		if (OpenFlAssets.exists(path))
-		{
-			rawJson = Assets.getText(path);
-		}
-		#end
 
 		if (rawJson != null && rawJson.length > 0)
 		{

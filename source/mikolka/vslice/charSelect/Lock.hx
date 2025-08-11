@@ -3,7 +3,7 @@ package mikolka.vslice.charSelect;
 import flixel.util.FlxColor;
 import flxanimate.effects.FlxTint;
 import mikolka.funkin.FlxAtlasSprite;
-import mikolka.compatibility.FunkinPath as Paths; 
+import mikolka.compatibility.funkin.FunkinPath as Paths; 
 class Lock extends FlxAtlasSprite
 {
   var colors:Array<FlxColor> = [
@@ -14,7 +14,7 @@ class Lock extends FlxAtlasSprite
 
   public function new(x:Float = 0, y:Float = 0, index:Int)
   {
-    super(x, y, Paths.animateAtlas("charSelect/lock"));
+    super(x, y, "charSelect/lock");
 
     var tint:FlxTint = new FlxTint(colors[index], 1);
 

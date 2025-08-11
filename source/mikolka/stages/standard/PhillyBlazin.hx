@@ -1,6 +1,7 @@
 package mikolka.stages.standard;
 
-import mikolka.stages.objects.PicoCapableStage;
+import mikolka.vslice.StickerSubState;
+import mikolka.stages.scripts.PicoCapableStage;
 import mikolka.compatibility.VsliceOptions;
 import openfl.filters.ShaderFilter;
 import shaders.RainShader;
@@ -27,14 +28,13 @@ class PhillyBlazin extends BaseStage
 	
 	var lightningTimer:Float = 3.0;
 
-	var nene:PicoCapableStage;
-	public function new(nene:PicoCapableStage) {
+	public function new() {
 		super();
-		this.nene = nene;
 	}
 	
 	override function create()
 	{
+		StickerSubState.STICKER_PACK = "weekend";
 		FlxTransitionableState.skipNextTransOut = true; //skip the original transition fade
 		function setupScale(spr:BGSprite)
 		{
@@ -86,12 +86,6 @@ class PhillyBlazin extends BaseStage
 		if(VsliceOptions.SHADERS)
 			setupRainShader();
 
-		var _song = PlayState.SONG;
-		if(_song.gameOverSound == null || _song.gameOverSound.trim().length < 1) GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pico-gutpunch';
-		if(_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1) GameOverSubstate.loopSoundName = 'gameOver-pico';
-		if(_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1) GameOverSubstate.endSoundName = 'gameOverEnd-pico';
-		if(_song.gameOverChar == null || _song.gameOverChar.trim().length < 1) GameOverSubstate.characterName = 'pico-blazin';
-		GameOverSubstate.deathDelay = 0.15;
 
 		setDefaultGF('nene');
 		gfGroup.y += 200;
@@ -120,7 +114,25 @@ class PhillyBlazin extends BaseStage
 	override function createPost()
 	{
 		super.createPost();
+		var _song = PlayState.SONG;
+		#if LEGACY_PSYCH
+		GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pico-gutpunch';
+		GameOverSubstate.loopSoundName = 'gameOver-pico';
+		GameOverSubstate.endSoundName = 'gameOverEnd-pico';
+		GameOverSubstate.characterName = 'pico-blazin';
+		#else
+		if(_song.gameOverSound == null || _song.gameOverSound.trim().length < 1) GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pico-gutpunch';
+		if(_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1) GameOverSubstate.loopSoundName = 'gameOver-pico';
+		if(_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1) GameOverSubstate.endSoundName = 'gameOverEnd-pico';
+		if(_song.gameOverChar == null || _song.gameOverChar.trim().length < 1) GameOverSubstate.characterName = 'pico-blazin';
+		GameOverSubstate.deathDelay = 0.15; //? There's like 90% change this breaks something on 0.6.3
+		#end
+
+		#if LEGACY_PSYCH
+		FlxG.camera.focusOn(get_camFollow());
+		#else
 		FlxG.camera.focusOn(camFollow.getPosition());
+		#end
 		FlxG.camera.fade(FlxColor.BLACK, 1.5, true, null, true);
 
 		for (character in boyfriendGroup.members)
@@ -138,7 +150,7 @@ class PhillyBlazin extends BaseStage
 			if(character == null) continue;
 			character.color = 0xFF888888;
 		}
-		nene.abot.color = 0xFF888888;
+		PicoCapableStage.instance.abot.color = 0xFF888888;
 
 		var unspawnNotes:Array<Note> = cast game.unspawnNotes;
 		for (note in unspawnNotes)
@@ -151,6 +163,7 @@ class PhillyBlazin extends BaseStage
 		}
 		remove(dadGroup, true);
 		addBehindBF(dadGroup);
+		
 	}
 
 	override function beatHit()
@@ -163,7 +176,11 @@ class PhillyBlazin extends BaseStage
 		rainShader = new RainShader();
 		rainShader.scale = FlxG.height / 200;
 		rainShader.intensity = 0.5;
+		#if LEGACY_PSYCH
 		FlxG.camera.setFilters([new ShaderFilter(rainShader)]);
+		#else
+		FlxG.camera.filters = [new ShaderFilter(rainShader)];
+		#end
 	}
 
 	function precache()
@@ -230,7 +247,7 @@ class PhillyBlazin extends BaseStage
 		FlxTween.color(boyfriend, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
 		FlxTween.color(dad, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
 		FlxTween.color(gf, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFF888888);
-		FlxTween.color(nene.abot, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFF888888);
+		FlxTween.color(PicoCapableStage.instance.abot, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFF888888);
 
 		// Sound
 		FlxG.sound.play(Paths.soundRandom('lightning/Lightning', 1, 3));

@@ -2,7 +2,10 @@
 	"songRating": 7,
 	"albumId": "volume3",
 	"freeplayCharacter": "",
+	"freeplayWeekName": "week 1",
 	"freeplaySongLength": 78.720021,
 	"freeplayPrevEnd": 20,
+	"altInstrumentalSongs": "",
+	"allowErectVariants": true,
 	"freeplayPrevStart": 0
 }

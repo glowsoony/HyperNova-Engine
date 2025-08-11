@@ -2,8 +2,15 @@ package backend;
 
 import backend.PsychCamera;
 import flixel.FlxState;
+import flixel.FlxState;
+import openfl.display.BitmapData;
 
-class MusicBeatState extends modcharting.ModchartMusicBeatState
+@:bitmap("assets/embed/images/ui/cursor.png")
+private class FunkinCursor extends BitmapData
+{
+}
+
+class MusicBeatState extends FlxState
 {
 	private static var currentState:MusicBeatState;
 
@@ -112,6 +119,10 @@ class MusicBeatState extends modcharting.ModchartMusicBeatState
 	{
 		currentState = this;
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
+		// //? Should fix the funkin cursor for good
+		if (!(FlxG.mouse.cursor?.bitmapData is FunkinCursor))
+			FlxG.mouse.load(new FunkinCursor(0, 0));
+		// nvm. too much lag
 		#if MODS_ALLOWED Mods.updatedOnState = false; #end
 
 		if (!_psychCameraInitialized)
@@ -308,7 +319,7 @@ class MusicBeatState extends modcharting.ModchartMusicBeatState
 		});
 	}
 
-	function stagesFunc(func:BaseStage->Void)
+	public function stagesFunc(func:BaseStage->Void)
 	{
 		for (stage in stages)
 			if (stage != null && stage.exists && stage.active)

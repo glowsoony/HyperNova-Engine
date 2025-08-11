@@ -7,7 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import mikolka.compatibility.FunkinPath as Paths;
+import mikolka.compatibility.funkin.FunkinPath as Paths;
 
 /**
  * The graphic for the album roll in the FreeplayState.
@@ -45,7 +45,7 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
+    newAlbumArt = new FlxAtlasSprite(640, 360, "freeplay/albumRoll/freeplayAlbum");
     newAlbumArt.visible = false;
     newAlbumArt.onAnimationComplete.add(onAlbumFinish);
 

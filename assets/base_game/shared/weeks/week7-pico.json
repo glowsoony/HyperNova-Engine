@@ -1,7 +1,7 @@
 {
 	"songs": [
 		[
-			"Ugh (Pico mix)",
+			"Ugh (Pico Mix)",
 			"tankman",
 			[
 				246,
@@ -10,7 +10,16 @@
 			]
 		],
 		[
-			"Guns (Pico mix)",
+			"Guns (Pico Mix)",
+			"tankman",
+			[
+				246,
+				182,
+				4
+			]
+		],
+		[
+			"Stress (Pico Mix)",
 			"tankman",
 			[
 				246,
@@ -27,6 +36,7 @@
 		"gf"
 	],
 	"storyName": "Tankman",
+	"difficulties": "Easy,Normal,Hard",
 	"weekName": "Week 7",
 	"freeplayColor": [
 		146,

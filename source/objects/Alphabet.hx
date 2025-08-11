@@ -18,7 +18,7 @@ class Alphabet extends FlxSpriteGroup
 	public var letters:Array<AlphaCharacter> = [];
 
 	public var isMenuItem:Bool = false;
-	public var targetY:Int = 0;
+	public var targetY:Float = 0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
 
@@ -296,21 +296,13 @@ class AlphaCharacter extends FlxSprite
 	public static function loadAlphabetData(request:String = 'alphabet')
 	{
 		var path:String = Paths.getPath('images/$request.json');
-		#if MODS_ALLOWED
-		if (!FileSystem.exists(path))
-		#else
-		if (!Assets.exists(path, TEXT))
-		#end
-		path = Paths.getPath('images/alphabet.json');
+		if (!NativeFileSystem.exists(path))
+			path = Paths.getPath('images/alphabet.json');
 
 		allLetters = new Map<String, Null<Letter>>();
 		try
 		{
-			#if MODS_ALLOWED
-			var data:Dynamic = Json.parse(File.getContent(path));
-			#else
-			var data:Dynamic = Json.parse(Assets.getText(path));
-			#end
+			var data:Dynamic = Json.parse(NativeFileSystem.getContent(path));
 
 			if (data.allowed != null && data.allowed.length > 0)
 			{
@@ -412,7 +404,11 @@ class AlphaCharacter extends FlxSprite
 				alphaAnim = curLetter.anim;
 
 			var anim:String = alphaAnim + postfix;
+			#if debug // ! This only exists to prevent annoying beeps!
+			animation.addByPrefix(anim, anim + " instance ", 24);
+			#else
 			animation.addByPrefix(anim, anim, 24);
+			#end
 			animation.play(anim, true);
 			if (animation.curAnim == null)
 			{
