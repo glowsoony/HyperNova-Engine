@@ -46,6 +46,13 @@ class Rotate extends Modifier
 
 	override function setupSubValues()
 	{
+		baseValue = 0.0;
+        currentValue = 1.0;
+
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 0.0);
+
 		setSubMod("offset_x", 0.0);
 		setSubMod("offset_y", 0.0);
 		setSubMod("offset_z", 0.0);
@@ -158,16 +165,6 @@ class Rotate extends Modifier
 
 class RotateModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		baseValue = 0.0;
-        currentValue = 1.0;
-
-		setSubMod("x", 0.0);
-		setSubMod("y", 0.0);
-		setSubMod("z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		rotatePivot(noteData, lane, pf, "x");
@@ -183,16 +180,6 @@ class RotateModifier extends Rotate
 
 class NoteRotateModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		baseValue = 0.0;
-        currentValue = 1.0;
-
-		setSubMod("x", 0.0);
-		setSubMod("y", 0.0);
-		setSubMod("z", 0.0);
-	}
-	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		rotatePivot(noteData, lane, pf, "x");
@@ -203,16 +190,6 @@ class NoteRotateModifier extends Rotate
 
 class StrumRotateModifier extends Rotate
 {
-	override function setupSubValues()
-	{
-		baseValue = 0.0;
-        currentValue = 1.0;
-
-		setSubMod("x", 0.0);
-		setSubMod("y", 0.0);
-		setSubMod("z", 0.0);
-	}
-	
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		rotatePivot(noteData, lane, pf, "x");
