@@ -154,12 +154,15 @@ class PlayfieldRenderer extends FlxBasic
 		strum.x = strumData.x;
 		strum.y = strumData.y;
 		strum.angle = strumData.angle;
+		//strum.angleZ = strumData.angleZ;
+		strum.angleY = strumData.angleY;
+		strum.angleX = strumData.angleX;
 		strum.alpha = strumData.alpha;
-
-		/*
-			strum.scale.x = strumData.scaleX;
-			strum.scale.y = strumData.scaleY;
-		 */
+		strum.scale.x = strumData.scaleX;
+		strum.scale.y = strumData.scaleY;
+		strum.skew.x = strumData.skewX;
+		strum.skew.y = strumData.skewY;
+		 
 
 		strum.rgbShader.stealthGlow = strumData.stealthGlow;
 		strum.rgbShader.stealthGlowRed = strumData.glowRed;
@@ -195,9 +198,14 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.y = noteData.y;
 		daNote.z = noteData.z;
 		daNote.angle = noteData.angle;
+		//daNote.angleZ = noteData.angleZ;
+		daNote.angleY = noteData.angleY;
+		daNote.angleX = noteData.angleX;
 		daNote.alpha = noteData.alpha;
 		daNote.scale.x = noteData.scaleX;
 		daNote.scale.y = noteData.scaleY;
+		daNote.skew.x = noteData.skewX;
+		daNote.skew.y = noteData.skewY;
 
 		daNote.rgbShader.stealthGlow = noteData.stealthGlow;
 		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
@@ -391,18 +399,20 @@ class PlayfieldRenderer extends FlxBasic
 		var changeX:Bool = noteData.z != 0;
 		var strumNote = strumGroup.members[noteData.index];
 
-		if (strumNote.arrowMesh == null)
-		{
-			strumNote.setupMesh();
-		}
+		// if (strumNote == null)
+		// {
+		// 	strumNote.setupMesh();
+		// }
 
 		var thisNotePos;
 		if (changeX)
 			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (strumNote.width / 2), noteData.y + (strumNote.height / 2),
 				noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180));
+				ModchartUtil.defaultFOV * (Math.PI / 180),
+				-(strumNote.width / 2),
+				-(strumNote.height / 2));
 		else
-			thisNotePos = new Vector3D(noteData.x + (strumNote.width / 2), noteData.y + (strumNote.height / 2), 0);
+			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
 
 		var skewX = ModchartUtil.getStrumSkew(strumNote, false);
 		var skewY = ModchartUtil.getStrumSkew(strumNote, true);
@@ -426,13 +436,15 @@ class PlayfieldRenderer extends FlxBasic
 		addDataToStrum(noteData, strumNote); // set position and stuff before drawing
 
 		strumNote.cameras = this.cameras;
+
 		// Same as strums case
-		if (strumNote.arrowMesh != null)
-		{
-			strumNote.arrowMesh.setupMesh(noteData);
-			strumNote.arrowMesh.draw();
-		}
-		else
+		// if (strumNote != null)
+		// {
+		// 	strumNote.setupMesh(noteData);
+		// 	strumNote.draw();
+		// }
+		// else
+			//strumNote.applyNoteData(noteData);
 			strumNote.draw();
 	}
 
@@ -443,18 +455,20 @@ class PlayfieldRenderer extends FlxBasic
 		var changeX:Bool = noteData.z != 0;
 		var daNote = notes.members[noteData.index];
 
-		if (daNote.arrowMesh == null)
-		{
-			daNote.setupMesh();
-		}
+		// if (daNote == null)
+		// {
+		// 	daNote.setupMesh();
+		// }
 
 		var thisNotePos;
 		if (changeX)
 			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance),
 				noteData.y + (daNote.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180));
+				ModchartUtil.defaultFOV * (Math.PI / 180),
+				-(daNote.width / 2),
+				-(daNote.height / 2));
 		else
-			thisNotePos = new Vector3D(noteData.x + (daNote.width / 2) + ModchartUtil.getNoteOffsetX(daNote, instance), noteData.y + (daNote.height / 2), 0);
+			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
 
 		var skewX = ModchartUtil.getNoteSkew(daNote, false);
 		var skewY = ModchartUtil.getNoteSkew(daNote, true);
@@ -475,12 +489,13 @@ class PlayfieldRenderer extends FlxBasic
 
 		daNote.cameras = this.cameras;
 		// Same as strums case
-		if (daNote.arrowMesh != null)
-		{
-			daNote.arrowMesh.setupMesh(noteData);
-			daNote.arrowMesh.draw();
-		}
-		else
+		// if (daNote != null)
+		// {
+		// 	daNote.setupMesh(noteData);
+		// 	daNote.draw();
+		// }
+		// else
+			//daNote.applyNoteData(noteData);
 			daNote.draw();
 	}
 

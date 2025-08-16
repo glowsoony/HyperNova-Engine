@@ -36,7 +36,7 @@ typedef NoteSplashData =
  * 
  * If you want to make a custom note type, you should search for: "function set_noteType"
 **/
-class Note extends FlxSkewedSprite
+class Note extends modcharting.NewModchartArrow
 {
 	// This is needed for the hardcoded note types to appear on the Chart Editor,
 	// It's also used for backwards compatibility with 0.1 - 0.3.2 charts.
@@ -78,8 +78,6 @@ class Note extends FlxSkewedSprite
 	public var sustainRGB:Bool = true; // so if it have only 1 sustain and colored it loads this LOL
 
 	public var mesh:modcharting.SustainStrip = null;
-	public var arrowMesh:ModchartArrowMesh;
-	public var z:Float = 0;
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
 	public var strumTime:Float = 0;
@@ -191,14 +189,14 @@ class Note extends FlxSkewedSprite
 
 	public var hitsound:String = 'hitsound';
 
-	// Call this to create a mesh
-	public function setupMesh():Void
-	{
-		if (arrowMesh == null)
-		{
-			arrowMesh = new ModchartArrowMesh(this);
-		}
-	}
+	// // Call this to create a mesh
+	// public function setupMesh():Void
+	// {
+	// 	if (arrowMesh == null)
+	// 	{
+	// 		arrowMesh = new ModchartArrowMesh(this);
+	// 	}
+	// }
 
 	private function set_multSpeed(value:Float):Float
 	{
@@ -894,10 +892,10 @@ class Note extends FlxSkewedSprite
 	{
 		super.destroy();
 		_lastValidChecked = '';
-		if (arrowMesh != null)
-		{
-			arrowMesh.destroy();
-		}
+		// if (arrowMesh != null)
+		// {
+		// 	arrowMesh.destroy();
+		// }
 	}
 
 	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)

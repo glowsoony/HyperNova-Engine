@@ -5,10 +5,8 @@ import flixel.addons.effects.FlxSkewedSprite;
 import shaders.RGBPalette.RGBShaderReference;
 import shaders.RGBPalette;
 
-class StrumNote extends FlxSkewedSprite
+class StrumNote extends modcharting.NewModchartArrow
 {
-	public var arrowMesh:ModchartArrowMesh;
-	public var z:Float = 0;
 	public var arrowPath:SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
 	public var resetAnim:Float = 0;
@@ -34,13 +32,13 @@ class StrumNote extends FlxSkewedSprite
 	}
 
 	// Call this to create a mesh
-	public function setupMesh():Void
-	{
-		if (arrowMesh == null)
-		{
-			arrowMesh = new ModchartArrowMesh(this);
-		}
-	}
+	// public function setupMesh():Void
+	// {
+	// 	if (arrowMesh == null)
+	// 	{
+	// 		arrowMesh = new ModchartArrowMesh(this);
+	// 	}
+	// }
 
 	public var useRGBShader:Bool = true;
 
@@ -226,9 +224,9 @@ class StrumNote extends FlxSkewedSprite
 	override public function destroy():Void
 	{
 		super.destroy();
-		if (arrowMesh != null)
-		{
-			arrowMesh.destroy();
-		}
+		// if (arrowMesh != null)
+		// {
+		// 	arrowMesh.destroy();
+		// }
 	}
 }

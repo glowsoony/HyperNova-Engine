@@ -81,7 +81,9 @@ class Rotate extends Modifier
 
 	function rotatePivot(noteData:NotePositionData, lane:Int, pf:Int, type:String = "x")
 	{
-		var angle:Float = currentValue;
+		var angleX:Float = getSubMod("x");
+		var angleY:Float = getSubMod("y");
+		var angleZ:Float = getSubMod("z");
 
 		switch (type)
 		{
@@ -90,7 +92,7 @@ class Rotate extends Modifier
 				pivotPoint.y = getPivot(noteData, lane, "y");
 				point.x = noteData.x;
 				point.y = noteData.y;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleZ);
 				noteData.x = output.x;
 				noteData.y = output.y;
 			case "y":
@@ -98,7 +100,7 @@ class Rotate extends Modifier
 				pivotPoint.y = getPivot(noteData, lane, "z");
 				point.x = noteData.x;
 				point.y = noteData.z;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleY);
 				noteData.x = output.x;
 				noteData.z = output.y;
 			case "x":
@@ -106,7 +108,7 @@ class Rotate extends Modifier
 				pivotPoint.y = getPivot(noteData, lane, "y");
 				point.x = noteData.z;
 				point.y = noteData.y;
-				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angle);
+				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleX);
 				noteData.z = output.x;
 				noteData.y = output.y;
 		}
@@ -161,9 +163,9 @@ class RotateModifier extends Rotate
 		baseValue = 0.0;
         currentValue = 1.0;
 
-		setSubMod("offset_x", 0.0);
-		setSubMod("offset_y", 0.0);
-		setSubMod("offset_z", 0.0);
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 0.0);
 	}
 	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -186,9 +188,9 @@ class NoteRotateModifier extends Rotate
 		baseValue = 0.0;
         currentValue = 1.0;
 
-		setSubMod("offset_x", 0.0);
-		setSubMod("offset_y", 0.0);
-		setSubMod("offset_z", 0.0);
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 0.0);
 	}
 	
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
@@ -206,9 +208,9 @@ class StrumRotateModifier extends Rotate
 		baseValue = 0.0;
         currentValue = 1.0;
 
-		setSubMod("offset_x", 0.0);
-		setSubMod("offset_y", 0.0);
-		setSubMod("offset_z", 0.0);
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 0.0);
 	}
 	
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
@@ -246,11 +248,11 @@ class RotateFieldsModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('x', new ModifierSubValue(0.0));
-		subValues.set('y', new ModifierSubValue(0.0));
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
 
-		subValues.set('rotatePointX', new ModifierSubValue((FlxG.width / 2) - (NoteMovement.arrowSize / 2)));
-		subValues.set('rotatePointY', new ModifierSubValue((FlxG.height / 2) - (NoteMovement.arrowSize / 2)));
+		setSubMod("rotatePointX", (FlxG.width / 2) - (NoteMovement.arrowSize / 2));
+		setSubMod("rotatePointY", (FlxG.height / 2) - (NoteMovement.arrowSize / 2));
 		currentValue = 1.0;
 	}
 
@@ -258,10 +260,10 @@ class RotateFieldsModifier extends Modifier
 	{
 		var xPos = NoteMovement.defaultStrumX[lane];
 		var yPos = NoteMovement.defaultStrumY[lane];
-		var rotX = ModchartUtil.getCartesianCoords3D(subValues.get('x').value, 90, xPos - subValues.get('rotatePointX').value);
-		noteData.x += rotX.x + subValues.get('rotatePointX').value - xPos;
-		var rotY = ModchartUtil.getCartesianCoords3D(90, subValues.get('y').value, yPos - subValues.get('rotatePointY').value);
-		noteData.y += rotY.y + subValues.get('rotatePointY').value - yPos;
+		var rotX = ModchartUtil.getCartesianCoords3D(getSubMod("x"), 90, xPos - getSubMod("rotatePointX"));
+		noteData.x += rotX.x + getSubMod("rotatePointX") - xPos;
+		var rotY = ModchartUtil.getCartesianCoords3D(90, getSubMod("y"), yPos - getSubMod("rotatePointY"));
+		noteData.y += rotY.y + getSubMod("rotatePointY") - yPos;
 		noteData.z += rotX.z + rotY.z;
 	}
 
@@ -281,9 +283,9 @@ class StrumLineRotateModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('x', new ModifierSubValue(0.0));
-		subValues.set('y', new ModifierSubValue(0.0));
-		subValues.set('z', new ModifierSubValue(90.0));
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
+		setSubMod("z", 90.0);
 		currentValue = 1.0;
 	}
 
@@ -312,8 +314,8 @@ class StrumLineRotateModifier extends Modifier
 				upscroll = false;
 
 		// var rot = ModchartUtil.getCartesianCoords3D(subValues.get('x').value, subValues.get('y').value, distFromCenter*NoteMovement.arrowSize);
-		var q = SimpleQuaternion.fromEuler(subValues.get('z').value, subValues.get('x').value,
-			(upscroll ? -subValues.get('y').value : subValues.get('y').value)); // i think this is the right order???
+		var q = SimpleQuaternion.fromEuler(getSubMod("z"), getSubMod("x"),
+			(upscroll ? -getSubMod("y") : getSubMod("y"))); // i think this is the right order???
 		// q = SimpleQuaternion.normalize(q); //dont think its too nessessary???
 		noteData.x += q.x * distFromCenter * NoteMovement.arrowSize;
 		noteData.y += q.y * distFromCenter * NoteMovement.arrowSize;
@@ -336,11 +338,11 @@ class RotateFields3DModifier extends Modifier
 {
 	override function setupSubValues()
 	{
-		subValues.set('x', new ModifierSubValue(0.0));
-		subValues.set('y', new ModifierSubValue(0.0));
+		setSubMod("x", 0.0);
+		setSubMod("y", 0.0);
 
-		subValues.set('rotatePointX', new ModifierSubValue((FlxG.width / 2) - (NoteMovement.arrowSize / 2)));
-		subValues.set('rotatePointY', new ModifierSubValue((FlxG.height / 2) - (NoteMovement.arrowSize / 2)));
+		setSubMod("rotatePointX", (FlxG.width / 2) - (NoteMovement.arrowSize / 2));
+		setSubMod("rotatePointY", (FlxG.height / 2) - (NoteMovement.arrowSize / 2));
 		currentValue = 1.0;
 	}
 
@@ -348,22 +350,21 @@ class RotateFields3DModifier extends Modifier
 	{
 		var xPos = NoteMovement.defaultStrumX[lane];
 		var yPos = NoteMovement.defaultStrumY[lane];
-		var rotX = ModchartUtil.getCartesianCoords3D(-subValues.get('x').value, 90, xPos - subValues.get('rotatePointX').value);
-		noteData.x += rotX.x + subValues.get('rotatePointX').value - xPos;
-		var rotY = ModchartUtil.getCartesianCoords3D(90, subValues.get('y').value, yPos - subValues.get('rotatePointY').value);
-		noteData.y += rotY.y + subValues.get('rotatePointY').value - yPos;
+		var rotX = ModchartUtil.getCartesianCoords3D(getSubMod("x"), 90, xPos - getSubMod("rotatePointX"));
+		noteData.x += rotX.x + getSubMod("rotatePointX") - xPos;
+		var rotY = ModchartUtil.getCartesianCoords3D(90, getSubMod("y"), yPos - getSubMod("rotatePointY"));
+		noteData.y += rotY.y + getSubMod("rotatePointY") - yPos;
 		noteData.z += rotX.z + rotY.z;
 
-		noteData.angleY += -subValues.get('x').value;
-		noteData.angleX += -subValues.get('y').value;
+		noteData.angleY += -getSubMod("x");
+		noteData.angleX += -getSubMod("y");
 	}
 
 	override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)
 	{
-		var multiply:Bool = subValues.get('y').value % 180 != 0; // so it calculates the stuff ONLY if angle its not 180/360 base
+		var multiply:Bool = getSubMod("y") % 180 != 0; // so it calculates the stuff ONLY if angle its not 180/360 base
 		var valueToUse:Float = multiply ? 90 : 0;
-		return [valueToUse, subValues.get('y')
-			.value]; // ik this might cause problems at some point with some modifiers but eh, there is nothing i could do about it- (i can LMAO)
+		return [valueToUse, getSubMod("y")]; // ik this might cause problems at some point with some modifiers but eh, there is nothing i could do about it- (i can LMAO)
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
