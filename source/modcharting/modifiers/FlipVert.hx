@@ -95,7 +95,7 @@ class InvertSineModifier extends Modifier
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += FlxMath.fastSin(0 + (curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * (lane % 2 == 0 ? 1 : -1) * currentValue * 0.5); // silly ah math
+		noteData.x += FlxMath.fastSin((curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * (lane % 2 == 0 ? 1 : -1) * currentValue * 0.5); // silly ah math
 	}
 }
 
@@ -105,8 +105,8 @@ class FlipSineModifier extends Modifier
 	{
 		var nd = lane % NoteMovement.keyCount;
 		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
-		noteData.x += FlxMath.fastSin(0 + (curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * newPos * currentValue * 0.5); // silly ah math
-		noteData.x -= NoteMovement.arrowSizes[lane] * currentValue;
+
+		noteData.x += (NoteMovement.arrowSizes[lane] * newPos * FlxMath.fastSin((curPos * 0.004))) * currentValue * -0.5; // silly ah math
 	}
 }
 

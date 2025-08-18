@@ -46,11 +46,10 @@ class HourGlass extends Modifier
 	public function hourGlassMath():Float
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
-		var pos = (Conductor.songPosition * 0.001) * scrollSwitch;
+		var pos:Float = (Conductor.songPosition * 0.001) * scrollSwitch;
 
 		// Copy of Sudden math
-		var a:Float = FlxMath.remapToRange(pos, getSubMod("start") + getSubMod("offset"),
-			getSubMod("end") + getSubMod("offset"), 1, 0);
+		var a:Float = FlxMath.remapToRange(pos, getSubMod("start") + getSubMod("offset"), getSubMod("end") + getSubMod("offset"), 1, 0);
 		a = FlxMath.bound(a, 0, 1); // clamp
 
 		var b:Float = 1 - a;
@@ -64,7 +63,7 @@ class HourGlassXModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		noteData.x += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
 	}
 }
 
@@ -72,7 +71,7 @@ class HourGlassYModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		noteData.y += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
 	}
 }
 
@@ -80,7 +79,7 @@ class HourGlassZModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += NoteMovement.arrowSizes[lane] * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		noteData.z += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
 	}
 }
 
