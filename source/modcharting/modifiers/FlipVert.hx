@@ -80,7 +80,7 @@ class RealGamesModifier extends Modifier
 	{
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (laneThing == 0 && laneThing == 3) // left and right notes
+		if (laneThing < 1 && laneThing > 2) // left and right notes
 			noteData.x += NoteMovement.arrowSizes[lane] * (laneThing == 0 ? 1 : -1) * currentValue;
 
 	}
@@ -106,6 +106,7 @@ class FlipSineModifier extends Modifier
 		var nd = lane % NoteMovement.keyCount;
 		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
 		noteData.x += FlxMath.fastSin(0 + (curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * newPos * currentValue * 0.5); // silly ah math
+		noteData.x -= NoteMovement.arrowSizes[lane] * currentValue;
 	}
 }
 
@@ -259,6 +260,7 @@ class BlackSphereFlipModifier extends Modifier
 
 		var newPos = FlxMath.remapToRange(laneThing, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
 		noteData.x += NoteMovement.arrowSizes[lane] * newPos * invertValue;
+		noteData.x -= NoteMovement.arrowSizes[lane] * invertValue;
 		noteData.y += NoteMovement.arrowSizes[lane] * yValue;
 	}
 

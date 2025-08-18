@@ -44,6 +44,9 @@ class Rotate extends Modifier
 	var pivotPoint:Vector2 = new Vector2(0, 0);
 	var point:Vector2 = new Vector2(0, 0);
 
+	var strumResultX:Array<Float> = [];
+	var strumResultY:Array<Float> = [];
+
 	override function setupSubValues()
 	{
 		baseValue = 0.0;
@@ -102,6 +105,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleZ);
 				noteData.x = output.x;
 				noteData.y = output.y;
+				strumResultX[lane] = point.x - output.x;
+				strumResultY[lane] = point.y - output.y;
 			case "y":
 				pivotPoint.x = getPivot(noteData, lane, "x");
 				pivotPoint.y = getPivot(noteData, lane, "z");
@@ -110,6 +115,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleY);
 				noteData.x = output.x;
 				noteData.z = output.y;
+				strumResultX[lane] = point.x - output.x;
+				strumResultY[lane] = point.y - output.y;
 			case "x":
 				pivotPoint.x = getPivot(noteData, lane, "z");
 				pivotPoint.y = getPivot(noteData, lane, "y");
@@ -118,6 +125,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleX);
 				noteData.z = output.x;
 				noteData.y = output.y;
+				strumResultX[lane] = point.x - output.x;
+				strumResultY[lane] = point.y - output.y;
 		}
 	}
 }
@@ -195,6 +204,11 @@ class StrumRotateModifier extends Rotate
 		rotatePivot(noteData, lane, pf, "x");
 		rotatePivot(noteData, lane, pf, "y");
 		rotatePivot(noteData, lane, pf, "z");
+	}
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.x -= strumResultX[lane%NoteMovement.keyCount];
+		noteData.y -= strumResultY[lane%NoteMovement.keyCount];
 	}
 }
 

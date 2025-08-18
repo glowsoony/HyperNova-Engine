@@ -200,174 +200,197 @@ class LinearSkewYModifier extends Modifier
 	}
 }
 
-class CircXModifier extends Modifier
+class Circ extends Modifier
 {
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	var strumResult:Array<Float>=[];
+
+	var ud = false;
+
+	override function setupSubValues()
 	{
-		var ud = false;
+		setSubMod("offset", 0.0);
+		setSubMod("useAlt", 0.0);
+	}
+
+	function doMath(curPos:Float)
+	{
 		if (instance != null)
 			if (ModchartUtil.getDownscroll(instance))
 				ud = true;
 
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.x += curPos2 * curPos2 * currentValue * -0.001; // No idea why math is like that, hazard is the one who made it -Ed
+		var curPos2:Float = curPos * (ud ? -1 : 1);
+		curPos2 += getSubMod("offset");
+		return (curPos2 * curPos2 * currentValue * -0.001);
 	}
 }
 
-class CircYModifier extends Modifier // Similar to speed but different, yk, weird Y behaviour
+class CircXModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-
-		noteData.y += curPos2 * curPos2 * (currentValue * (ud ? -1 : 1)) * -0.001;
+		noteData.x -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.x += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.x += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircZModifier extends Modifier
+class CircYModifier extends Circ // Similar to speed but different, yk, weird Y behaviour
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.z += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.y -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.y += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos) * (ud ? -1 : 1); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0) * (ud ? -1 : 1);
+		noteData.y += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircAngleModifier extends Modifier
+class CircZModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.angle += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.z -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.z += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.z += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircAngleXModifier extends Modifier
+class CircAngleModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.angleX += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.angle -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.angle += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.angle += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircAngleYModifier extends Modifier
+class CircAngleXModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.angleY += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.angleX -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.angleX += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.angleX += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircScaleModifier extends Modifier
+class CircAngleYModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.scaleX += curPos2 * curPos2 * currentValue * -0.001;
-		noteData.scaleY += curPos2 * curPos2 * currentValue * -0.001;
+		noteData.angleY -= strumResult[lane%NoteMovement.keyCount]; //calls only half
+		noteData.angleY += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.angleY += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircScaleXModifier extends Modifier
+class CircScaleModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.scaleX += curPos2 * curPos2 * currentValue * -0.001;
+		var r = doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos) * -0.01;
+		noteData.scaleX += r; // No idea why math is like that, hazard is the one who made it -Ed
+		noteData.scaleY += r;
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0) * -0.01;
+		noteData.scaleX += strumResult[lane%NoteMovement.keyCount];
+		noteData.scaleY += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircScaleYModifier extends Modifier
+class CircScaleXModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.scaleY += curPos2 * curPos2 * currentValue * -0.001;
+		var r = doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos) * -0.01;
+		noteData.scaleX += r; // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0) * -0.01;
+		noteData.scaleX += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircSkewModifier extends Modifier // absurdely similar to angle xdxd
+class CircScaleYModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.skewX += curPos2 * curPos2 * currentValue * -0.001;
-		noteData.skewY += curPos2 * curPos2 * currentValue * -0.001;
+		var r = doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos) * -0.01;
+		noteData.scaleY += r; // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0) * -0.01;
+		noteData.scaleY += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircSkewXModifier extends Modifier
+class CircSkewModifier extends Circ // absurdely similar to angle xdxd
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
-
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.scaleX += curPos2 * curPos2 * currentValue * -0.001;
+		var r = doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos);
+		noteData.skewX += r;
+		noteData.skewY += r; // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.skewX += strumResult[lane%NoteMovement.keyCount];
+		noteData.skewY += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
-class CircSkewYModifier extends Modifier
+class CircSkewXModifier extends Circ
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var ud = false;
-		if (instance != null)
-			if (ModchartUtil.getDownscroll(instance))
-				ud = true;
+		noteData.skewX += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.skewX += strumResult[lane%NoteMovement.keyCount];
+	}
+}
 
-		var curPos2 = Conductor.songPosition * 0.001 * (ud ? -1 : 1);
-		noteData.scaleY += curPos2 * curPos2 * currentValue * -0.001;
+class CircSkewYModifier extends Circ
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.skewY += doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : curPos); // No idea why math is like that, hazard is the one who made it -Ed
+	}
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
+	{
+		strumResult[lane%NoteMovement.keyCount] = getSubMod("offset") == 0 ? 0.0 : doMath(getSubMod("useAlt") >= 0.5 ? Conductor.songPosition * 0.001 : 0.0);
+		noteData.skewY += strumResult[lane%NoteMovement.keyCount];
 	}
 }
 
