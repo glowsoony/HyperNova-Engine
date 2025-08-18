@@ -218,7 +218,7 @@ class Circ extends Modifier
 			if (ModchartUtil.getDownscroll(instance))
 				ud = true;
 
-		var curPos2:Float = curPos * (ud ? -1 : 1);
+		var curPos2:Float = curPos * 0.45 * (ud ? -1 : 1);
 		curPos2 += getSubMod("offset");
 		return (curPos2 * curPos2 * currentValue * -0.001);
 	}
