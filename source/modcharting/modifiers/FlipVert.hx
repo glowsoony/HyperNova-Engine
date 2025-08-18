@@ -80,8 +80,8 @@ class RealGamesModifier extends Modifier
 	{
 		var laneThing = lane % NoteMovement.keyCount;
 
-		if (laneThing < 1 && laneThing > 2) // left and right notes
-			noteData.x += NoteMovement.arrowSizes[lane] * (laneThing == 0 ? 1 : -1) * currentValue;
+		if (laneThing == 0 || laneThing == 3) // left and right notes
+			noteData.x += NoteMovement.arrowSizes[lane] * (laneThing == 0 ? 1 : -1) * currentValue * 3; // ????
 
 	}
 
