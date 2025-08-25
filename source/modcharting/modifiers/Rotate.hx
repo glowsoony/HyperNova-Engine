@@ -81,7 +81,7 @@ class Rotate extends Modifier
 				r += getSubMod("offset_x");
 				return r;
 			case "y":
-				return (FlxG.height/2) + getSubMod("offset_y");
+				return ((FlxG.height/2) - (NoteMovement.arrowSize / 2)) + getSubMod("offset_y");
 			case "z":
 				return 0.0 + getSubMod("offset_z");
 			default:
