@@ -26,7 +26,7 @@ class ImprovedEases
 
   public static inline function tri(t:Float):Float
   {
-    return 1 - Math.abs(2 * t - 2);
+    return 1 - Math.abs(2 * t - 1);
   }
 
   public static inline function bell(t:Float):Float
