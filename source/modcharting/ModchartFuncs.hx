@@ -55,6 +55,12 @@ class ModchartFuncs
 
 				PlayState.instance.playfieldRenderer.modifierTable.reconstructTable(); // needs to be reconstructed for lua modcharts
 			});
+			Lua_helper.add_callback(funkin.lua, 'registerMod', function(name:String, type:String = '', pf:Int = -1)
+			{
+				registerMod(name, type, pf);
+
+				PlayState.instance.playfieldRenderer.modifierTable.reconstructTable(); // needs to be reconstructed for lua modcharts
+			});
 			Lua_helper.add_callback(funkin.lua, 'setMod', function(name:String, value:Float)
 			{
 				setMod(name, value);
@@ -220,6 +226,15 @@ class ModchartFuncs
 				PlayState.instance.playfieldRenderer.modifierTable.reconstructTable(); // needs to be reconstructed for lua modcharts
 			}
 		});
+		parent.set('registerMod', function(name:String, type:String = '', pf:Int = -1)
+		{
+			registerMod(name, type, pf);
+
+			if (PlayState.instance == FlxG.state && PlayState.instance.playfieldRenderer != null)
+			{
+				PlayState.instance.playfieldRenderer.modifierTable.reconstructTable(); // needs to be reconstructed for lua modcharts
+			}
+		});
 		parent.set('setMod', function(name:String, value:Float)
 		{
 			setMod(name, value);
@@ -329,6 +344,45 @@ class ModchartFuncs
 			mod = Type.resolveClass('modcharting.modifiers.' + modClass + "Modifier");
 		} // dont need to add "Modifier" to the end of every mod
 
+		if (mod != null)
+		{
+			var modType = getModTypeFromString(type);
+			var modifier = Type.createInstance(mod, [name, modType, pf]);
+			instance.playfieldRenderer.modifierTable.add(modifier);
+		}
+	}
+
+	public static function registerMod(name:String, type:String = '', pf:Int = -1, ?instance:ModchartMusicBeatState = null)
+	{
+		if (instance == null)
+		{
+			// if (editor)
+			//     instance = EditorPlayState.instance;
+			// else
+			instance = PlayState.instance;
+			if (instance.playfieldRenderer.modchart.scriptListen)
+			{
+				instance.playfieldRenderer.modchart.data.modifiers.push([name, "Modifier", type, pf]);
+				trace(name, "Modifier", type, pf);
+			}
+		}
+
+		if (instance.playfieldRenderer.modchart.customModifiers.exists("Modifier"))
+		{
+			var modifier = new Modifier(name, getModTypeFromString(type), pf);
+			if (instance.playfieldRenderer.modchart.customModifiers.get("Modifier").interp != null)
+				instance.playfieldRenderer.modchart.customModifiers.get("Modifier").interp.variables.set('instance', instance);
+			instance.playfieldRenderer.modchart.customModifiers.get("Modifier")
+				.initMod(modifier); // need to do it this way instead because using current value in the modifier script didnt work
+			// var modifier = instance.playfieldRenderer.modchart.customModifiers.get(modClass).copy();
+			// modifier.tag = name; //set correct stuff because its copying shit
+			// modifier.playfield = pf;
+			// modifier.type = getModTypeFromString(type);
+			instance.playfieldRenderer.modifierTable.add(modifier);
+			return;
+		}
+
+		var mod = Type.resolveClass('modcharting.Modifier');
 		if (mod != null)
 		{
 			var modType = getModTypeFromString(type);
