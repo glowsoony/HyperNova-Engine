@@ -10,6 +10,7 @@ import psychlua.FunkinLua;
 #if HSCRIPT_ALLOWED
 import crowplexus.hscript.Expr.Error as IrisError;
 import crowplexus.hscript.Printer;
+import crowplexus.iris.Iris.IrisCall;
 import crowplexus.iris.Iris;
 import crowplexus.iris.IrisConfig;
 
@@ -472,6 +473,13 @@ class HScript extends Iris
 			set('addBehindDad', PlayState.instance.addBehindDad);
 			set('addBehindBF', PlayState.instance.addBehindBF);
 		}
+	}
+
+	override public function call(func:String, ?args:Array<Dynamic>):IrisCall
+	{
+		if (func == null || !interp.variables.exists(func))
+			return null;
+		return super.call(func, args);
 	}
 
 	#if LUA_ALLOWED
