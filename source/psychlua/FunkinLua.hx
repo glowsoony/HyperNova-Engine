@@ -1980,11 +1980,8 @@ class FunkinLua
 			}
 		});
 
-		Lua_helper.add_callback(lua, "createLuaShader", function(id:String, file:String, glslVersion:String = '120')
-		{
-			var funnyCustomShader:CustomCodeShader = new CustomCodeShader(file, glslVersion);
-			lua_Custom_Shaders.set(id, funnyCustomShader);
-		});
+		Lua_helper.add_callback(lua, "createLuaShader",
+			function(id:String, file:String, glslVersion:String = '120') lua_Custom_Shaders.set(id, new CustomCodeShader(file, glslVersion)));
 
 		Lua_helper.add_callback(lua, "setActorCustomShader", function(id:String, actor:String)
 		{

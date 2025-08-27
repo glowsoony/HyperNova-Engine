@@ -475,13 +475,6 @@ class HScript extends Iris
 		}
 	}
 
-	override public function call(func:String, ?args:Array<Dynamic>):IrisCall
-	{
-		if (func == null || !interp.variables.exists(func))
-			return null;
-		return super.call(func, args);
-	}
-
 	#if LUA_ALLOWED
 	public static function implement(funk:FunkinLua)
 	{
@@ -564,14 +557,8 @@ class HScript extends Iris
 
 	override function call(funcToRun:String, ?args:Array<Dynamic>):IrisCall
 	{
-		if (funcToRun == null || interp == null)
+		if (funcToRun == null || interp == null || !exists(funcToRun))
 			return null;
-
-		if (!exists(funcToRun))
-		{
-			Iris.error('No function named: $funcToRun', this.interp.posInfos());
-			return null;
-		}
 
 		try
 		{
