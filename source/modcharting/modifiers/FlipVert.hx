@@ -104,9 +104,9 @@ class FlipSineModifier extends Modifier
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		var nd = lane % NoteMovement.keyCount;
-		var newPos = FlxMath.remapToRange(nd, 0, NoteMovement.keyCount, NoteMovement.keyCount, -NoteMovement.keyCount);
+		var newPos = (nd - 1.5) * -2;
 
-		noteData.x += (NoteMovement.arrowSizes[lane] * newPos * FlxMath.fastSin((curPos * 0.004))) * currentValue * -0.5; // silly ah math
+		noteData.x += FlxMath.fastSin((curPos * 0.004)) * (NoteMovement.arrowSizes[lane] * newPos * currentValue * 0.5);
 	}
 }
 

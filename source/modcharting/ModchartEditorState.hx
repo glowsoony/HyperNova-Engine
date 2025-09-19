@@ -133,7 +133,7 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.Skew.SkewFieldXModifier,modcharting.modifiers.Skew.SkewFieldYModifier,
 
 		modcharting.modifiers.Scroll.SpeedModifier,
-		modcharting.modifiers.Scroll.BoostModifier,modcharting.modifiers.Scroll.BrakeModifier,modcharting.modifiers.Scroll.BoomerangModifier,modcharting.modifiers.Scroll.WaveModifier,
+		modcharting.modifiers.Scroll.BoostModifier,modcharting.modifiers.Scroll.BrakeModifier,modcharting.modifiers.Scroll.BoomerangModifier,modcharting.modifiers.Scroll.WaveModifier,modcharting.modifiers.Scroll.ExpandModifier,
 		modcharting.modifiers.Scroll.JumpModifier,modcharting.modifiers.Scroll.JumpStrumsModifier,modcharting.modifiers.Scroll.JumpNotesModifier,modcharting.modifiers.Scroll.DrivenModifier,
 		modcharting.modifiers.Scroll.TimeStopModifier,
 		modcharting.modifiers.Scroll.ParalysisModifier,
@@ -235,6 +235,11 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.HourGlass.HourGlassAngleModifier,modcharting.modifiers.HourGlass.HourGlassAngleXModifier,modcharting.modifiers.HourGlass.HourGlassAngleYModifier,
 		modcharting.modifiers.HourGlass.HourGlassScaleModifier,modcharting.modifiers.HourGlass.HourGlassScaleXModifier,modcharting.modifiers.HourGlass.HourGlassScaleYModifier,
 		modcharting.modifiers.HourGlass.HourGlassSkewModifier,modcharting.modifiers.HourGlass.HourGlassSkewXModifier,modcharting.modifiers.HourGlass.HourGlassSkewYModifier,
+
+		modcharting.modifiers.Spiral.SpiralXModifier,modcharting.modifiers.Spiral.SpiralYModifier,modcharting.modifiers.Spiral.SpiralZModifier,
+		modcharting.modifiers.Spiral.SpiralAngleModifier,modcharting.modifiers.Spiral.SpiralAngleXModifier,modcharting.modifiers.Spiral.SpiralAngleYModifier,
+		modcharting.modifiers.Spiral.SpiralScaleModifier,modcharting.modifiers.Spiral.SpiralScaleXModifier,modcharting.modifiers.Spiral.SpiralScaleYModifier,
+		modcharting.modifiers.Spiral.SpiralSkewModifier,modcharting.modifiers.Spiral.SpiralSkewXModifier,modcharting.modifiers.Spiral.SpiralSkewYModifier,
 
 		modcharting.modifiers.SawTooth.SawToothXModifier,modcharting.modifiers.SawTooth.SawToothYModifier,modcharting.modifiers.SawTooth.SawToothZModifier,
 		modcharting.modifiers.SawTooth.SawToothAngleModifier,modcharting.modifiers.SawTooth.SawToothAngleXModifier,modcharting.modifiers.SawTooth.SawToothAngleYModifier,

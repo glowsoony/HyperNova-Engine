@@ -97,7 +97,7 @@ class BoomerangModifier extends Modifier
 	{
 		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
 
-		noteData.y += (FlxMath.fastSin((curPos / -700)) * 400 + (curPos / 3.5)) * scrollSwitch * (-currentValue);
+		noteData.y += (FlxMath.fastSin((curPos / -700)) * 400 + (curPos / 3.5)) * scrollSwitch * (currentValue);
 		noteData.alpha *= FlxMath.bound(1 - (curPos / -600 - 3.5), 0, 1);
 	}
 
@@ -128,6 +128,34 @@ class WaveModifier extends Modifier
 		curPos += (FlxMath.fastSin(-curPos / 38.0 * (getSubMod("multiplier") * 0.75) * 0.2) * 100) * (currentValue * 2);
 
 		return curPos * 0.75;
+	}
+}
+
+class ExpandModifier extends Modifier
+{
+	override function setupSubValues()
+	{
+		setSubMod("Speed", 1.0);
+	}
+	override function curPosMath(lane:Int, curPos:Float, pf:Int)
+	{
+		var b:Float = Modifier.beat / 2 * getSubMod("Speed");
+		var sine:Float = FlxMath.fastSin(b * Math.PI);
+
+		var speedMod:Float = 1.0;
+
+		if (currentValue > 0){
+			speedMod = 1 + (sine * currentValue / 4); // 4 means that scroll speed becames 0
+		}else{ //special negative behaviour
+			var r:Float = FlxMath.lerp(1,0,currentValue*-1);
+			r = FlxMath.bound(r,0,1);
+
+			r += sine * (1 - r) * (currentValue * -0.5); // 2 is normal speed in both ways?
+
+			speedMod = r;
+		}
+
+		return curPos * speedMod;
 	}
 }
 

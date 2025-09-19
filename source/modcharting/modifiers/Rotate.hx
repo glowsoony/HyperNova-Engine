@@ -46,6 +46,7 @@ class Rotate extends Modifier
 
 	var strumResultX:Array<Float> = [];
 	var strumResultY:Array<Float> = [];
+	var strumResultZ:Array<Float> = [];
 
 	override function setupSubValues()
 	{
@@ -116,7 +117,7 @@ class Rotate extends Modifier
 				noteData.x = output.x;
 				noteData.z = output.y;
 				strumResultX[lane] = point.x - output.x;
-				strumResultY[lane] = point.y - output.y;
+				strumResultZ[lane] = point.y - output.y;
 			case "x":
 				pivotPoint.x = getPivot(noteData, lane, "z");
 				pivotPoint.y = getPivot(noteData, lane, "y");
@@ -125,7 +126,7 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleX);
 				noteData.z = output.x;
 				noteData.y = output.y;
-				strumResultX[lane] = point.x - output.x;
+				strumResultZ[lane] = point.x - output.x;
 				strumResultY[lane] = point.y - output.y;
 		}
 	}
@@ -209,6 +210,7 @@ class StrumRotateModifier extends Rotate
 	{
 		noteData.x -= strumResultX[lane%NoteMovement.keyCount];
 		noteData.y -= strumResultY[lane%NoteMovement.keyCount];
+		noteData.z -= strumResultZ[lane%NoteMovement.keyCount];
 	}
 }
 

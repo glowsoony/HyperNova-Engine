@@ -3,6 +3,7 @@ package modcharting.modifiers;
 import modcharting.*;
 import modcharting.Modifier.ModifierSubValue;
 import modcharting.Modifier;
+import modcharting.Modifier.ModifierMath as ModifierMath;
 import modcharting.PlayfieldRenderer.StrumNoteType;
 
 // CHANGE LOG (the changes to modifiers)
@@ -20,9 +21,10 @@ import modcharting.PlayfieldRenderer.StrumNoteType;
 
 	[EXTRA & REWORK] HourGlass Helper class:
 	-   HourGlass helper class has the basics of HourGlass with new subValues.
-	-   Added 2 subValues:
-		+   mult (changes HourGlass's period)
-		+   steps (changes HourGlass's offset)
+	-   Added 3 subValues:
+		+   start (changes HourGlass's start position)
+		+   offset (changes HourGlass's offset)
+		+   end (changes HourGlass's end position)
 	-   HourGlass helper class can be called via custom mods (so you can create any custom HourGlassMod, such as idk, HourGlassDadX. yet you are the one who defines how to use it).
 		+ Methods (2):
 			1. Use ModifiersMath.HourGlass(values) and set it to whatever you want to modify.
@@ -38,18 +40,15 @@ class HourGlass extends Modifier
 {
 	override function setupSubValues()
 	{
-		setSubMod("start", 420.0);
-		setSubMod("end", 135.0);
+		setSubMod("start", 5.0);
+		setSubMod("end", 3.0);
 		setSubMod("offset", 0.0);
 	}
 
-	public function hourGlassMath():Float
+	public function hourGlassMath(curPos):Float
 	{
-		var scrollSwitch = (instance != null && ModchartUtil.getDownscroll(instance)) ? -1 : 1;
-		var pos:Float = (Conductor.songPosition * 0.001) * scrollSwitch;
-
 		// Copy of Sudden math
-		var a:Float = FlxMath.remapToRange(pos, getSubMod("start") + getSubMod("offset"), getSubMod("end") + getSubMod("offset"), 1, 0);
+		var a:Float = FlxMath.remapToRange(curPos, (getSubMod("start")*-100) + (getSubMod("offset")*-100), (getSubMod("end")*-100) + (getSubMod("offset")*-100), 1, 0);
 		a = FlxMath.bound(a, 0, 1); // clamp
 
 		var b:Float = 1 - a;
@@ -57,13 +56,20 @@ class HourGlass extends Modifier
 
 		return c;
 	}
+
+	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int){
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class HourGlassXModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		var c = hourGlassMath(curPos);
+
+		noteData.x += NoteMovement.arrowSizes[lane] * ModifierMath.Flip(lane) * currentValue * c;
+		noteData.x -= NoteMovement.arrowSizes[lane] * currentValue * c;
 	}
 }
 
@@ -71,7 +77,10 @@ class HourGlassYModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.y += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		var c = hourGlassMath(curPos);
+
+		noteData.y += NoteMovement.arrowSizes[lane] * ModifierMath.Flip(lane) * currentValue * c;
+		noteData.y -= NoteMovement.arrowSizes[lane] * currentValue * c;
 	}
 }
 
@@ -79,7 +88,10 @@ class HourGlassZModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.z += NoteMovement.arrowSize * hourGlassMath() * (lane - 1.5) * -2 * currentValue;
+		var c = hourGlassMath(curPos);
+
+		noteData.z += NoteMovement.arrowSizes[lane] * ModifierMath.Flip(lane) * currentValue * c;
+		noteData.z -= NoteMovement.arrowSizes[lane] * currentValue * c;
 	}
 }
 
@@ -87,7 +99,9 @@ class HourGlassAngleModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angle += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.angle += c * (currentValue * -1)*180;
 	}
 }
 
@@ -95,7 +109,9 @@ class HourGlassAngleXModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleX += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.angleX += c * (currentValue * -1)*180;
 	}
 }
 
@@ -103,7 +119,9 @@ class HourGlassAngleYModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.angleY += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.angleY += c * (currentValue * -1)*180;
 	}
 }
 
@@ -111,8 +129,10 @@ class HourGlassScaleModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += ((hourGlassMath() * (currentValue * -1)) - 1);
-		noteData.scaleY += ((hourGlassMath() * (currentValue * -1)) - 1);
+		var c = hourGlassMath(curPos);
+
+		noteData.scaleX += c * currentValue;
+		noteData.scaleY += c * currentValue;
 	}
 }
 
@@ -120,7 +140,9 @@ class HourGlassScaleXModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleX += ((hourGlassMath() * (currentValue * -1)) - 1);
+		var c = hourGlassMath(curPos);
+
+		noteData.scaleX += c * currentValue;
 	}
 }
 
@@ -128,7 +150,9 @@ class HourGlassScaleYModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.scaleY += ((hourGlassMath() * (currentValue * -1)) - 1);
+		var c = hourGlassMath(curPos);
+
+		noteData.scaleY += c * currentValue;
 	}
 }
 
@@ -136,8 +160,10 @@ class HourGlassSkewModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += hourGlassMath() * (currentValue * -1);
-		noteData.skewY += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.skewX += c * (currentValue * -2);
+		noteData.skewY += c * (currentValue * -2);
 	}
 }
 
@@ -145,7 +171,9 @@ class HourGlassSkewXModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewX += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.skewX += c * (currentValue * -2);
 	}
 }
 
@@ -153,6 +181,8 @@ class HourGlassSkewYModifier extends HourGlass
 {
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.skewY += hourGlassMath() * (currentValue * -1);
+		var c = hourGlassMath(curPos);
+
+		noteData.skewY += c * (currentValue * -2);
 	}
 }
