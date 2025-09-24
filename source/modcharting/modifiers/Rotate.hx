@@ -44,9 +44,14 @@ class Rotate extends Modifier
 	var pivotPoint:Vector2 = new Vector2(0, 0);
 	var point:Vector2 = new Vector2(0, 0);
 
-	var strumResultX:Array<Float> = [];
-	var strumResultY:Array<Float> = [];
-	var strumResultZ:Array<Float> = [];
+	var strumXRotA:Array<Float> = [];
+	var strumXRotB:Array<Float> = [];
+
+	var strumYRotA:Array<Float> = [];
+	var strumYRotB:Array<Float> = [];
+
+	var strumZRotA:Array<Float> = [];
+	var strumZRotB:Array<Float> = [];
 
 	override function setupSubValues()
 	{
@@ -106,8 +111,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleZ);
 				noteData.x = output.x;
 				noteData.y = output.y;
-				strumResultX[lane] = point.x - output.x;
-				strumResultY[lane] = point.y - output.y;
+				strumZRotA[lane] = point.x - output.x;
+				strumZRotB[lane] = point.y - output.y;
 			case "y":
 				pivotPoint.x = getPivot(noteData, lane, "x");
 				pivotPoint.y = getPivot(noteData, lane, "z");
@@ -116,8 +121,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleY);
 				noteData.x = output.x;
 				noteData.z = output.y;
-				strumResultX[lane] = point.x - output.x;
-				strumResultZ[lane] = point.y - output.y;
+				strumYRotA[lane] = point.x - output.x;
+				strumYRotB[lane] = point.y - output.y;
 			case "x":
 				pivotPoint.x = getPivot(noteData, lane, "z");
 				pivotPoint.y = getPivot(noteData, lane, "y");
@@ -126,8 +131,8 @@ class Rotate extends Modifier
 				var output:Vector2 = ModchartUtil.rotateAround(pivotPoint, point, angleX);
 				noteData.z = output.x;
 				noteData.y = output.y;
-				strumResultZ[lane] = point.x - output.x;
-				strumResultY[lane] = point.y - output.y;
+				strumXRotA[lane] = point.x - output.x;
+				strumXRotB[lane] = point.y - output.y;
 		}
 	}
 }
@@ -208,9 +213,16 @@ class StrumRotateModifier extends Rotate
 	}
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		noteData.x -= strumResultX[lane%NoteMovement.keyCount];
-		noteData.y -= strumResultY[lane%NoteMovement.keyCount];
-		noteData.z -= strumResultZ[lane%NoteMovement.keyCount];
+		var laneShit = lane % NoteMovement.keyCount;
+		//X
+		noteData.z -= strumXRotA[laneShit];
+		noteData.y -= strumXRotB[laneShit];
+		//Y
+		noteData.x -= strumYRotA[laneShit];
+		noteData.z -= strumYRotB[laneShit];
+		//Z
+		noteData.x -= strumZRotA[laneShit];
+		noteData.y -= strumZRotB[laneShit];
 	}
 }
 
