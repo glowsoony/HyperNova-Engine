@@ -226,6 +226,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		var noteAlpha:Float = 1;
 
+		// if (!notesGroup[field][noteIndex].specialHurt)
 		#if PSYCH
 		if (!notes.members[noteIndex].specialHurt)
 		{
@@ -397,6 +398,16 @@ class PlayfieldRenderer extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 		var changeX:Bool = noteData.z != 0;
+
+		/*targetGroup<Array<Array>> = new Array<Array>();
+
+		targetGroup = [
+			[0,1,2,3,4,5,6,7],
+			[0,1,2,3,4,5,6,7]
+		];
+
+		*/
+		// var strumNote = targetGroup[0][noteData.index];
 		var strumNote = strumGroup.members[noteData.index];
 
 		// if (strumNote == null)
