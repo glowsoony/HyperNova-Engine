@@ -506,7 +506,7 @@ class NewModchartArrow extends FlxSkewedSprite
 	public var preRotationMoveY:Float = 0;
 	public var preRotationMoveZ:Float = 0;
 
-	var skewOffsetFix:Float = 0.5;
+	var skewOffsetFix:Float = 0.0;
 
 	public function applySkew(pos:Vector3D, xPercent:Float, yPercent:Float, w:Float, h:Float):Vector3D
 	{
