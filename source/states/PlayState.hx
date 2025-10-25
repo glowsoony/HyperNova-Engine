@@ -520,8 +520,55 @@ class PlayState extends MusicBeatState
 
 		generateSong();
 
+<<<<<<< Updated upstream
 		noteGroup.add(grpNoteSplashes);
 		noteGroup.add(grpHoldSplashes);
+=======
+		// Loading silly notes :D!!
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+		NoteMovement.getDefaultStrumPos(this);
+		for (i in 0...playerStrums.length)
+		{
+			setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+			setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
+		}
+		for (i in 0...opponentStrums.length)
+		{
+			setOnScripts('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+			setOnScripts('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
+			// if(ClientPrefs.data.middleScroll) opponentStrums.members[i].visible = false;
+		}
+
+		if (notITGMod)
+		{
+			if (SONG.notITG && !SONG.newModchartTool)
+			{
+				playfieldRenderer = new PlayfieldRenderer(this);
+				playfieldRenderer.cameras = [camHUD];
+				add(playfieldRenderer);
+			}
+			#if funkin_modchart
+			else if (SONG.notITG && SONG.newModchartTool)
+			{
+				modchartRenderer = new Manager();
+				add(modchartRenderer);
+				add(grpNoteSplashes);
+				add(grpHoldSplashes);
+			}
+			#end
+		else
+		{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes for vanilla!
+			add(grpNoteSplashes);
+			add(grpHoldSplashes);
+		}
+		}
+		else
+		{
+			add(grpNoteSplashes);
+			add(grpHoldSplashes);
+		}
+>>>>>>> Stashed changes
 
 		camFollow = new FlxObject();
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -4177,7 +4224,76 @@ public function setOnLuas(variable:String, arg:Dynamic, exclusions:Array<String>
 		if (exclusions.contains(script.scriptName))
 			continue;
 
+<<<<<<< Updated upstream
 		script.set(variable, arg);
+=======
+		#if (!flash && MODS_ALLOWED && sys)
+		if (!runtimeShaders.exists(shaderName) && !initLuaShader(shaderName))
+		{
+			Sys.println(shaderName);
+			FlxG.log.warn('Shader $shaderName is missing!');
+			return new ErrorHandledRuntimeShader(shaderName);
+		}
+
+		var arr:Array<String> = runtimeShaders.get(shaderName);
+		Sys.println('glFragment ${arr[0]}, glVertex: ${arr[1]}');
+		return new ErrorHandledRuntimeShader(shaderName, arr[0], arr[1]);
+		#else
+		FlxG.log.warn("Platform unsupported for Runtime Shaders!");
+		return null;
+		#end
+	}
+
+	public function initLuaShader(name:String, ?glslVersion:Int = 120)
+	{
+		if (!ClientPrefs.data.shaders)
+			return false;
+
+		#if (MODS_ALLOWED && !flash && sys)
+		if (runtimeShaders.exists(name))
+		{
+			FlxG.log.warn('Shader $name was already initialized!');
+			return true;
+		}
+
+		for (folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'shaders/'))
+		{
+			var frag:String = folder + name + '.frag';
+			var vert:String = folder + name + '.vert';
+			var found:Bool = false;
+			if (NativeFileSystem.exists(frag))
+			{
+				frag = NativeFileSystem.getContent(frag);
+				found = true;
+			}
+			else
+				frag = null;
+
+			if (NativeFileSystem.exists(vert))
+			{
+				vert = NativeFileSystem.getContent(vert);
+				found = true;
+			}
+			else
+				vert = null;
+
+			if (found)
+			{
+				runtimeShaders.set(name, [frag, vert]);
+				// trace('Found shader $name!');
+				return true;
+			}
+		}
+		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+		addTextToDebug('Missing shader $name .frag AND .vert files!', FlxColor.RED);
+		#else
+		FlxG.log.warn('Missing shader $name .frag AND .vert files!');
+		#end
+		#else
+		FlxG.log.warn('This platform doesn\'t support Runtime Shaders!');
+		#end
+		return false;
+>>>>>>> Stashed changes
 	}
 	#end
 }
