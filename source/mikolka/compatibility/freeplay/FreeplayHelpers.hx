@@ -6,6 +6,7 @@ import options.GameplayChangersSubstate;
 import substates.ResetScoreSubState;
 import mikolka.vslice.components.crash.UserErrorSubstate;
 import openfl.utils.AssetType;
+import mikolka.vslice.freeplay.pslice.FreeplayColorTweener;
 import mikolka.vslice.freeplay.pslice.BPMCache;
 import mikolka.vslice.freeplay.FreeplayState;
 import backend.Song;
@@ -114,7 +115,7 @@ class FreeplayHelpers {
 				// 	trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
 				// 	Paths.freeGraphicsFromMemory();
 				// }
-				#if !STRICT_LOADING_SCREEN LoadingState.prepareToSong(); #end
+				LoadingState.prepareToSong();
 
 				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 			}

@@ -1,8 +1,8 @@
 package mikolka.stages.cutscenes.dialogueBox.styles;
 
 import mikolka.compatibility.VsliceOptions;
-import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxState;
 import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxPosition;
+import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxState;
 #if !LEGACY_PSYCH
 import objects.TypedAlphabet;
 #end
@@ -13,13 +13,12 @@ class PsychDialogueStyle extends DialogueStyle
 
 	public function new()
 	{
-		super();
 	}
 
 	// {"","left-","center-"}+{"angry","normal"}+{"","Open","Wait"}
 	public function makeDialogueBox():FlxSprite
 	{
-		box = new FlxSprite(70+((FlxG.width-FlxG.initialWidth)/2), 370);
+		box = new FlxSprite(70, 370);
 		box.antialiasing = VsliceOptions.ANTIALIASING;
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
@@ -52,29 +51,21 @@ class PsychDialogueStyle extends DialogueStyle
 					{
 						box.offset.set(50, 30); // center-angry
 						box.animation.play("center-angryOpen");
-						#if LEGACY_PSYCH
 						box.animation.finishCallback = (anim) ->
 						{
 							playBoxAnim(pos, IDLE, boxType);
 							box.animation.finishCallback = null;
 						}
-						#else
-						box.animation.onFinish.addOnce(anim -> playBoxAnim(pos, IDLE, boxType));
-						#end
 					}
 					else
 					{
 						box.offset.set(50, 65); // angry
 						box.animation.play("angryOpen");
-						#if LEGACY_PSYCH
 						box.animation.finishCallback = (anim) ->
 						{
 							playBoxAnim(pos, IDLE, boxType);
 							box.animation.finishCallback = null;
 						}
-						#else
-						box.animation.onFinish.addOnce(anim -> playBoxAnim(pos, IDLE, boxType));
-						#end
 					}
 				}
 				else
@@ -84,15 +75,11 @@ class PsychDialogueStyle extends DialogueStyle
 						box.animation.play("center-normalOpen");
 					else
 						box.animation.play("normalOpen");
-					#if LEGACY_PSYCH
 					box.animation.finishCallback = (anim) ->
 					{
 						playBoxAnim(pos, IDLE, boxType);
 						box.animation.finishCallback = null;
 					}
-					#else
-					box.animation.onFinish.addOnce(anim -> playBoxAnim(pos, IDLE, boxType));
-					#end
 				}
 				box.flipX = pos == LEFT;
 				if (!box.flipX)

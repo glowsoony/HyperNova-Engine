@@ -178,6 +178,7 @@ class ModchartFile
 		try
 		{
 			renderer.noteFields.clear();
+			trace(data.playfields == null, data.playfields);
 			for (i in 0...data.playfields)
 			{
 				trace(i, data.playfields);
@@ -195,7 +196,7 @@ class ModchartFile
 
 		renderer.proxiefields = [];
 		// for (i in 0...data.proxiefields)
-		// 	renderer.addProxiefield(new Proxiefield.Proxie());
+		// 	renderer.addNewProxiefield(new Proxiefield.Proxie());
 	}
 
 	public function loadEvents()
@@ -241,8 +242,8 @@ class ModchartFile
 		if (renderer == null)
 			return;
 
-		data.playfields = renderer.noteFields.length;
-		data.proxiefields = renderer.noteFields.length;
+		data.playfields = renderer.playfields.length;
+		data.proxiefields = renderer.proxiefields.length;
 		scriptListen = true;
 	}
 }
@@ -285,8 +286,8 @@ class CustomModifierScript
 		interp.variables.set('ModchartUtil', ModchartUtil);
 		interp.variables.set('Modifier', Modifier);
 		interp.variables.set('ModifierSubValue', Modifier.ModifierSubValue);
-		// interp.variables.set('modifiers', modchating.modifiers.*);
-		// interp.variables.set('BeatXModifier', modifiers.Beat.BeatXModifier);
+		//interp.variables.set('modifiers', modchating.modifiers.*);
+		//interp.variables.set('BeatXModifier', modifiers.Beat.BeatXModifier);
 		interp.variables.set('ModifierMath', Modifier.ModifierMath);
 		interp.variables.set('NoteMovement', NoteMovement);
 		interp.variables.set('NotePositionData', NotePositionData);

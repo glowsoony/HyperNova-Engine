@@ -1,14 +1,15 @@
 package backend;
 
-import mikolka.vslice.components.crash.CrashState;
 import haxe.CallStack;
+import mikolka.vslice.components.crash.CrashState;
 import openfl.events.UncaughtErrorEvent;
-#if sys
-import sys.io.File;
-#end
 
 using StringTools;
 using flixel.util.FlxArrayUtil;
+
+#if sys
+import sys.io.File;
+#end
 
 /**
  * Crash Handler.
@@ -32,7 +33,7 @@ class CrashHandler
 
 	private static function onUncaughtError(e:UncaughtErrorEvent):Void
 	{
-		var crashState = new CrashState(e.error,CallStack.exceptionStack(true));
+		var crashState = new CrashState(e.error, CallStack.exceptionStack(true));
 		e.preventDefault();
 		FlxG.switchState(crashState);
 	}
@@ -65,9 +66,7 @@ class CrashHandler
 			if (!NativeFileSystem.exists('logs'))
 				NativeFileSystem.createDirectory('logs');
 
-			File.saveContent('logs/'
-				+ Date.now().toString().replace(' ', '-').replace(':', "'")
-				+ '.txt', message);
+			File.saveContent('logs/' + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', message);
 		}
 		catch (e:haxe.Exception)
 			trace('Couldn\'t save error message. (${e.message})');

@@ -1,25 +1,19 @@
 package mikolka.stages.erect;
 
-import shaders.DropShadowShader;
-import shaders.WiggleEffectRuntime;
-import mikolka.stages.cutscenes.SchoolDoof;
 import flixel.addons.effects.FlxTrail;
 import mikolka.compatibility.VsliceOptions;
+import mikolka.stages.cutscenes.SchoolDoof;
+import openfl.utils.Assets as OpenFlAssets;
+import shaders.DropShadowShader;
+import shaders.WiggleEffectRuntime;
 #if !LEGACY_PSYCH
 import substates.GameOverSubstate;
 #end
-import openfl.utils.Assets as OpenFlAssets;
 
 class SchoolEvilErect extends BaseStage
 {
-	var backSpikes:BGSprite;
-	var school:BGSprite;
-	var spike:BGSprite;
-	var street:BGSprite;
-	var wiggleBack:WiggleEffectRuntime = null;
-	var wiggleSchool:WiggleEffectRuntime = null;
-	var wiggleStreet:WiggleEffectRuntime = null;
-	var wiggleSpike:WiggleEffectRuntime = null;
+	var bg:BGSprite;
+	var wiggle:WiggleEffectRuntime;
 
 	override function create()
 	{
@@ -41,26 +35,13 @@ class SchoolEvilErect extends BaseStage
 			GameOverSubstate.characterName = 'bf-pixel-dead';
 		#end
 
-		backSpikes = new BGSprite('weeb/erect/evil/weebBackSpikes', -662, -60,0.5,0.5);
-		backSpikes.scale.set(PlayState.daPixelZoom, PlayState.daPixelZoom);
-		backSpikes.updateHitbox();
-		backSpikes.antialiasing = false;
-		add(backSpikes);
+		var posX = 410;
+		var posY = 390;
 
-		school = new BGSprite('weeb/erect/evil/weebSchool', -816, -38, 0.75, 0.75);
-		school.makePixel();
-		add(school);
-
-		spike = new BGSprite('weeb/erect/evil/backSpike', 1416, 464,0.85,0.85);
-		spike.makePixel();
-		add(spike);
-
-		var blackBg:FlxSprite = FunkinTools.makeSolidColor(new FlxSprite(-500, 660), 2400, 2000, 0xFF000000);
-		add(blackBg);
-
-		street = new BGSprite('weeb/erect/evil/weebStreet', -662, 6);
-		street.makePixel();
-		add(street);
+		bg = new BGSprite('weeb/erect/evilSchoolBG', posX, posY, 0.8, 0.9);
+		bg.scale.set(PlayState.daPixelZoom, PlayState.daPixelZoom);
+		bg.antialiasing = false;
+		add(bg);
 
 		setDefaultGF('gf-pixel');
 
@@ -78,32 +59,22 @@ class SchoolEvilErect extends BaseStage
 		var trail:FlxTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
 		if (VsliceOptions.SHADERS)
 		{
-			wiggleBack = new WiggleEffectRuntime(2 * 0.8, 4 * 0.4, 0.011, WiggleEffectType.DREAMY);
-			wiggleSchool = new WiggleEffectRuntime(2, 4, 0.017, WiggleEffectType.DREAMY);
-			wiggleSpike = new WiggleEffectRuntime(2, 4, 0.01, WiggleEffectType.DREAMY);
-			wiggleStreet = new WiggleEffectRuntime(2, 4, 0.007, WiggleEffectType.DREAMY);
-			backSpikes.shader = wiggleBack;
-			school.shader = wiggleSchool;
-			spike.shader = wiggleSpike;
-			street.shader = wiggleStreet;
+			wiggle = new WiggleEffectRuntime(2, 4, 0.017, shaders.Shaders.WiggleEffectType.DREAMY);
+			bg.shader = wiggle;
 		}
 		addBehindDad(trail);
 		if (VsliceOptions.SHADERS)
-			{
-				applyShader(boyfriend, boyfriend.curCharacter);
-				applyShader(gf, gf.curCharacter);
-				applyShader(dad, dad.curCharacter);
-				
-			}
+		{
+			applyShader(boyfriend, boyfriend.curCharacter);
+			applyShader(gf, gf.curCharacter);
+			applyShader(dad, dad.curCharacter);
+		}
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		wiggleBack?.update(elapsed);
-		wiggleSchool?.update(elapsed);
-		wiggleSpike?.update(elapsed);
-		wiggleStreet?.update(elapsed);
+		wiggle?.update(elapsed);
 	}
 
 	// Ghouls event
@@ -144,103 +115,105 @@ class SchoolEvilErect extends BaseStage
 						if (name == 'BG freaks glitch instance')
 							bgGhouls.visible = false;
 					}
+
 					addBehindGF(bgGhouls);
 				}
 		}
 	}
+
 	function applyShader(sprite:FlxSprite, char_name:String)
+	{
+		var rim = new DropShadowShader();
+		rim.setAdjustColor(-66, -10, 24, -23);
+		rim.color = 0xFF641B1B;
+		rim.antialiasAmt = 0;
+		rim.attachedSprite = sprite;
+		rim.distance = 5;
+		switch (char_name)
 		{
-			var rim = new DropShadowShader();
-			rim.setAdjustColor(-66, -10, 24, -23);
-			rim.color = 0xFF641B1B;
-			rim.antialiasAmt = 0;
-			rim.attachedSprite = sprite;
-			rim.distance = 5;
-			switch (char_name)
-			{
-				case "bf-pixel":
+			case "bf-pixel":
+				{
+					rim.angle = 90;
+					sprite.shader = rim;
+
+					// rim.loadAltMask('assets/week6/images/weeb/erect/masks/bfPixel_mask.png');
+					rim.altMaskImage = Paths.image("weeb/erect/masks/bfPixel_mask").bitmap;
+					rim.maskThreshold = 1;
+					rim.useAltMask = true;
+
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.angle = 90;
-						sprite.shader = rim;
-	
-						// rim.loadAltMask('assets/week6/images/weeb/erect/masks/bfPixel_mask.png');
-						rim.altMaskImage = Paths.image("weeb/erect/masks/bfPixel_mask").bitmap;
-						rim.maskThreshold = 1;
-						rim.useAltMask = true;
-	
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-				case "pico-pixel":
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
+			case "pico-pixel":
+				{
+					rim.angle = 90;
+					sprite.shader = rim;
+
+					// rim.loadAltMask('assets/week6/images/weeb/erect/masks/bfPixel_mask.png');
+					rim.altMaskImage = Paths.image("weeb/erect/masks/picoPixel_mask").bitmap;
+					rim.maskThreshold = 1;
+					rim.useAltMask = true;
+
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.angle = 90;
-						sprite.shader = rim;
-	
-						// rim.loadAltMask('assets/week6/images/weeb/erect/masks/bfPixel_mask.png');
-						rim.altMaskImage = Paths.image("weeb/erect/masks/picoPixel_mask").bitmap;
-						rim.maskThreshold = 1;
-						rim.useAltMask = true;
-	
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-				case "gf-pixel":
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
+			case "gf-pixel":
+				{
+					rim.setAdjustColor(-42, -10, 5, -25);
+					rim.angle = 90;
+					sprite.shader = rim;
+					rim.distance = 3;
+					rim.threshold = 0.3;
+					rim.altMaskImage = Paths.image("weeb/erect/masks/gfPixel_mask").bitmap;
+					rim.maskThreshold = 1;
+					rim.useAltMask = true;
+
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.setAdjustColor(-42, -10, 5, -25);
-						rim.angle = 90;
-						sprite.shader = rim;
-						rim.distance = 3;
-						rim.threshold = 0.3;
-						rim.altMaskImage = Paths.image("weeb/erect/masks/gfPixel_mask").bitmap;
-						rim.maskThreshold = 1;
-						rim.useAltMask = true;
-	
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-				case "nene-pixel":
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
+			case "nene-pixel":
+				{
+					rim.setAdjustColor(-42, -10, 5, -25);
+					rim.angle = 90;
+					sprite.shader = rim;
+					rim.distance = 3;
+					rim.threshold = 0.3;
+					rim.altMaskImage = Paths.image("weeb/erect/masks/nenePixel_mask").bitmap;
+					rim.maskThreshold = 1;
+					rim.useAltMask = true;
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.setAdjustColor(-42, -10, 5, -25);
-						rim.angle = 90;
-						sprite.shader = rim;
-						rim.distance = 3;
-						rim.threshold = 0.3;
-						rim.altMaskImage = Paths.image("weeb/erect/masks/nenePixel_mask").bitmap;
-						rim.maskThreshold = 1;
-						rim.useAltMask = true;
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-	
-				case "spirit":
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
+
+			case "spirit":
+				{
+					rim.angle = 90;
+					sprite.shader = rim;
+					rim.setAdjustColor(0, -10, 44, -13);
+					rim.useAltMask = false;
+
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.angle = 90;
-						sprite.shader = rim;
-						rim.setAdjustColor(0, -10, 44, -13);
-						rim.useAltMask = false;
-	
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-				default:
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
+			default:
+				{
+					rim.angle = 90;
+					sprite.shader = rim;
+					sprite.animation.callback = function(anim, frame, index)
 					{
-						rim.angle = 90;
-						sprite.shader = rim;
-						sprite.animation.callback = function(anim, frame, index)
-						{
-							rim.updateFrameInfo(sprite.frame);
-						};
-					}
-			}
+						rim.updateFrameInfo(sprite.frame);
+					};
+				}
 		}
+	}
 }

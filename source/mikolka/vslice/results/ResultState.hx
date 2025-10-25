@@ -1,6 +1,5 @@
 package mikolka.vslice.results;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
 import haxe.Exception;
 import mikolka.compatibility.ModsHelper;
 import mikolka.compatibility.VsliceOptions;
@@ -102,7 +101,7 @@ class ResultState extends MusicBeatSubState
     // This prevents having to do `null` checks everywhere.
 
     var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
-    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49 + MobileScaleMode.gameNotchSize.x , 62)));
+    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
     songName.text = params.title;
     songName.letterSpacing = -15;
     songName.angle = -4.4;
@@ -111,7 +110,7 @@ class ResultState extends MusicBeatSubState
     var fractal = difColor.redFloat*0.33;
     difColor.greenFloat = Math.max(difColor.greenFloat,fractal);
 
-    difficulty = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49 + MobileScaleMode.gameNotchSize.x, 62)));
+    difficulty = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
     difficulty.text = FreeplayHelpers.getDifficultyName();
     difficulty.color = difColor;
     difficulty.letterSpacing = -11; //!!!
@@ -124,15 +123,15 @@ class ResultState extends MusicBeatSubState
 
     bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFF1A6, 0xFFFFF1BE], 90);
 
-    resultsAnim = FunkinSprite.createSparrow(FlxG.width -(1480 + (MobileScaleMode.gameCutoutSize.x / 2)), -10, "resultScreen/results");
+    resultsAnim = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
 
-    ratingsPopin = FunkinSprite.createSparrow(-135+ MobileScaleMode.gameNotchSize.x, 135, "resultScreen/ratingsPopin");
+    ratingsPopin = FunkinSprite.createSparrow(-135, 135, "resultScreen/ratingsPopin");
 
-    scorePopin = FunkinSprite.createSparrow(-180+ MobileScaleMode.gameNotchSize.x, 515, "resultScreen/scorePopin");
+    scorePopin = FunkinSprite.createSparrow(-180, 515, "resultScreen/scorePopin");
 
-    highscoreNew = new FlxSprite(44+ MobileScaleMode.gameNotchSize.x, 557);
+    highscoreNew = new FlxSprite(44, 557);
 
-    score = new ResultScore(35+ MobileScaleMode.gameNotchSize.x, 305, 10, params.scoreData.score);
+    score = new ResultScore(35, 305, 10, params.scoreData.score);
 
     rankBg = new FunkinSprite(0, 0);
 
@@ -186,7 +185,7 @@ class ResultState extends MusicBeatSubState
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
-    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15+ MobileScaleMode.gameNotchSize.x, -180, 'resultScreen/soundSystem');
+    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(8 / 24, _ -> {
@@ -238,13 +237,12 @@ class ResultState extends MusicBeatSubState
       {
         case 'animateatlas':
           //? Scaling offsets because Pico decided to be annoying
+          var xDiff = offsets[0] - (offsets[0]* (animData.scale ?? 1.0));
+          var yDiff = offsets[1] - (offsets[1]* (animData.scale ?? 1.0));
+          offsets[0] -= xDiff*1.8;
+          offsets[1] -= yDiff*1.8;
 
-          // var xDiff = offsets[0] - (offsets[0]* (animData.scale ?? 1.0));
-          // var yDiff = offsets[1] - (offsets[1]* (animData.scale ?? 1.0));
-          // offsets[0] -= xDiff*1.8;
-          // offsets[1] -= yDiff*1.8;
-
-          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0] + MobileScaleMode.gameNotchSize.x, offsets[1], animPath);
+          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0], offsets[1], animPath);
           animation.zIndex = animData.zIndex ?? 500;
           animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
 
@@ -295,7 +293,7 @@ class ResultState extends MusicBeatSubState
           // Add to the scene.
           add(animation);
         case 'sparrow':
-          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0] + MobileScaleMode.gameNotchSize.x, offsets[1], animPath);
+          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0], offsets[1], animPath);
           animation.animation.addByPrefix('idle', '', 24, false, false, false);
 
           if (animData.loopFrame != null)
@@ -344,7 +342,7 @@ class ResultState extends MusicBeatSubState
     // maskShaderSongName.swagMaskX = difficulty.x - 15;
     //maskShaderDifficulty.swagMaskX = difficulty.x - 15;
 
-    var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(BitmapUtil.createResultsBar());
+    var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
     FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24});
     blackTopBar.zIndex = 1010;
@@ -423,10 +421,10 @@ class ResultState extends MusicBeatSubState
      * NOTE: We display how many notes were HIT, not how many notes there were in total.
      *
      */
-    var totalHit:TallyCounter = new TallyCounter(375 + MobileScaleMode.gameNotchSize.x, hStuf * 3, params.scoreData.totalNotesHit);
+    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.scoreData.totalNotesHit);
     ratingGrp.add(totalHit);
 
-    var maxCombo:TallyCounter = new TallyCounter(375 + MobileScaleMode.gameNotchSize.x, hStuf * 4, params.scoreData.maxCombo);
+    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.maxCombo);
     ratingGrp.add(maxCombo);
 
     hStuf += 2;
@@ -434,19 +432,19 @@ class ResultState extends MusicBeatSubState
 
     hStuf += 2;
 
-    var tallySick:TallyCounter = new TallyCounter(230 + MobileScaleMode.gameNotchSize.x, (hStuf * 5) + extraYOffset, params.scoreData.sick, 0xFF89E59E);
+    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, params.scoreData.sick, 0xFF89E59E);
     ratingGrp.add(tallySick);
 
-    var tallyGood:TallyCounter = new TallyCounter(210+ MobileScaleMode.gameNotchSize.x, (hStuf * 6) + extraYOffset, params.scoreData.good, 0xFF89C9E5);
+    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.scoreData.good, 0xFF89C9E5);
     ratingGrp.add(tallyGood);
 
-    var tallyBad:TallyCounter = new TallyCounter(190 + MobileScaleMode.gameNotchSize.x, (hStuf * 7) + extraYOffset, params.scoreData.bad, 0xFFE6CF8A);
+    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.scoreData.bad, 0xFFE6CF8A);
     ratingGrp.add(tallyBad);
 
-    var tallyShit:TallyCounter = new TallyCounter(220 + MobileScaleMode.gameNotchSize.x, (hStuf * 8) + extraYOffset, params.scoreData.shit, 0xFFE68C8A);
+    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.scoreData.shit, 0xFFE68C8A);
     ratingGrp.add(tallyShit);
 
-    var tallyMissed:TallyCounter = new TallyCounter(260 + MobileScaleMode.gameNotchSize.x, (hStuf * 9) + extraYOffset, params.scoreData.missed, 0xFFC68AE6);
+    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
     score.visible = false;
@@ -461,6 +459,17 @@ class ResultState extends MusicBeatSubState
         FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
       });
     }
+
+    // if (params.isNewHighscore ?? false)
+    // {
+    //   highscoreNew.visible = true;
+    //   highscoreNew.animation.play("new");
+    //   //FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+    // }
+    // else
+    // {
+    //   highscoreNew.visible = false;
+    // }
 
     new FlxTimer().start(rank.getMusicDelay(), _ -> {
       //? Changed a little sound loading
@@ -661,109 +670,11 @@ class ResultState extends MusicBeatSubState
     }
   }
 
-    private function handleAnimationVibrations()
-  {
-    for (atlas in characterAtlasAnimations)
-    {
-      if (atlas == null || atlas.sprite == null) continue;
-
-      switch (rank)
-      {
-        case ScoringRank.PERFECT | ScoringRank.PERFECT_GOLD:
-          switch (playerCharacterId)
-          {
-            // Feel the bed fun :freaky:
-            case "bf":
-              if (atlas.sprite.anim.curFrame > 87 && atlas.sprite.anim.curFrame % 5 == 0)
-              {
-                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE);
-                break;
-              }
-
-              // GF slams into the wall.
-              if (atlas.sprite.anim.curFrame == 51)
-              {
-                HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
-                break;
-              }
-
-            // Pico drop-kicking Nene.
-            case "pico":
-              if (atlas.sprite.anim.curFrame == 52)
-              {
-                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
-                break;
-              }
-
-            default:
-              break;
-          }
-
-        case ScoringRank.GREAT | ScoringRank.EXCELLENT:
-          switch (playerCharacterId)
-          {
-            // Pico explodes the targets with a rocket launcher.
-            case "pico":
-              // Pico shoots.
-              if (atlas.sprite.anim.curFrame == 45)
-              {
-                HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
-                break;
-              }
-
-              // The targets explode.
-              if (atlas.sprite.anim.curFrame == 50)
-              {
-                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
-                break;
-              }
-
-            default:
-              break;
-          }
-
-        case ScoringRank.GOOD:
-          switch (playerCharacterId)
-          {
-            // Pico shooting the targets.
-            case "pico":
-              if (atlas.sprite.anim.curFrame % 2 != 0) continue;
-
-              final frames:Array<Array<Int>> = [[40, 50], [80, 90], [140, 157]];
-              for (i in 0...frames.length)
-              {
-                if (atlas.sprite.anim.curFrame < frames[i][0] || atlas.sprite.anim.curFrame > frames[i][1]) continue;
-
-                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE);
-                break;
-              }
-
-            default:
-              break;
-          }
-
-        case ScoringRank.SHIT:
-          switch (playerCharacterId)
-          {
-            // BF falling and GF slams on BF with her ass.
-            case "bf":
-              if (atlas.sprite.anim.curFrame == 5 || atlas.sprite.anim.curFrame == 90)
-              {
-                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 2, Constants.DEFAULT_VIBRATION_DURATION * 2, Constants.MAX_VIBRATION_AMPLITUDE);
-                break;
-              }
-
-            default:
-              break;
-          }
-      }
-    }
-  }
   function timerThenSongName(timerLength:Float = 3.0, autoScroll:Bool = true):Void
   {
     movingSongStuff = false;
 
-    difficulty.x = 555 + MobileScaleMode.gameNotchSize.x;
+    difficulty.x = 555;
 
     var diffYTween:Float = 122;
 
@@ -961,8 +872,7 @@ class ResultState extends MusicBeatSubState
         }
       }
     }
-    
-    if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
+
     super.update(elapsed);
   }
 }

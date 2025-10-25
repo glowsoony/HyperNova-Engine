@@ -2,20 +2,20 @@ package psychlua;
 
 import flixel.FlxBasic;
 import objects.Character;
-import psychlua.LuaUtils;
 import psychlua.CustomSubstate;
-
+import psychlua.LuaUtils;
 #if LUA_ALLOWED
 import psychlua.FunkinLua;
 #end
-
 #if HSCRIPT_ALLOWED
-import crowplexus.iris.Iris;
-import crowplexus.iris.IrisConfig;
 import crowplexus.hscript.Expr.Error as IrisError;
 import crowplexus.hscript.Printer;
+import crowplexus.iris.Iris.IrisCall;
+import crowplexus.iris.Iris;
+import crowplexus.iris.IrisConfig;
 
-typedef HScriptInfos = {
+typedef HScriptInfos =
+{
 	> haxe.PosInfos,
 	var ?funcName:String;
 	var ?showLine:Null<Bool>;
@@ -32,9 +32,10 @@ class HScript extends Iris
 
 	#if LUA_ALLOWED
 	public var parentLua:FunkinLua;
+
 	public static function initHaxeModule(parent:FunkinLua)
 	{
-		if(parent.hscript == null)
+		if (parent.hscript == null)
 		{
 			trace('initializing haxe interp for: ${parent.scriptName}');
 			parent.hscript = new HScript(parent);
@@ -44,15 +45,18 @@ class HScript extends Iris
 	public static function initHaxeModuleCode(parent:FunkinLua, code:String, ?varsToBring:Any = null)
 	{
 		var hs:HScript = try parent.hscript catch (e) null;
-		if(hs == null)
+		if (hs == null)
 		{
 			trace('initializing haxe interp for: ${parent.scriptName}');
-			try {
+			try
+			{
 				parent.hscript = new HScript(parent, code, varsToBring);
 			}
-			catch(e:IrisError) {
+			catch (e:IrisError)
+			{
 				var pos:HScriptInfos = cast {fileName: parent.scriptName, isLua: true};
-				if(parent.lastCalledFunction != '') pos.funcName = parent.lastCalledFunction;
+				if (parent.lastCalledFunction != '')
+					pos.funcName = parent.lastCalledFunction;
 				Iris.error(Printer.errorToString(e, false), pos);
 				parent.hscript = null;
 			}
@@ -67,11 +71,12 @@ class HScript extends Iris
 				var ret:Dynamic = hs.execute();
 				hs.returnValue = ret;
 			}
-			catch(e:IrisError)
+			catch (e:IrisError)
 			{
 				var pos:HScriptInfos = cast hs.interp.posInfos();
 				pos.isLua = true;
-				if(parent.lastCalledFunction != '') pos.funcName = parent.lastCalledFunction;
+				if (parent.lastCalledFunction != '')
+					pos.funcName = parent.lastCalledFunction;
 				Iris.error(Printer.errorToString(e, false), pos);
 				hs.returnValue = null;
 			}
@@ -80,6 +85,7 @@ class HScript extends Iris
 	#end
 
 	public var origin:String;
+
 	override public function new(?parent:Dynamic, ?file:String, ?varsToBring:Any = null, ?manualRun:Bool = false)
 	{
 		if (file == null)
@@ -91,16 +97,18 @@ class HScript extends Iris
 			this.origin = filePath;
 			#if MODS_ALLOWED
 			var myFolder:Array<String> = filePath.split('/');
-			if(myFolder[0] + '/' == Paths.mods() && (Mods.currentModDirectory == myFolder[1] || Mods.getGlobalMods().contains(myFolder[1]))) //is inside mods folder
+			if (myFolder[0] + '/' == Paths.mods()
+				&& (Mods.currentModDirectory == myFolder[1] || Mods.getGlobalMods().contains(myFolder[1]))) // is inside mods folder
 				this.modFolder = myFolder[1];
 			#end
 		}
 		var scriptThing:String = file;
 		var scriptName:String = null;
-		if(parent == null && file != null)
+		if (parent == null && file != null)
 		{
 			var f:String = file.replace('\\', '/');
-			if(f.contains('/') && !f.contains('\n')) {
+			if (f.contains('/') && !f.contains('\n'))
+			{
 				scriptThing = NativeFileSystem.getContent(f);
 				scriptName = f;
 			}
@@ -124,11 +132,15 @@ class HScript extends Iris
 		#end
 		preset();
 		this.varsToBring = varsToBring;
-		if (!manualRun) {
-			try {
+		if (!manualRun)
+		{
+			try
+			{
 				var ret:Dynamic = execute();
 				returnValue = ret;
-			} catch(e:IrisError) {
+			}
+			catch (e:IrisError)
+			{
 				returnValue = null;
 				this.destroy();
 				throw e;
@@ -137,7 +149,9 @@ class HScript extends Iris
 	}
 
 	var varsToBring(default, set):Any = null;
-	override function preset() {
+
+	override function preset()
+	{
 		super.preset();
 
 		// Some very commonly used classes
@@ -179,32 +193,38 @@ class HScript extends Iris
 		#end
 
 		// Functions & Variables
-		set('setVar', function(name:String, value:Dynamic) {
+		set('setVar', function(name:String, value:Dynamic)
+		{
 			MusicBeatState.getVariables().set(name, value);
 			return value;
 		});
-		set('getVar', function(name:String) {
+		set('getVar', function(name:String)
+		{
 			var result:Dynamic = null;
-			if(MusicBeatState.getVariables().exists(name)) result = MusicBeatState.getVariables().get(name);
+			if (MusicBeatState.getVariables().exists(name))
+				result = MusicBeatState.getVariables().get(name);
 			return result;
 		});
 		set('removeVar', function(name:String)
 		{
-			if(MusicBeatState.getVariables().exists(name))
+			if (MusicBeatState.getVariables().exists(name))
 			{
 				MusicBeatState.getVariables().remove(name);
 				return true;
 			}
 			return false;
 		});
-		set('debugPrint', function(text:String, ?color:FlxColor = null) {
-			if(color == null) color = FlxColor.WHITE;
+		set('debugPrint', function(text:String, ?color:FlxColor = null)
+		{
+			if (color == null)
+				color = FlxColor.WHITE;
 			PlayState.instance.addTextToDebug(text, color);
 		});
-		set('getModSetting', function(saveTag:String, ?modName:String = null) {
-			if(modName == null)
+		set('getModSetting', function(saveTag:String, ?modName:String = null)
+		{
+			if (modName == null)
 			{
-				if(this.modFolder == null)
+				if (this.modFolder == null)
 				{
 					PlayState.instance.addTextToDebug('getModSetting: Argument #2 is null and script is not inside a packed Mod folder!', FlxColor.RED);
 					return null;
@@ -212,6 +232,18 @@ class HScript extends Iris
 				modName = this.modFolder;
 			}
 			return LuaUtils.getModSetting(saveTag, modName);
+		});
+
+		set('pushCustomCameraToLua', function(name:String, camera:FlxCamera)
+		{
+			return LuaUtils.pushCustomCameras(name, camera);
+		});
+		set('startNewCustomCamera', function(name:String, newCamera:FlxCamera)
+		{
+			newCamera.bgColor.alpha = 0;
+			LuaUtils.pushCustomCameras(name, newCamera);
+			MusicBeatState.getVariables().set(name, newCamera);
+			return newCamera;
 		});
 
 		// Keyboard & Gamepads
@@ -226,69 +258,95 @@ class HScript extends Iris
 		set('gamepadAnalogX', function(id:Int, ?leftStick:Bool = true)
 		{
 			var controller = FlxG.gamepads.getByID(id);
-			if (controller == null) return 0.0;
+			if (controller == null)
+				return 0.0;
 
 			return controller.getXAxis(leftStick ? LEFT_ANALOG_STICK : RIGHT_ANALOG_STICK);
 		});
 		set('gamepadAnalogY', function(id:Int, ?leftStick:Bool = true)
 		{
 			var controller = FlxG.gamepads.getByID(id);
-			if (controller == null) return 0.0;
+			if (controller == null)
+				return 0.0;
 
 			return controller.getYAxis(leftStick ? LEFT_ANALOG_STICK : RIGHT_ANALOG_STICK);
 		});
 		set('gamepadJustPressed', function(id:Int, name:String)
 		{
 			var controller = FlxG.gamepads.getByID(id);
-			if (controller == null) return false;
+			if (controller == null)
+				return false;
 
 			return Reflect.getProperty(controller.justPressed, name) == true;
 		});
 		set('gamepadPressed', function(id:Int, name:String)
 		{
 			var controller = FlxG.gamepads.getByID(id);
-			if (controller == null) return false;
+			if (controller == null)
+				return false;
 
 			return Reflect.getProperty(controller.pressed, name) == true;
 		});
 		set('gamepadReleased', function(id:Int, name:String)
 		{
 			var controller = FlxG.gamepads.getByID(id);
-			if (controller == null) return false;
+			if (controller == null)
+				return false;
 
 			return Reflect.getProperty(controller.justReleased, name) == true;
 		});
 
-		set('keyJustPressed', function(name:String = '') {
+		set('keyJustPressed', function(name:String = '')
+		{
 			name = name.toLowerCase();
-			switch(name) {
-				case 'left': return Controls.instance.NOTE_LEFT_P;
-				case 'down': return Controls.instance.NOTE_DOWN_P;
-				case 'up': return Controls.instance.NOTE_UP_P;
-				case 'right': return Controls.instance.NOTE_RIGHT_P;
-				default: return Controls.instance.justPressed(name);
+			switch (name)
+			{
+				case 'left':
+					return Controls.instance.NOTE_LEFT_P;
+				case 'down':
+					return Controls.instance.NOTE_DOWN_P;
+				case 'up':
+					return Controls.instance.NOTE_UP_P;
+				case 'right':
+					return Controls.instance.NOTE_RIGHT_P;
+				default:
+					return Controls.instance.justPressed(name);
 			}
 			return false;
 		});
-		set('keyPressed', function(name:String = '') {
+		set('keyPressed', function(name:String = '')
+		{
 			name = name.toLowerCase();
-			switch(name) {
-				case 'left': return Controls.instance.NOTE_LEFT;
-				case 'down': return Controls.instance.NOTE_DOWN;
-				case 'up': return Controls.instance.NOTE_UP;
-				case 'right': return Controls.instance.NOTE_RIGHT;
-				default: return Controls.instance.pressed(name);
+			switch (name)
+			{
+				case 'left':
+					return Controls.instance.NOTE_LEFT;
+				case 'down':
+					return Controls.instance.NOTE_DOWN;
+				case 'up':
+					return Controls.instance.NOTE_UP;
+				case 'right':
+					return Controls.instance.NOTE_RIGHT;
+				default:
+					return Controls.instance.pressed(name);
 			}
 			return false;
 		});
-		set('keyReleased', function(name:String = '') {
+		set('keyReleased', function(name:String = '')
+		{
 			name = name.toLowerCase();
-			switch(name) {
-				case 'left': return Controls.instance.NOTE_LEFT_R;
-				case 'down': return Controls.instance.NOTE_DOWN_R;
-				case 'up': return Controls.instance.NOTE_UP_R;
-				case 'right': return Controls.instance.NOTE_RIGHT_R;
-				default: return Controls.instance.justReleased(name);
+			switch (name)
+			{
+				case 'left':
+					return Controls.instance.NOTE_LEFT_R;
+				case 'down':
+					return Controls.instance.NOTE_DOWN_R;
+				case 'up':
+					return Controls.instance.NOTE_UP_R;
+				case 'right':
+					return Controls.instance.NOTE_RIGHT_R;
+				default:
+					return Controls.instance.justReleased(name);
 			}
 			return false;
 		});
@@ -299,7 +357,7 @@ class HScript extends Iris
 		set('createGlobalCallback', function(name:String, func:Dynamic)
 		{
 			for (script in PlayState.instance.luaArray)
-				if(script != null && script.lua != null && !script.closed)
+				if (script != null && script.lua != null && !script.closed)
 					Lua_helper.add_callback(script.lua, name, func);
 
 			FunkinLua.customFunctions.set(name, func);
@@ -308,22 +366,28 @@ class HScript extends Iris
 		// this one was tested
 		set('createCallback', function(name:String, func:Dynamic, ?funk:FunkinLua = null)
 		{
-			if(funk == null) funk = parentLua;
-			
-			if(funk != null) funk.addLocalCallback(name, func);
-			else FunkinLua.luaTrace('createCallback ($name): 3rd argument is null', false, false, FlxColor.RED);
+			if (funk == null)
+				funk = parentLua;
+
+			if (funk != null)
+				funk.addLocalCallback(name, func);
+			else
+				FunkinLua.luaTrace('createCallback ($name): 3rd argument is null', false, false, FlxColor.RED);
 		});
 		#end
 
-		set('addHaxeLibrary', function(libName:String, ?libPackage:String = '') {
-			try {
+		set('addHaxeLibrary', function(libName:String, ?libPackage:String = '')
+		{
+			try
+			{
 				var str:String = '';
-				if(libPackage.length > 0)
+				if (libPackage.length > 0)
 					str = libPackage + '.';
 
 				set(libName, Type.resolveClass(str + libName));
 			}
-			catch (e:IrisError) {
+			catch (e:IrisError)
+			{
 				Iris.error(Printer.errorToString(e, false), this.interp.posInfos());
 			}
 		});
@@ -332,44 +396,54 @@ class HScript extends Iris
 		#else
 		set('parentLua', null);
 		#end
-		
+
 		#if TOUCH_CONTROLS_ALLOWED
-		set("addTouchPad", (DPadMode:String, ActionMode:String) -> {
+		set("addTouchPad", (DPadMode:String, ActionMode:String) ->
+		{
 			PlayState.instance.makeLuaTouchPad(DPadMode, ActionMode);
 			PlayState.instance.addLuaTouchPad();
-		  });
-  
-		set("removeTouchPad", () -> {
+		});
+
+		set("removeTouchPad", () ->
+		{
 			PlayState.instance.removeLuaTouchPad();
 		});
-  
-		set("addTouchPadCamera", () -> {
-			if(PlayState.instance.luaTouchPad == null){
+
+		set("addTouchPadCamera", () ->
+		{
+			if (PlayState.instance.luaTouchPad == null)
+			{
 				FunkinLua.luaTrace('addTouchPadCamera: TPAD does not exist.');
 				return;
 			}
 			PlayState.instance.addLuaTouchPadCamera();
 		});
-  
-		set("touchPadJustPressed", function(button:Dynamic):Bool {
-			if(PlayState.instance.luaTouchPad == null){
-			  FunkinLua.luaTrace('touchPadJustPressed: TPAD does not exist.');
-			  return false;
+
+		set("touchPadJustPressed", function(button:Dynamic):Bool
+		{
+			if (PlayState.instance.luaTouchPad == null)
+			{
+				// FunkinLua.luaTrace('touchPadJustPressed: TPAD does not exist.');
+				return false;
 			}
-		  return PlayState.instance.luaTouchPadJustPressed(button);
+			return PlayState.instance.luaTouchPadJustPressed(button);
 		});
-  
-		set("touchPadPressed", function(button:Dynamic):Bool {
-			if(PlayState.instance.luaTouchPad == null){
-				FunkinLua.luaTrace('touchPadPressed: TPAD does not exist.');
+
+		set("touchPadPressed", function(button:Dynamic):Bool
+		{
+			if (PlayState.instance.luaTouchPad == null)
+			{
+				// FunkinLua.luaTrace('touchPadPressed: TPAD does not exist.');
 				return false;
 			}
 			return PlayState.instance.luaTouchPadPressed(button);
 		});
-  
-		set("touchPadJustReleased", function(button:Dynamic):Bool {
-			if(PlayState.instance.luaTouchPad == null){
-				FunkinLua.luaTrace('touchPadJustReleased: TPAD does not exist.');
+
+		set("touchPadJustReleased", function(button:Dynamic):Bool
+		{
+			if (PlayState.instance.luaTouchPad == null)
+			{
+				// FunkinLua.luaTrace('touchPadJustReleased: TPAD does not exist.');
 				return false;
 			}
 			return PlayState.instance.luaTouchPadJustReleased(button);
@@ -385,7 +459,7 @@ class HScript extends Iris
 
 		set('Function_Stop', LuaUtils.Function_Stop);
 		set('Function_Continue', LuaUtils.Function_Continue);
-		set('Function_StopLua', LuaUtils.Function_StopLua); //doesnt do much cuz HScript has a lower priority than Lua
+		set('Function_StopLua', LuaUtils.Function_StopLua); // doesnt do much cuz HScript has a lower priority than Lua
 		set('Function_StopHScript', LuaUtils.Function_StopHScript);
 		set('Function_StopAll', LuaUtils.Function_StopAll);
 
@@ -393,7 +467,7 @@ class HScript extends Iris
 		set('insert', FlxG.state.insert);
 		set('remove', FlxG.state.remove);
 
-		if(PlayState.instance == FlxG.state)
+		if (PlayState.instance == FlxG.state)
 		{
 			set('addBehindGF', PlayState.instance.addBehindGF);
 			set('addBehindDad', PlayState.instance.addBehindDad);
@@ -402,43 +476,51 @@ class HScript extends Iris
 	}
 
 	#if LUA_ALLOWED
-	public static function implement(funk:FunkinLua) {
-		funk.addLocalCallback("runHaxeCode", function(codeToRun:String, ?varsToBring:Any = null, ?funcToRun:String = null, ?funcArgs:Array<Dynamic> = null):Dynamic {
-			initHaxeModuleCode(funk, codeToRun, varsToBring);
+	public static function implement(funk:FunkinLua)
+	{
+		funk.addLocalCallback("runHaxeCode",
+			function(codeToRun:String, ?varsToBring:Any = null, ?funcToRun:String = null, ?funcArgs:Array<Dynamic> = null):Dynamic
+			{
+				initHaxeModuleCode(funk, codeToRun, varsToBring);
+				if (funk.hscript != null)
+				{
+					final retVal:IrisCall = funk.hscript.call(funcToRun, funcArgs);
+					if (retVal != null)
+					{
+						return (retVal.returnValue == null
+							|| LuaUtils.isOfTypes(retVal.returnValue, [Bool, Int, Float, String, Array])) ? retVal.returnValue : null;
+					}
+					else if (funk.hscript.returnValue != null)
+					{
+						return funk.hscript.returnValue;
+					}
+				}
+				return null;
+			});
+
+		funk.addLocalCallback("runHaxeFunction", function(funcToRun:String, ?funcArgs:Array<Dynamic> = null)
+		{
 			if (funk.hscript != null)
 			{
 				final retVal:IrisCall = funk.hscript.call(funcToRun, funcArgs);
 				if (retVal != null)
 				{
-					return (retVal.returnValue == null || LuaUtils.isOfTypes(retVal.returnValue, [Bool, Int, Float, String, Array])) ? retVal.returnValue : null;
-				}
-				else if (funk.hscript.returnValue != null)
-				{
-					return funk.hscript.returnValue;
-				}
-			}
-			return null;
-		});
-		
-		funk.addLocalCallback("runHaxeFunction", function(funcToRun:String, ?funcArgs:Array<Dynamic> = null) {
-			if (funk.hscript != null)
-			{
-				final retVal:IrisCall = funk.hscript.call(funcToRun, funcArgs);
-				if (retVal != null)
-				{
-					return (retVal.returnValue == null || LuaUtils.isOfTypes(retVal.returnValue, [Bool, Int, Float, String, Array])) ? retVal.returnValue : null;
+					return (retVal.returnValue == null
+						|| LuaUtils.isOfTypes(retVal.returnValue, [Bool, Int, Float, String, Array])) ? retVal.returnValue : null;
 				}
 			}
 			else
 			{
 				var pos:HScriptInfos = cast {fileName: funk.scriptName, showLine: false};
-				if (funk.lastCalledFunction != '') pos.funcName = funk.lastCalledFunction;
+				if (funk.lastCalledFunction != '')
+					pos.funcName = funk.lastCalledFunction;
 				Iris.error("runHaxeFunction: HScript has not been initialized yet! Use \"runHaxeCode\" to initialize it", pos);
 			}
 			return null;
 		});
 		// This function is unnecessary because import already exists in HScript as a native feature
-		funk.addLocalCallback("addHaxeLibrary", function(libName:String, ?libPackage:String = '') {
+		funk.addLocalCallback("addHaxeLibrary", function(libName:String, ?libPackage:String = '')
+		{
 			var str:String = '';
 			if (libPackage.length > 0)
 				str = libPackage + '.';
@@ -455,13 +537,15 @@ class HScript extends Iris
 			var pos:HScriptInfos = cast funk.hscript.interp.posInfos();
 			pos.showLine = false;
 			if (funk.lastCalledFunction != '')
-				 pos.funcName = funk.lastCalledFunction;
+				pos.funcName = funk.lastCalledFunction;
 
-			try {
+			try
+			{
 				if (c != null)
 					funk.hscript.set(libName, c);
 			}
-			catch (e:IrisError) {
+			catch (e:IrisError)
+			{
 				Iris.error(Printer.errorToString(e, false), pos);
 			}
 			FunkinLua.lastCalledScript = funk;
@@ -471,27 +555,27 @@ class HScript extends Iris
 	}
 	#end
 
-	override function call(funcToRun:String, ?args:Array<Dynamic>):IrisCall {
-		if (funcToRun == null || interp == null) return null;
-
-		if (!exists(funcToRun)) {
-			Iris.error('No function named: $funcToRun', this.interp.posInfos());
+	override function call(funcToRun:String, ?args:Array<Dynamic>):IrisCall
+	{
+		if (funcToRun == null || interp == null || !exists(funcToRun))
 			return null;
-		}
 
-		try {
+		try
+		{
 			var func:Dynamic = interp.variables.get(funcToRun); // function signature
 			final ret = Reflect.callMethod(null, func, args ?? []);
 			return {funName: funcToRun, signature: func, returnValue: ret};
 		}
-		catch(e:IrisError) {
+		catch (e:IrisError)
+		{
 			var pos:HScriptInfos = cast this.interp.posInfos();
 			pos.funcName = funcToRun;
 			#if LUA_ALLOWED
 			if (parentLua != null)
 			{
 				pos.isLua = true;
-				if (parentLua.lastCalledFunction != '') pos.funcName = parentLua.lastCalledFunction;
+				if (parentLua.lastCalledFunction != '')
+					pos.funcName = parentLua.lastCalledFunction;
 			}
 			#end
 			Iris.error(Printer.errorToString(e, false), pos);
@@ -506,7 +590,8 @@ class HScript extends Iris
 		super.destroy();
 	}
 
-	function set_varsToBring(values:Any) {
+	function set_varsToBring(values:Any)
+	{
 		if (varsToBring != null)
 			for (key in Reflect.fields(varsToBring))
 				if (exists(key.trim()))
@@ -525,7 +610,8 @@ class HScript extends Iris
 	}
 }
 
-class CustomFlxColor {
+class CustomFlxColor
+{
 	public static var TRANSPARENT(default, null):Int = FlxColor.TRANSPARENT;
 	public static var BLACK(default, null):Int = FlxColor.BLACK;
 	public static var WHITE(default, null):Int = FlxColor.WHITE;
@@ -543,7 +629,7 @@ class CustomFlxColor {
 	public static var MAGENTA(default, null):Int = FlxColor.MAGENTA;
 	public static var CYAN(default, null):Int = FlxColor.CYAN;
 
-	public static function fromInt(Value:Int):Int 
+	public static function fromInt(Value:Int):Int
 		return cast FlxColor.fromInt(Value);
 
 	public static function fromRGB(Red:Int, Green:Int, Blue:Int, Alpha:Int = 255):Int
@@ -568,11 +654,13 @@ class CustomFlxColor {
 class CustomInterp extends crowplexus.hscript.Interp
 {
 	public var parentInstance(default, set):Dynamic = [];
+
 	private var _instanceFields:Array<String>;
+
 	function set_parentInstance(inst:Dynamic):Dynamic
 	{
 		parentInstance = inst;
-		if(parentInstance == null)
+		if (parentInstance == null)
 		{
 			_instanceFields = [];
 			return inst;
@@ -586,23 +674,28 @@ class CustomInterp extends crowplexus.hscript.Interp
 		super();
 	}
 
-	override function resolve(id: String): Dynamic {
-		if (locals.exists(id)) {
+	override function resolve(id:String):Dynamic
+	{
+		if (locals.exists(id))
+		{
 			var l = locals.get(id);
 			return l.r;
 		}
 
-		if (variables.exists(id)) {
+		if (variables.exists(id))
+		{
 			var v = variables.get(id);
 			return v;
 		}
 
-		if (imports.exists(id)) {
+		if (imports.exists(id))
+		{
 			var v = imports.get(id);
 			return v;
 		}
 
-		if(parentInstance != null && _instanceFields.contains(id)) {
+		if (parentInstance != null && _instanceFields.contains(id))
+		{
 			var v = Reflect.getProperty(parentInstance, id);
 			return v;
 		}
@@ -616,16 +709,21 @@ class CustomInterp extends crowplexus.hscript.Interp
 class HScript
 {
 	#if LUA_ALLOWED
-	public static function implement(funk:FunkinLua) {
-		funk.addLocalCallback("runHaxeCode", function(codeToRun:String, ?varsToBring:Any = null, ?funcToRun:String = null, ?funcArgs:Array<Dynamic> = null):Dynamic {
+	public static function implement(funk:FunkinLua)
+	{
+		funk.addLocalCallback("runHaxeCode",
+			function(codeToRun:String, ?varsToBring:Any = null, ?funcToRun:String = null, ?funcArgs:Array<Dynamic> = null):Dynamic
+			{
+				PlayState.instance.addTextToDebug('HScript is not supported on this platform!', FlxColor.RED);
+				return null;
+			});
+		funk.addLocalCallback("runHaxeFunction", function(funcToRun:String, ?funcArgs:Array<Dynamic> = null)
+		{
 			PlayState.instance.addTextToDebug('HScript is not supported on this platform!', FlxColor.RED);
 			return null;
 		});
-		funk.addLocalCallback("runHaxeFunction", function(funcToRun:String, ?funcArgs:Array<Dynamic> = null) {
-			PlayState.instance.addTextToDebug('HScript is not supported on this platform!', FlxColor.RED);
-			return null;
-		});
-		funk.addLocalCallback("addHaxeLibrary", function(libName:String, ?libPackage:String = '') {
+		funk.addLocalCallback("addHaxeLibrary", function(libName:String, ?libPackage:String = '')
+		{
 			PlayState.instance.addTextToDebug('HScript is not supported on this platform!', FlxColor.RED);
 			return null;
 		});

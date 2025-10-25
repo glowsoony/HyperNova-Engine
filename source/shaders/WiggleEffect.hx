@@ -1,14 +1,6 @@
 package shaders;
 
-// STOLEN FROM HAXEFLIXEL DEMO LOL
-enum WiggleEffectType
-{
-	DREAMY;
-	WAVY;
-	HEAT_WAVE_HORIZONTAL;
-	HEAT_WAVE_VERTICAL;
-	FLAG;
-}
+import shaders.Shaders.WiggleEffectType;
 
 class WiggleEffect
 {

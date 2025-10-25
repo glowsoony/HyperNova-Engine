@@ -21,15 +21,13 @@ import sys.FileSystem as FileSystem;
 **/
 class NativeFileSystem
 {
-	public static var openFlAssets:Array<String> = null;
-
 	public static function getContent(path:String):Null<String>
 	{
 		var isModded = path.startsWith("mods");
 		#if OPENFL_LOOKUP
 		if (!isModded)
 		{
-			var openfl_content = (openFlAssets.contains(path)) ? Assets.getText(path) : null;
+			var openfl_content = (OpenFlAssets.exists(path, TEXT)) ? Assets.getText(path) : null;
 			if (openfl_content != null)
 				return openfl_content;
 		}
@@ -52,12 +50,18 @@ class NativeFileSystem
 	// Loads a given bitmap. Returns null if it doesn't exist
 	public static function getBitmap(path:String):Null<BitmapData>
 	{
+		#if nativesys_profile var timeStart = Sys.time(); #end
 		var isModded = path.startsWith("mods");
 
 		#if OPENFL_LOOKUP
-		if (#if NATIVE_LOOKUP !isModded && #end openFlAssets.contains(path))
+		if (#if NATIVE_LOOKUP !isModded && #end OpenFlAssets.exists(path, IMAGE))
 		{
 			var result = OpenFlAssets.getBitmapData(path);
+			#if nativesys_profile
+			var timeEnd = Sys.cpuTime() - timeStart;
+			if (timeEnd > 1.2)
+				trace('Getting native bitmap ${path} took: $timeEnd');
+			#end
 			return result;
 		}
 		#end
@@ -71,6 +75,11 @@ class NativeFileSystem
 		if (sys_path != null)
 		{
 			var result = BitmapData.fromFile(sys_path);
+			#if nativesys_profile
+			var timeEnd = Sys.cpuTime() - timeStart;
+			if (timeEnd > 1.2)
+				trace('Getting system bitmap ${path} took: $timeEnd');
+			#end
 			return result;
 		}
 		#end
@@ -81,11 +90,12 @@ class NativeFileSystem
 	public static function getSound(path:String):Null<Sound>
 	{
 		var isModded = path.startsWith("mods");
+		#if nativesys_profile var timeStart = Sys.time(); #end
 
 		#if OPENFL_LOOKUP
 		if (!isModded)
 		{
-			if (openFlAssets.contains(path))
+			if (OpenFlAssets.exists(path, SOUND))
 			{
 				var result = OpenFlAssets.getSound(path);
 				#if nativesys_profile
@@ -127,14 +137,15 @@ class NativeFileSystem
 	public static function exists(path:String)
 	{
 		var isModded = path.startsWith("mods");
+		#if nativesys_profile var timeStart = Sys.time(); #end
 
 		#if OPENFL_LOOKUP
 		if (!isModded)
 		{
-			var isFile = openFlAssets.contains(path);
+			var isFile = OpenFlAssets.exists(path, TEXT);
 			if (!isFile)
 			{
-				var isDir = openFlAssets.filter(folder -> folder.startsWith(path)).length > 0;
+				var isDir = Assets.list().filter(folder -> folder.startsWith(path)).length > 0;
 				return isDir;
 			}
 			return isFile;
@@ -168,7 +179,7 @@ class NativeFileSystem
 			var dirs:Array<String> = [];
 			if (!directory.endsWith("/"))
 				directory += '/';
-			for (dir in openFlAssets.filter(folder -> folder.startsWith(directory)))
+			for (dir in Assets.list().filter(folder -> folder.startsWith(directory)))
 			{
 				@:privateAccess
 				for (library in lime.utils.Assets.libraries.keys())
@@ -206,6 +217,11 @@ class NativeFileSystem
 		}
 		#end
 
+		#if nativesys_profile
+		var timeEnd = Sys.cpuTime() - timeStart;
+		if (timeEnd > 1.2)
+			trace('Getting (failed) directory ${directory} took: $timeEnd');
+		#end
 		return [];
 	}
 
@@ -226,7 +242,12 @@ class NativeFileSystem
 		#if OPENFL_LOOKUP
 		if (!result && !isModded)
 		{
-			result = openFlAssets.filter(folder -> folder.startsWith(directory) && folder != directory).length > 0;
+			result = Assets.list().filter(folder -> folder.startsWith(directory) && folder != directory).length > 0;
+			#if nativesys_profile
+			var timeEnd = Sys.cpuTime() - timeStart;
+			if (timeEnd > 1.2)
+				trace('Checking native directory ${directory} took: $timeEnd');
+			#end
 		}
 		#end
 
@@ -238,6 +259,11 @@ class NativeFileSystem
 		if (!result)
 		{
 			result = sys.FileSystem.isDirectory(addCwd(directory));
+			#if nativesys_profile
+			var timeEnd = Sys.cpuTime() - timeStart;
+			if (timeEnd > 1.2)
+				trace('Checking system directory ${directory} took: $timeEnd');
+			#end
 		}
 		#end
 		return result;
@@ -281,42 +307,49 @@ class NativeFileSystem
 		#end
 	}
 
-	#if (linux || ios)
-		/**
+	#if linux
+	/**
 	 * Returns a path to the existing file similar to the given one.
 	 * (For instance "mod/firelight" and  "Mod/FireLight" are *similar* paths)
-	 * @param path The path to find
-	 * @return Null<String> Found path or null if such doesn't exist
+	 * @param path
+	 * @return Null<String>
 	 */
-	public static function getPathLike(path:String):Null<String> {
-		var path = addCwd(path);// fir ios
-		if(sys.FileSystem.exists(path)) return path;
+	public static function getPathLike(path:String):Null<String>
+	{
+		if (sys.FileSystem.exists(path))
+			return path;
 
 		var baseParts:Array<String> = path.replace('\\', '/').split('/');
 		var keyParts = [];
-		if (baseParts.length == 0) return null;
+		if (baseParts.length == 0)
+			return null;
 
-		while(!sys.FileSystem.exists(baseParts.join("/")) && baseParts.length != 0)
+		while (!sys.FileSystem.exists(baseParts.join("/")) && baseParts.length != 0)
 			keyParts.insert(0, baseParts.pop());
 
-		return findFile(baseParts.join("/"),keyParts);
+		return findFile(baseParts.join("/"), keyParts);
 	}
 
-	private static function findFile(base_path:String,keys:Array<String>):Null<String> {
+	private static function findFile(base_path:String, keys:Array<String>):Null<String>
+	{
 		var nextDir:String = base_path;
-		for (part in keys) {
-			if (part == '') continue;
+		for (part in keys)
+		{
+			if (part == '')
+				continue;
 
 			var foundNode = findNode(nextDir, part);
 
-			if (foundNode == null) {
+			if (foundNode == null)
+			{
 				return null;
 			}
-			nextDir = nextDir+"/"+foundNode;
+			nextDir = nextDir + "/" + foundNode;
 		}
 
 		return nextDir;
 	}
+
 	/**
 	 * Searches a given directory and returns a name of the existing file/directory
 	 * *similar* to the **key**
@@ -324,17 +357,22 @@ class NativeFileSystem
 	 * @param key The file/directory you want to find
 	 * @return Either a file name, or null if the one doesn't exist
 	 */
-	private static function findNode(dir:String, key:String):Null<String> {
-		try {
+	private static function findNode(dir:String, key:String):Null<String>
+	{
+		try
+		{
 			var allFiles:Array<String> = sys.FileSystem.readDirectory(dir);
 			var fileMap:Map<String, String> = new Map();
 
-			for (file in allFiles) {
+			for (file in allFiles)
+			{
 				fileMap.set(file.toLowerCase(), file);
 			}
 
 			return fileMap.get(key.toLowerCase());
-		} catch (e:Dynamic) {
+		}
+		catch (e:Dynamic)
+		{
 			return null;
 		}
 	}

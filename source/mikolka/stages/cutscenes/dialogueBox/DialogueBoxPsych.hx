@@ -3,12 +3,12 @@ package mikolka.stages.cutscenes.dialogueBox;
 #if !LEGACY_PSYCH
 import substates.PauseSubState;
 #end
-import mikolka.stages.cutscenes.dialogueBox.styles.*;
-import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle;
-import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxState;
-import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxPosition;
 import cutscenes.styles.*;
 import haxe.Json;
+import mikolka.stages.cutscenes.dialogueBox.styles.*;
+import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxPosition;
+import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle.DialogueBoxState;
+import mikolka.stages.cutscenes.dialogueBox.styles.DialogueStyle;
 
 typedef DialogueFile =
 {
@@ -192,51 +192,8 @@ class DialogueBoxPsych extends FlxSpriteGroup
 
 		if (!dialogueEnded)
 		{
-			var back:Bool = #if android FlxG.android.justReleased.BACK || #end#if TOUCH_CONTROLS_ALLOWED MusicBeatState.getState()?.touchPad?.buttonP.justPressed ?? false || #end
-			Controls.instance.BACK;
-
-			if (back && !pauseJustClosed && !dialogueEnded)
-			{
-				var game = PlayState.instance;
-				FlxG.camera.followLerp = 0;
-				FlxG.state.persistentUpdate = false;
-				FlxG.state.persistentDraw = true;
-				FlxG.sound.music.pause();
-				#if LEGACY_PSYCH
-				var pauseState = new PauseSubState(0, 0, true, DIALOGUE);
-				#else
-				var pauseState = new PauseSubState(true, DIALOGUE);
-				#end
-				pauseState.cutscene_allowSkipping = true;
-				pauseState.cutscene_hardReset = false;
-				game.openSubState(pauseState);
-
-				game.subStateClosed.addOnce(s ->
-				{ // TODO
-					pauseJustClosed = true;
-					FlxTimer.wait(0.1, () -> pauseJustClosed = false);
-					switch (pauseState.specialAction)
-					{
-						case SKIP: {
-								trace('skipped cutscene');
-								skipDialogue();
-								FlxG.sound.play(Paths.sound(style.closeSound), style.closeVolume);
-							}
-						case RESUME: {
-								FlxG.sound.music.resume();
-							}
-						case NOTHING: {}
-						case RESTART: {
-								FlxG.sound.music?.resume();
-								dialogueList.dialogue = staticDialList.copy();
-								currentText = 0;
-								startNextDialog();
-								FlxG.sound.play(Paths.sound(style.closeSound), style.closeVolume);
-							}
-					}
-				});
-			}
-			else if ((TouchUtil.justPressed || Controls.instance.ACCEPT || back) && box.visible)
+			var back:Bool = #if android FlxG.android.justReleased.BACK || #end Controls.instance.BACK;
+			if ((TouchUtil.justPressed || Controls.instance.ACCEPT || back) && box.visible)
 			{
 				if (!style.isLineFinished() && !back)
 				{
@@ -247,6 +204,47 @@ class DialogueBoxPsych extends FlxSpriteGroup
 						skipDialogueThing();
 					}
 					FlxG.sound.play(Paths.sound(style.closeSound), style.closeVolume);
+				}
+				else if (back && !pauseJustClosed && !dialogueEnded)
+				{
+					var game = PlayState.instance;
+					FlxG.camera.followLerp = 0;
+					FlxG.state.persistentUpdate = false;
+					FlxG.state.persistentDraw = true;
+					FlxG.sound.music.pause();
+					#if LEGACY_PSYCH
+					var pauseState = new PauseSubState(0, 0, true, DIALOGUE);
+					#else
+					var pauseState = new PauseSubState(true, DIALOGUE);
+					#end
+					pauseState.cutscene_allowSkipping = true;
+					pauseState.cutscene_hardReset = false;
+					game.openSubState(pauseState);
+
+					game.subStateClosed.addOnce(s ->
+					{ // TODO
+						pauseJustClosed = true;
+						FlxTimer.wait(0.1, () -> pauseJustClosed = false);
+						switch (pauseState.specialAction)
+						{
+							case SKIP: {
+									trace('skipped cutscene');
+									skipDialogue();
+									FlxG.sound.play(Paths.sound(style.closeSound), style.closeVolume);
+								}
+							case RESUME: {
+									FlxG.sound.music.resume();
+								}
+							case NOTHING: {}
+							case RESTART: {
+									FlxG.sound.music?.resume();
+									dialogueList.dialogue = staticDialList.copy();
+									currentText = 0;
+									startNextDialog();
+									FlxG.sound.play(Paths.sound(style.closeSound), style.closeVolume);
+								}
+						}
+					});
 				}
 				else if (currentText >= dialogueList.dialogue.length)
 				{
@@ -329,7 +327,8 @@ class DialogueBoxPsych extends FlxSpriteGroup
 					}
 				}
 			}
-		} else
+		}
+		else
 		{ // Dialogue ending
 			if (box != null && box.animation.curAnim.curFrame <= 0)
 			{

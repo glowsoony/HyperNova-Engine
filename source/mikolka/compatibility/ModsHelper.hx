@@ -32,11 +32,7 @@ class ModsHelper {
 	}
 	public static function getModsWithPlayersRegistry():Array<String> {
 		#if MODS_ALLOWED
-		return Mods.parseList().enabled.filter(s ->{
-			var mod_path = Paths.mods(s)+'/registry/players';
-			return NativeFileSystem.exists(mod_path) && 
-				NativeFileSystem.readDirectory(mod_path).filter(s -> s.endsWith(".json")).length > 0;
-		});
+		return Mods.parseList().enabled.filter(s ->NativeFileSystem.exists(Paths.mods(s)+'/registry/players'));
 		#else
 		return [];
 		#end
@@ -56,7 +52,6 @@ class ModsHelper {
 		camera.filtersEnabled = true;
 	}
 	public static function clearStoredWithoutStickers() {
-		//! Doesn't actually clear the stickers
 		@:privateAccess
 		var cache = FlxG.bitmap._cache;
 		Paths.currentTrackedAssets.clear();
@@ -67,7 +62,6 @@ class ModsHelper {
 		) Paths.currentTrackedAssets.set(key,val);
 		}
 		Paths.clearStoredMemory();
-		Paths.currentTrackedAssets.clear();
 	}
 	#if sys
 	public inline static function collectVideos():String{

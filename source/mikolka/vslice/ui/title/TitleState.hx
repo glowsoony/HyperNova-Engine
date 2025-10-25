@@ -1,25 +1,25 @@
 package mikolka.vslice.ui.title;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
-import mikolka.compatibility.VsliceOptions;
-import flixel.input.keyboard.FlxKey;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
-import flixel.util.FlxDirectionFlags;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxDirectionFlags;
 import haxe.Json;
-import openfl.Assets;
+import mikolka.compatibility.VsliceOptions;
+import mikolka.vslice.components.ScreenshotPlugin;
 import mikolka.vslice.components.crash.Logger;
+import openfl.Assets;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import shaders.ColorSwap;
-import mikolka.vslice.components.ScreenshotPlugin;
+
+using StringTools;
+
 #if VIDEOS_ALLOWED
 import mikolka.vslice.ui.title.AttractState;
 #end
-
-using StringTools;
 
 typedef TitleData =
 {
@@ -76,12 +76,11 @@ class TitleState extends MusicBeatState
 		if (!initialized && FlxG.sound.music == null)
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 
-		var cutout_size = MobileScaleMode.gameCutoutSize.x / 2.5;
 		loadJsonData();
 		#if TITLE_SCREEN_EASTER_EGG easterEggData(); #end
 		Conductor.bpm = musicBPM;
 
-		logoBl = new FlxSprite(logoPosition.x+cutout_size, logoPosition.y);
+		logoBl = new FlxSprite(logoPosition.x, logoPosition.y);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = VsliceOptions.ANTIALIASING;
 
@@ -89,7 +88,7 @@ class TitleState extends MusicBeatState
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
 
-		gfDance = new FlxSprite(gfPosition.x+cutout_size, gfPosition.y);
+		gfDance = new FlxSprite(gfPosition.x, gfPosition.y);
 		gfDance.antialiasing = VsliceOptions.ANTIALIASING;
 
 		if (VsliceOptions.SHADERS)
@@ -113,7 +112,7 @@ class TitleState extends MusicBeatState
 		}
 
 		var animFrames:Array<FlxFrame> = [];
-		titleText = new FlxSprite(enterPosition.x+cutout_size, enterPosition.y);
+		titleText = new FlxSprite(enterPosition.x, enterPosition.y);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
 		@:privateAccess
 		{
@@ -613,13 +612,13 @@ class TitleState extends MusicBeatState
 	 */
 	function moveToAttract():Void
 	{
-		#if VIDEOS_ALLOWED 
+		#if VIDEOS_ALLOWED
 		if (!Std.isOfType(FlxG.state, TitleState))
 			return;
 		#if LEGACY_PSYCH
-		FlxG.switchState(new AttractState()); 
+		FlxG.switchState(new AttractState());
 		#else
-		FlxG.switchState(() -> new AttractState()); 
+		FlxG.switchState(() -> new AttractState());
 		#end
 		#end
 	}

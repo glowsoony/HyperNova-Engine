@@ -1,27 +1,31 @@
 package;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
-import states.InitState;
+import backend.crashHandler.*;
+import flixel.FlxGame;
+import flixel.FlxState;
+import flixel.graphics.FlxGraphic;
+import haxe.io.Path;
+import lime.app.Application;
+import lime.app.Application;
+import mikolka.GameBorder;
+import mikolka.vslice.components.MemoryCounter;
 import mikolka.vslice.components.crash.Logger;
+import openfl.Assets;
+import openfl.Lib;
+import openfl.display.FPS;
+import openfl.display.Sprite;
+import openfl.display.StageScaleMode;
+import openfl.events.Event;
+import states.InitState;
 #if HSCRIPT_ALLOWED
 import crowplexus.iris.Iris;
 import psychlua.HScript.HScriptInfos;
 #end
-import openfl.display.FPS;
-import mikolka.vslice.components.MemoryCounter;
-import mikolka.GameBorder;
-import flixel.graphics.FlxGraphic;
-import flixel.FlxGame;
-import flixel.FlxState;
-import haxe.io.Path;
-import openfl.Assets;
-import openfl.Lib;
-import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.display.StageScaleMode;
-import lime.app.Application;
 #if (linux || mac)
 import lime.graphics.Image;
+#end
+#if mobile
+import mobile.backend.MobileScaleMode;
 #end
 
 #if (linux && !debug)
@@ -63,8 +67,7 @@ class Main extends Sprite
 		StorageUtil.requestPermissions();
 		#end
 
-		//? iOS seems to be crasing on this line... 
-		#if android
+		#if mobile
 		Sys.setCwd(StorageUtil.getStorageDirectory());
 		#end
 
@@ -126,18 +129,8 @@ class Main extends Sprite
 		setupGame();
 	}
 
-
-
 	private function setupGame():Void
 	{
-
-		trace(backend.Native.buildSystemInfo());
-		#if HXCPP_TRACY
-		trace("Starting tracy");
-		cpp.vm.tracy.TracyProfiler.messageAppInfo(backend.Native.buildSystemInfo());
-		cpp.vm.tracy.TracyProfiler.setThreadName("main");
-		#end
-
 		trace("Starting game setup");
 		#if (openfl <= "9.2.0")
 		var stageWidth:Int = Lib.current.stage.stageWidth;
@@ -156,29 +149,9 @@ class Main extends Sprite
 		#end
 
 		trace("Initializing save .sol");
-		FlxG.save.bind('funkin', CoolUtil.getSavePath(), (rawSave, error) ->
-		{
-			trace("Couldn't load main save. Attempting to extract");
-			try
-			{
-				var badSave = File.write(StorageUtil.getStorageDirectory() + "/funkin.sol.bad");
-				badSave.writeString(rawSave);
-				badSave.close();
-				trace("Extracted bad save to funkin.sol.bad. Creating new save..");
-			}
-			catch (x)
-			{
-				trace(x);
-				trace("Failed to backup. Discarding..");
-			}
-			return
-			{
-			};
-		});
-
+		FlxG.save.bind('funkin', CoolUtil.getSavePath());
 		trace("Loading scores..");
 		Highscore.load();
-
 		#if HSCRIPT_ALLOWED
 		trace("Hooking up the Iris log functions");
 		Iris.warn = function(x, ?pos:haxe.PosInfos)
@@ -203,6 +176,7 @@ class Main extends Sprite
 			if (PlayState.instance != null)
 				PlayState.instance.addTextToDebug('WARNING: $msgInfo', FlxColor.YELLOW);
 		}
+
 		Iris.error = function(x, ?pos:haxe.PosInfos)
 		{
 			Iris.logLevel(ERROR, x, pos);
@@ -225,6 +199,7 @@ class Main extends Sprite
 			if (PlayState.instance != null)
 				PlayState.instance.addTextToDebug('ERROR: $msgInfo', FlxColor.RED);
 		}
+
 		Iris.fatal = function(x, ?pos:haxe.PosInfos)
 		{
 			Iris.logLevel(FATAL, x, pos);
@@ -253,44 +228,42 @@ class Main extends Sprite
 		trace("Hooking up Lua");
 		Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call));
 		#end
-
 		trace("Loading controls");
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
-
-
+		#if mobile
+		FlxG.signals.postGameStart.addOnce(() -> FlxG.scaleMode = new MobileScaleMode());
+		#end
 		trace("Loading game objest...");
 		var gameObject = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
 			game.skipSplash, game.startFullscreen);
+
 		// FlxG.game._customSoundTray wants just the class, it calls new from
 		// create() in there, which gets called when it's added to stage
 		// which is why it needs to be added before addChild(game) here
 		@:privateAccess
 		gameObject._customSoundTray = mikolka.vslice.components.FunkinSoundTray;
-
 		addChild(gameObject);
-
 		trace("Finishing up..");
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
 		#if mobile
 		FlxG.game.addChild(fpsVar);
 		#else
 		#if !debug
-		// var border = new GameBorder();
-		// addChild(border);
-		// Lib.current.stage.window.onResize.add(border.updateGameSize);
+		var border = new GameBorder();
+
+		addChild(border);
+		Lib.current.stage.window.onResize.add(border.updateGameSize);
 		#end
 		addChild(fpsVar);
 		#end
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-
 		if (fpsVar != null)
 		{
 			fpsVar.visible = ClientPrefs.data.showFPS;
 		}
-
 		#if !html5
 		// TODO: disabled on HTML5 (todo: find another method that works?)
 		memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
@@ -304,16 +277,13 @@ class Main extends Sprite
 			memoryCounter.visible = ClientPrefs.data.showFPS;
 		}
 		#end
-
-		// #if (debug)
-		// flixel.addons.studio.FlxStudio.create();
-		// #end
-
+		#if (debug)
+		flixel.addons.studio.FlxStudio.create();
+		#end
 		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#end
-
 		FlxG.fixedTimestep = false;
 		FlxG.game.focusLostFramerate = #if mobile 30 #else 60 #end;
 		#if web
@@ -321,17 +291,15 @@ class Main extends Sprite
 		#else
 		FlxG.keys.preventDefaultKeys = [TAB];
 		#end
-
 		#if DISCORD_ALLOWED
 		DiscordClient.prepare();
 		#end
-
 		#if mobile
 		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
 		lime.system.System.allowScreenTimeout = ClientPrefs.data.screensaver;
+		FlxG.scaleMode = new MobileScaleMode();
 		Application.current.window.vsync = ClientPrefs.data.vsync;
 		#end
-
 		// shader coords fix
 		FlxG.signals.gameResized.add(function(w, h)
 		{

@@ -1,6 +1,5 @@
 package mikolka.editors;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
 import mikolka.editors.forms.CharSelectDialogBox;
 import mikolka.vslice.components.crash.UserErrorSubstate;
 #if LEGACY_PSYCH
@@ -58,37 +57,30 @@ class CharSelectEditor extends MusicBeatState
 		FlxG.mouse.visible = true;
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
-		
-		var cutoutSize = MobileScaleMode.gameCutoutSize.x / 2;
 
-		var bg:FlxSprite = new FlxSprite(cutoutSize + -153, -140);
+		var bg:FlxSprite = new FlxSprite(-153, -140);
 		bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
 		bg.scrollFactor.set(0.1, 0.1);
 		add(bg);
 
-		var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, "charSelect/charSelectStage");
-		stageSpr.anim.play("");
-		stageSpr.anim.onComplete.add(function()
-		{
-			stageSpr.anim.play("");
-		});
+		var stageSpr:FlxSprite = new FlxSprite(-40, 391);
+		stageSpr.frames = Paths.getSparrowAtlas("charSelect/charSelectStage");
+		stageSpr.animation.addByPrefix("idle", "stage full instance 1", 24, true);
+		stageSpr.animation.play("idle");
 		add(stageSpr);
 
 		nametag = new Nametag(0, 0, initPlayerId); // ? Set to current char
-		nametag.midpointX += cutoutSize;
 		add(nametag);
 
 		gfChill = new CharSelectGF();
-		gfChill.x += cutoutSize;
 		switchEditorGF(activePlayer._data.charSelect.gf);
 		add(gfChill);
-
-		playerChill = new CharSelectPlayer(cutoutSize*2.5, 0);
+		playerChill = new CharSelectPlayer(0, 0);
 		playerChill.switchChar(initPlayerId); // ? Set to current character
 		playerChill.onAnimationComplete.removeAll(); // ? clear imposed triggers
 		add(playerChill);
 
-		var curtains:FlxSprite = new FlxSprite(cutoutSize + (-47 - 165), -49 - 50);
+		var curtains:FlxSprite = new FlxSprite(-47, -49);
 		curtains.loadGraphic(Paths.image('charSelect/curtains'));
 		curtains.scrollFactor.set(1.4, 1.4);
 		add(curtains);

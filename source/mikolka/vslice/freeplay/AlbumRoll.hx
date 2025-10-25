@@ -1,6 +1,5 @@
 package mikolka.vslice.freeplay;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
 import mikolka.funkin.freeplay.album.AlbumRegistry;
 import mikolka.funkin.freeplay.album.Album;
 import flixel.FlxSprite;
@@ -46,20 +45,18 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = new FlxAtlasSprite((FlxG.width - 640) - MobileScaleMode.gameNotchSize.x, 360, "freeplay/albumRoll/freeplayAlbum");
+    newAlbumArt = new FlxAtlasSprite(640, 360, "freeplay/albumRoll/freeplayAlbum");
     newAlbumArt.visible = false;
     newAlbumArt.onAnimationComplete.add(onAlbumFinish);
 
     add(newAlbumArt);
 
-    difficultyStars = new DifficultyStars((FlxG.width - 1140) - MobileScaleMode.gameNotchSize.x, 39);
+    difficultyStars = new DifficultyStars(140, 39);
     difficultyStars.visible = false;
     add(difficultyStars);
 
     buildAlbumTitle("freeplay/albumRoll/volume1-text");
     albumTitle.visible = false;
-
-     newAlbumArt.onAnimationComplete.add(onAlbumFinish);
   }
 
   function onAlbumFinish(animName:String):Void
@@ -199,7 +196,7 @@ class AlbumRoll extends FlxSpriteGroup
       albumTitle = null;
     }
 
-    albumTitle = FunkinSprite.createSparrow((FlxG.width - 355) - MobileScaleMode.gameNotchSize.x, 500, assetKey);
+    albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
     albumTitle.visible = albumTitle.frames != null && newAlbumArt.visible;
     albumTitle.animation.addByPrefix('idle', 'idle0', 24, true);
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);

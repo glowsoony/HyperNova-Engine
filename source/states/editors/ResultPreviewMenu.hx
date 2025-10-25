@@ -2,8 +2,14 @@ package states.editors;
 
 
 import objects.AlphabetMenu;
+import mikolka.funkin.FunkinSprite;
+import flixel.math.FlxRect;
+import openfl.events.UncaughtErrorEvent;
 import mikolka.compatibility.VsliceOptions;
+import flixel.math.FlxRandom;
+import backend.WeekData;
 import mikolka.vslice.results.ResultState;
+import objects.Character;
 
 class ResultPreviewMenu extends MusicBeatState
 {
@@ -28,8 +34,6 @@ class ResultPreviewMenu extends MusicBeatState
 		DiscordClient.changePresence("Result Preview Menu", null);
 		#end
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-		bg.setGraphicSize(Std.int(bg.width * 1.175));
-		bg.screenCenter();
 		bg.scrollFactor.set();
 		add(bg);
 

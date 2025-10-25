@@ -12,7 +12,6 @@ abstract class SngCapsuleData{
 	public var metaSngId:String = "";
 
 	public var isNew:Bool = false;
-	public var metaAllowNew:Bool = false;
 	public var folder:String = "";
 	public var color:Int = -7179779;
 
@@ -74,7 +73,7 @@ abstract class SngCapsuleData{
 		var meta = FreeplayMeta.getMeta(metaSngId);
 		difficultyRating = meta.songRating;
 
-		metaAllowNew = meta.allowNewTag;
+		isNew = meta.allowNewTag;
 		allowErect = meta.allowErectVariants;
 		freeplayPrevStart = meta.freeplayPrevStart / meta.freeplaySongLength;
 		freeplayPrevEnd = meta.freeplayPrevEnd / meta.freeplaySongLength;

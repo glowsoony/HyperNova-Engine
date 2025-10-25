@@ -1,8 +1,10 @@
 package mikolka.funkin;
 
-import mikolka.funkin.sound.FlxPartialSound;
 import openfl.media.Sound;
 import mikolka.vslice.freeplay.FreeplayState;
+import funkin.util.flixel.sound.FlxPartialSound;
+import haxe.exceptions.NotImplementedException;
+import openfl.media.SoundMixer;
 import flixel.system.FlxAssets.FlxSoundAsset;
 
 class FunkinSound extends FlxSound
@@ -76,8 +78,6 @@ class FunkinSound extends FlxSound
 
 		return sound;
 	}
-
-	static var prevSound:Sound = null;
 	public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Bool {
 		if(params.pathsFunction == INST){
 			var instPath = "";
@@ -89,11 +89,7 @@ class FunkinSound extends FlxSound
 				#if MODS_ALLOWED
 				var modsInstPath = Paths.modFolders('songs/${Paths.formatToSongPath(key)}/Inst.${Paths.SOUND_EXT}');
 				var real_modSngPath = NativeFileSystem.getPathLike(modsInstPath);
-				#if (mac || ios)
-				if(real_modSngPath != null) instPath = haxe.io.Path.join([StorageUtil.getStorageDirectory(),real_modSngPath]);
-				#else
 				if(real_modSngPath != null) instPath = real_modSngPath;
-				#end
 
 				#end
 				
@@ -108,24 +104,18 @@ class FunkinSound extends FlxSound
 							if(!Std.isOfType(FlxG.state.subState,FreeplayState)) return;
 							var fp = cast (FlxG.state.subState,FreeplayState);
 
-							var cap = fp.grpCapsules.activeSongItems[fp.curSelected];
+							var cap = fp.grpCapsules.members[fp.curSelected];
 							if(cap.songData == null || cap.songData.getNativeSongId() != key || fp.busy) return;
 						}
 						
 						trace("Playing preview!");
-
 						FlxG.sound.playMusic(sound,0);
-						// #if (lime_vorbis && linux)
-						// prevSound?.close();
-						// prevSound = sound;
-						// #end
 						params.onLoad();
 					});
 				return true;
 			}
-			catch (x:Exception){
+			catch (x){
 				var targetPath = instPath == "" ? "" : "from "+instPath;
-				trace(x.message);
 				trace('Failed to parialy load instrumentals for ${key} ${targetPath}');
 				return false;
 			}

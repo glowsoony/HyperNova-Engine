@@ -1,7 +1,5 @@
 package options;
 
-import flixel.system.scaleModes.RatioScaleMode;
-import mikolka.funkin.custom.mobile.MobileScaleMode;
 import objects.Character;
 import options.Option;
 
@@ -9,72 +7,49 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 {
 	var antialiasingOption:Int;
 	var boyfriend:Character = null;
+
 	public function new()
 	{
 		title = Language.getPhrase('graphics_menu', 'Graphics Settings');
-		rpcTitle = 'Graphics Settings Menu'; //for Discord Rich Presence
+		rpcTitle = 'Graphics Settings Menu'; // for Discord Rich Presence
 
 		boyfriend = new Character(840, 170, 'bf', true);
 		boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
 		boyfriend.updateHitbox();
 		boyfriend.dance();
-		boyfriend.animation.finishCallback = function (name:String) boyfriend.dance();
+		boyfriend.animation.finishCallback = function(name:String) boyfriend.dance();
 		boyfriend.visible = false;
 
-		//I'd suggest using "Low Quality" as an example for making your own option since it is the simplest here
-		var option:Option = new Option('Low Quality', //Name
-			'If checked, disables some background details,\ndecreases loading times and improves performance.', //Description
-			'lowQuality', //Save data variable name
-			BOOL); //Variable type
+		// I'd suggest using "Low Quality" as an example for making your own option since it is the simplest here
+		var option:Option = new Option('Low Quality', // Name
+			'If checked, disables some background details,\ndecreases loading times and improves performance.', // Description
+			'lowQuality', // Save data variable name
+			BOOL); // Variable type
 		addOption(option);
 
-		var option:Option = new Option('Anti-Aliasing',
-			'If unchecked, disables anti-aliasing, increases performance\nat the cost of sharper visuals.',
-			'antialiasing',
-			BOOL);
-		option.onChange = onChangeAntiAliasing; //Changing onChange is only needed if you want to make a special interaction after it changes the value
+		var option:Option = new Option('Anti-Aliasing', 'If unchecked, disables anti-aliasing, increases performance\nat the cost of sharper visuals.',
+			'antialiasing', BOOL);
+		option.onChange = onChangeAntiAliasing; // Changing onChange is only needed if you want to make a special interaction after it changes the value
 		addOption(option);
-		antialiasingOption = optionsArray.length-1;
+		antialiasingOption = optionsArray.length - 1;
 
-		var option:Option = new Option('Shaders', //Name
-			"If unchecked, disables shaders.\nIt's used for some visual effects, and also CPU intensive for weaker " + Main.platform + ").", //Description
-			'shaders',
-			BOOL);
+		var option:Option = new Option('Shaders', // Name
+			"If unchecked, disables shaders.\nIt's used for some visual effects, and also CPU intensive for weaker " + Main.platform + ").", // Description
+			'shaders', BOOL);
 		addOption(option);
 
-		var option:Option = new Option('GPU Caching', //Name
-			"If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon't turn this on if you have a shitty Graphics Card.", //Description
-			'cacheOnGPU',
-			BOOL);
+		var option:Option = new Option('GPU Caching', // Name
+			"If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon't turn this on if you have a shitty Graphics Card.", // Description
+			'cacheOnGPU', BOOL);
 		addOption(option);
 
-		option = new Option('Wide Screen Mode',
-			'If checked, The game will stetch to fill your whole screen. (WARNING: Can result in bad visuals & break some mods that resizes the game/cameras)',
-			'wideScreen', BOOL);
-		option.onChange = () -> MobileScaleMode.enabled = ClientPrefs.data.wideScreen;
+		var option:Option = new Option('Multithreaded Caching', // Name
+			"If checked, enables multithreaded loading, which improves loading times but with a low chance for the game to freeze while loading a song.", // Description
+			'cacheOnCPU', BOOL);
 		addOption(option);
 
-		#if MULTITHREADED_LOADING
-		var option:Option = new Option('Multithreaded Caching', //Name
-		"If checked, enables multithreaded loading, which improves loading times but with a low chance for the game to freeze while loading a song.", //Description
-		'cacheOnCPU',
-		BOOL);
-		addOption(option);
-		#end
-
-		#if STRICT_LOADING_SCREEN
-		var option:Option = new Option('Strict Loading Screen', //Name
-		"If checked, the game will unload the UI assets first, and then preload the song data (useful for low-memory devices)", //Description
-		'strictLoadingScreen',
-		BOOL);
-		addOption(option);
-		#end
-
-		#if !html5 //Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
-		var option:Option = new Option('Framerate',
-			"Pretty self explanatory, isn't it?",
-			'framerate',
-			INT);
+		#if !html5 // Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
+		var option:Option = new Option('Framerate', "Pretty self explanatory, isn't it?", 'framerate', INT);
 		addOption(option);
 
 		final refreshRate:Int = FlxG.stage.application.window.displayMode.refreshRate;
@@ -94,7 +69,8 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		for (sprite in members)
 		{
 			var sprite:FlxSprite = cast sprite;
-			if(sprite != null && (sprite is FlxSprite) && !(sprite is FlxText)) {
+			if (sprite != null && (sprite is FlxSprite) && !(sprite is FlxText))
+			{
 				sprite.antialiasing = ClientPrefs.data.antialiasing;
 			}
 		}
@@ -102,7 +78,7 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 
 	function onChangeFramerate()
 	{
-		if(ClientPrefs.data.framerate > FlxG.drawFramerate)
+		if (ClientPrefs.data.framerate > FlxG.drawFramerate)
 		{
 			FlxG.updateFramerate = ClientPrefs.data.framerate;
 			FlxG.drawFramerate = ClientPrefs.data.framerate;
@@ -114,9 +90,9 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		}
 	}
 
-	override function changeSelection(change:Float,usePrecision:Bool = false) 
+	override function changeSelection(change:Float, usePrecision:Bool = false)
 	{
-		super.changeSelection(change,usePrecision);
+		super.changeSelection(change, usePrecision);
 		boyfriend.visible = (antialiasingOption == curSelected);
 	}
 }

@@ -1,6 +1,5 @@
 package states.editors;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
 import backend.WeekData;
 
 import openfl.utils.Assets;
@@ -302,8 +301,7 @@ class WeekEditorState extends MusicBeatState implements PsychUIEventHandler.Psyc
 				isMissing = false;
 			}
 		}
-		// In case some 2 year old mod breaks
-		if(MobileScaleMode.enabled) bgSprite.screenCenter(X); 
+
 		if(isMissing) {
 			bgSprite.visible = false;
 		}
@@ -454,7 +452,7 @@ class WeekEditorState extends MusicBeatState implements PsychUIEventHandler.Psyc
 		if(_file.__path != null) fullPath = _file.__path;
 
 		if(fullPath != null) {
-			var rawJson:String = File.getContent(fullPath);
+			var rawJson:String = NativeFileSystem.getContent(fullPath);
 			if(rawJson != null) {
 				loadedWeek = cast Json.parse(rawJson);
 				if(loadedWeek.weekCharacters != null && loadedWeek.weekName != null) //Make sure it's really a week
@@ -573,8 +571,6 @@ class WeekEditorFreeplayState extends MusicBeatState implements PsychUIEventHand
 	override function create() {
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.setGraphicSize(Std.int(bg.width * 1.175));
-		bg.screenCenter();
 		bg.color = FlxColor.WHITE;
 		add(bg);
 

@@ -98,8 +98,6 @@ class EditorPlayState extends MusicBeatSubstate
 		/* setting up Editor PlayState stuff */
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.setGraphicSize(FlxG.width,FlxG.height);
-		bg.screenCenter();
 		bg.scrollFactor.set();
 		bg.color = 0xFF101010;
 		bg.alpha = 0.9;
@@ -383,7 +381,13 @@ class EditorPlayState extends MusicBeatSubstate
 				// CLEAR ANY POSSIBLE GHOST NOTES
 				for (evilNote in unspawnNotes) {
 					var matches: Bool = note.noteData == evilNote.noteData && note.mustPress == evilNote.mustPress;
-					if (matches && Math.abs(note.strumTime - evilNote.strumTime) == 0.0) {
+					if (matches && Math.abs(note.strumTime - evilNote.strumTime) < flixel.math.FlxMath.EPSILON) {
+						if (evilNote.tail.length > 0)
+							for (tail in evilNote.tail)
+							{
+								tail.destroy();
+								unspawnNotes.remove(tail);
+							}
 						evilNote.destroy();
 						unspawnNotes.remove(evilNote);
 						//continue;

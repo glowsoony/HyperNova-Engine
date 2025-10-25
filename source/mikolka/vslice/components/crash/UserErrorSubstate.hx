@@ -1,11 +1,10 @@
 package mikolka.vslice.components.crash;
 
-import mikolka.funkin.custom.mobile.MobileScaleMode;
+import flixel.util.typeLimit.OneOfTwo;
+import haxe.CallStack.StackItem;
+import mikolka.compatibility.ModsHelper;
 import mikolka.compatibility.VsliceOptions;
 import mikolka.vslice.ui.title.TitleState;
-import mikolka.compatibility.ModsHelper;
-import haxe.CallStack.StackItem;
-import flixel.util.typeLimit.OneOfTwo;
 
 class UserErrorSubstate extends MusicBeatSubstate
 {
@@ -135,15 +134,17 @@ class UserErrorSubstate extends MusicBeatSubstate
 			'Unknown'
 		#end;
 	}
-    public inline static function getLogger():String
-        {
-            return switch(VsliceOptions.LOGGING){
-                case "File": "Logs available in the 'latest.log' file";
-                case "Console": "Check the console for logs";
-                case "None": "Logs disabled!";
-                default: "Is the logger corrupted???";
-            }
-        }
+
+	public inline static function getLogger():String
+	{
+		return switch (VsliceOptions.LOGGING)
+		{
+			case "File": "Logs available in the 'latest.log' file";
+			case "Console": "Check the console for logs";
+			case "None": "Logs disabled!";
+			default: "Is the logger orrupted???";
+		}
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -160,8 +161,8 @@ class UserErrorSubstate extends MusicBeatSubstate
 				return;
 			}
 			TitleState.initialized = false;
-            ScreenshotPlugin.instance.destroy();
-            ScreenshotPlugin.instance = null;
+			ScreenshotPlugin.instance.destroy();
+			ScreenshotPlugin.instance = null;
 			TitleState.closedState = false;
 			#if LEGACY_PSYCH
 			if (Main.fpsVar != null)
@@ -188,7 +189,7 @@ class UserErrorSubstate extends MusicBeatSubstate
 
 	function printError(error:CrashData)
 	{
-		//43
+		// 43
 		var star = #if (CHECK_FOR_UPDATES || debug) "" #else "*" #end;
 		printToTrace('P-SLICE ${MainMenuState.pSliceVersion}$star  (${error.message})');
 		textNextY += 35;
@@ -202,10 +203,12 @@ class UserErrorSubstate extends MusicBeatSubstate
 				switch (line.length)
 				{
 					case 1:
-						if(line[0].length>43){
+						if (line[0].length > 43)
+						{
 							var remText = line[0];
-							while(remText.length>43){
-								printToTrace(remText.substr(0,43));
+							while (remText.length > 43)
+							{
+								printToTrace(remText.substr(0, 43));
 								linesPrinted += 1;
 								remText = remText.substr(42);
 							}
@@ -234,7 +237,7 @@ class UserErrorSubstate extends MusicBeatSubstate
 			printToTrace('TIME:${date_split[1].rpad(" ", 9)} DATE:${date_split[0]}');
 			printToTrace('MOD:${error.activeMod.rpad(" ", 10)} PE:${MainMenuState.psychEngineVersion.rpad(" ", 5)} SYS:${error.systemName}');
 			printSpaceToTrace();
-            printToTrace(getLogger());
+			printToTrace(getLogger());
 			if (isCritical)
 				printToTrace('REPORT TO GITHUB.COM/MIKOLKA9144/P-SLICE');
 			else
@@ -261,7 +264,7 @@ class UserErrorSubstate extends MusicBeatSubstate
 
 	function printToTrace(text:String):FlxText
 	{
-		var test_text = new FlxText(180+MobileScaleMode.gameCutoutSize.x/4, textNextY, FlxG.width * 0.71, text.toUpperCase());
+		var test_text = new FlxText(180, textNextY, 920, text.toUpperCase());
 		test_text.setFormat(Paths.font('vcr.ttf'), 35, FlxColor.WHITE, LEFT);
 		test_text.updateHitbox();
 		test_text.camera = camOverlay;
