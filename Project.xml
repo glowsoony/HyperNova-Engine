@@ -169,8 +169,15 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 
 	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons"/>
+<<<<<<< Updated upstream
 	<haxelib name="tjson"/>
 	<haxelib name="FlxPartialSound" version="git"/>
+=======
+	<haxelib name="hxcpp"/>
+	<haxelib name="extension-haptics" if="mobile"/>
+	<haxelib name="tjson" version="1.4.0"/>
+	<haxelib name="FlxPartialSound"	version="git"/>
+>>>>>>> Stashed changes
 	<haxelib name="grig.audio" />
 	<haxelib name="funkin.vis" />
 	<!-- <haxelib name="fnf-modcharting-tools" /> -->

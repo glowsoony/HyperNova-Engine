@@ -15,10 +15,10 @@ import states.PlayState;
 
 using StringTools;
 
-class NoteField extends flixel.FlxBasic
+class NoteField extends FlxBasic
 {
-	public var strums:FlxTypedGroup<objects.StrumNote>;
-	public var notes:FlxTypedGroup<objects.Note>;
+	public var strums:FlxTypedGroup<StrumNote>;
+	public var notes:FlxTypedGroup<Note>;
 	public var renderer:PlayfieldRenderer = null;
 	public var pfIndex:Int = 0;
 

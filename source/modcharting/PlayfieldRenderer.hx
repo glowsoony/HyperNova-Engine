@@ -92,7 +92,18 @@ class PlayfieldRenderer extends FlxBasic
 		timerManager = new FlxTimerManager();
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
+<<<<<<< Updated upstream
 		addPlayfield(0);
+=======
+		trace(noteFields, noteFields == null, noteFields.length);
+		
+		addPlayfield();
+		addPlayfield();
+		addPlayfield();
+		addPlayfield();
+
+		trace(noteFields, noteFields == null, noteFields.length);
+>>>>>>> Stashed changes
 
 		// why ??
 
