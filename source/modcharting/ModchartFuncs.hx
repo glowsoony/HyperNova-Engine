@@ -73,30 +73,12 @@ class ModchartFuncs
 			{
 				setModTargetLane(name, value);
 			});
-			Lua_helper.add_callback(funkin.lua, 'setModPlayfield', function(name:String, value:Int)
-			{
-				setModPlayfield(name, value);
-			});
-			Lua_helper.add_callback(funkin.lua, 'addPlayfield', function(?x:Float = 0, ?y:Float = 0, ?z:Float = 0)
-			{
-				addPlayfield(x, y, z);
-			});
-			Lua_helper.add_callback(funkin.lua, 'removePlayfield', function(idx:Int)
-			{
-				removePlayfield(idx);
-			});
-			Lua_helper.add_callback(funkin.lua, 'tweenModifier', function(modifier:String, val:Float, time:Float, ease:String)
-			{
-				tweenModifier(modifier, val, time, ease);
-			});
-			Lua_helper.add_callback(funkin.lua, 'tweenModifierSubValue', function(modifier:String, subValue:String, val:Float, time:Float, ease:String)
-			{
-				tweenModifierSubValue(modifier, subValue, val, time, ease);
-			});
-			Lua_helper.add_callback(funkin.lua, 'setModEaseFunc', function(name:String, ease:String)
-			{
-				setModEaseFunc(name, ease);
-			});
+			Lua_helper.add_callback(funkin.lua, 'setModPlayfield', setModPlayfield);
+			Lua_helper.add_callback(funkin.lua, 'addPlayfield', addPlayfield);
+			Lua_helper.add_callback(funkin.lua, 'removePlayfield', removePlayfield);
+			Lua_helper.add_callback(funkin.lua, 'tweenModifier', tweenModifier);
+			Lua_helper.add_callback(funkin.lua, 'tweenModifierSubValue', tweenModifierSubValue);
+			Lua_helper.add_callback(funkin.lua, 'setModEaseFunc', setModEaseFunc);
 			Lua_helper.add_callback(funkin.lua, 'set', function(beat:Float, argsAsString:String)
 			{
 				set(beat, argsAsString);
@@ -235,76 +217,23 @@ class ModchartFuncs
 				PlayState.instance.playfieldRenderer.modifierTable.reconstructTable(); // needs to be reconstructed for lua modcharts
 			}
 		});
-		parent.set('setMod', function(name:String, value:Float)
-		{
-			setMod(name, value);
-		});
-		parent.set('setSubMod', function(name:String, subValName:String, value:Float)
-		{
-			setSubMod(name, subValName, value);
-		});
-		parent.set('setModTargetLane', function(name:String, value:Int)
-		{
-			setModTargetLane(name, value);
-		});
-		parent.set('setModPlayfield', function(name:String, value:Int)
-		{
-			setModPlayfield(name, value);
-		});
-		parent.set('addPlayfield', function(?x:Float = 0, ?y:Float = 0, ?z:Float = 0)
-		{
-			addPlayfield(x, y, z);
-		});
-		parent.set('removePlayfield', function(idx:Int)
-		{
-			removePlayfield(idx);
-		});
-		parent.set('tweenModifier', function(modifier:String, val:Float, time:Float, ease:String)
-		{
-			tweenModifier(modifier, val, time, ease);
-		});
-		parent.set('tweenModifierSubValue', function(modifier:String, subValue:String, val:Float, time:Float, ease:String)
-		{
-			tweenModifierSubValue(modifier, subValue, val, time, ease);
-		});
-		parent.set('setModEaseFunc', function(name:String, ease:String)
-		{
-			setModEaseFunc(name, ease);
-		});
-		parent.set('setModValue', function(beat:Float, argsAsString:String)
-		{
-			set(beat, argsAsString);
-		});
-		parent.set('easeModValue', function(beat:Float, time:Float, easeStr:String, argsAsString:String)
-		{
-			ease(beat, time, easeStr, argsAsString);
-		});
-		parent.set('sSetModValue', function(beat:Float, argsAsString:String)
-		{
-			stepSet(beat, argsAsString);
-		});
-		parent.set('sEaseModValue', function(beat:Float, time:Float, easeStr:String, argsAsString:String)
-		{
-			stepEase(beat, time, easeStr, argsAsString);
-		});
-		parent.set('setAdd', function(beat:Float, argsAsString:String)
-		{
-			setAdd(beat, argsAsString);
-		});
-		parent.set('easeAdd', function(beat:Float, time:Float, easeStr:String, argsAsString:String)
-		{
-			add(beat, time, easeStr, argsAsString);
-		});
-		parent.set('getMod', function(name:String, base:Bool = false)
-		{
-			var result = getMod(name, base);
-			return result;
-		});
-		parent.set('getSubMod', function(name:String, subMod:String, base:Bool = false)
-		{
-			var result = getSubMod(name, subMod, base);
-			return result;
-		});
+		parent.set('setMod', setMod);
+		parent.set('setSubMod', setSubMod);
+		parent.set('setModTargetLane', setModTargetLane);
+		parent.set('setModPlayfield', setModPlayfield);
+		parent.set('addPlayfield', addPlayfield);
+		parent.set('removePlayfield', removePlayfield);
+		parent.set('tweenModifier', tweenModifier);
+		parent.set('tweenModifierSubValue', tweenModifierSubValue);
+		parent.set('setModEaseFunc', setModEaseFunc);
+		parent.set('setModValue', set);
+		parent.set('easeModValue', ease);
+		parent.set('sSetModValue', stepSet);
+		parent.set('sEaseModValue', stepEase);
+		parent.set('setAdd', setAdd);
+		parent.set('easeAdd', add);
+		parent.set('getMod', function(name:String, base:Bool = false) return getMod(name, base));
+		parent.set('getSubMod', function(name:String, subMod:String, base:Bool = false) return getSubMod(name, subMod, base));
 		#end
 	}
 
@@ -469,7 +398,7 @@ class ModchartFuncs
 			instance.playfieldRenderer.modifierTable.modifiers.get(name).playfield = value;
 	}
 
-	public static function addPlayfield(?x:Float = 0, ?y:Float = 0, ?z:Float = 0, ?instance:ModchartMusicBeatState = null)
+	public static function addPlayfield(?index, ?instance:ModchartMusicBeatState = null)
 	{
 		if (instance == null)
 		{
@@ -478,7 +407,7 @@ class ModchartFuncs
 			// else
 			instance = PlayState.instance;
 		}
-		instance.playfieldRenderer.addPlayfield();
+		instance.playfieldRenderer.addPlayfield(index ?? instance.playfieldRenderer.noteFields.length - 1);
 	}
 
 	public static function removePlayfield(idx:Int, ?instance:ModchartMusicBeatState = null)

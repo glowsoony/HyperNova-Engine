@@ -5,6 +5,8 @@
       "graphic": "b",
       "x": 1022,
       "y": 587,
+      "width": 132,
+      "height": 125,
       "color": "0xFFCB00"
     },
     {
@@ -12,6 +14,8 @@
       "graphic": "e",
       "x": 1148,
       "y": 2,
+      "width": 132,
+      "height": 125,
       "color": "0xFF7D00"
     },
     {
@@ -19,6 +23,8 @@
       "graphic": "x",
       "x": 1022,
       "y": 2,
+      "width": 132,
+      "height": 125,
       "color": "0x99062D"
     },
     {
@@ -26,6 +32,8 @@
       "graphic": "y",
       "x": 1148,
       "y": 252,
+      "width": 132,
+      "height": 125,
       "color": "0x4A35B9"
     },
     {
@@ -33,6 +41,8 @@
       "graphic": "z",
       "x": 1022,
       "y": 252,
+      "width": 132,
+      "height": 125,
       "color": "0xCCB98E"
     },
     {
@@ -40,6 +50,8 @@
       "graphic": "a",
       "x": 1148,
       "y": 587,
+      "width": 132,
+      "height": 125,
       "color": "0xFF0000"
     },
     {
@@ -47,6 +59,8 @@
       "graphic": "c",
       "x": 1148,
       "y": 127,
+      "width": 132,
+      "height": 125,
       "color": "0x44FF00"
     },
     {
@@ -54,6 +68,8 @@
       "graphic": "v",
       "x": 1022,
       "y": 127,
+      "width": 132,
+      "height": 125,
       "color": "0x49A9B2"
     }
   ]

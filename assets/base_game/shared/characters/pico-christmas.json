@@ -29,6 +29,7 @@
 			"loop": false,
 			"fps": 24,
 			"anim": "singDOWNmiss",
+			"frameIndices": [ 1, 2, 3, 4],
 			"name": "Pico Down Note MISS xmas0"
 		},
 		{
@@ -36,6 +37,7 @@
 			"loop": false,
 			"fps": 24,
 			"anim": "singUPmiss",
+			"frameIndices": [ 1, 2, 3, 4],
 			"name": "pico Up note miss xmas0"
 		},
 		{
@@ -59,14 +61,16 @@
 			"offsets": [-45, 50],
 			"anim": "singRIGHTmiss",
 			"fps": 24,
-			"name": "Pico Note Right Miss xmas0"
+			"name": "Pico Note Right Miss xmas0",
+			"frameIndices": [ 1, 2, 3, 4]
 		},
 		{
 			"loop": false,
 			"offsets": [83, 28],
 			"anim": "singLEFTmiss",
 			"fps": 24,
-			"name": "Pico NOTE LEFT miss xmas0"
+			"name": "Pico NOTE LEFT miss xmas0",
+			"frameIndices": [ 1, 2, 3, 4]
 		}
 	],
 	"vocals_file": "",

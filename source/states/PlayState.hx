@@ -783,8 +783,10 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notITG && !SONG.newModchartTool)
 			{
-				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
-				playfieldRenderer.cameras = [camHUD];
+				strumLineNotes.visible = false;
+				notes.visible = false;
+				playfieldRenderer = new PlayfieldRenderer(this);
+				playfieldRenderer.cameras = playfieldRenderer.noteFields.cameras = [camHUD];
 				add(playfieldRenderer);
 			}
 			#if funkin_modchart

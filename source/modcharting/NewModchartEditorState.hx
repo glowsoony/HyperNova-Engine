@@ -628,12 +628,6 @@ class NewModchartEditorState extends MusicBeatState
 			updateEventSprites();
 		}
 
-		if (playfieldRenderer.modchart.data.playfields != playfieldCountStepper.value)
-		{
-			playfieldRenderer.modchart.data.playfields = Std.int(playfieldCountStepper.value);
-			playfieldRenderer.modchart.loadPlayfields();
-		}
-
 		if (playfieldRenderer.modchart.data.proxiefields != proxiefieldCountStepper.value)
 		{
 			playfieldRenderer.modchart.data.proxiefields = Std.int(proxiefieldCountStepper.value);
@@ -2330,6 +2324,11 @@ class NewModchartEditorState extends MusicBeatState
 
 		playfieldCountStepper = new PsychUINumericStepper(25, 50, 1, 1, 1, 100, 0);
 		playfieldCountStepper.value = playfieldRenderer.modchart.data.playfields;
+		playfieldCountStepper.onValueChange = function() {
+			if (playfieldRenderer.modchart.data.playfields == playfieldCountStepper.value) return;
+			playfieldRenderer.modchart.data.playfields = Std.int(playfieldCountStepper.value);
+			playfieldRenderer.modchart.loadPlayfields();
+		}
 
 		tab_group.add(playfieldCountStepper);
 		tab_group.add(makeLabel(playfieldCountStepper, 0, -15, "Playfield Count"));

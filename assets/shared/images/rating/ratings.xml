@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Rating-.png">
+<SubTexture name="Rating-H0000" x="0" y="487" width="212" height="194" frameX="0" frameY="-25" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-S0000" x="0" y="0" width="193" height="254" frameX="-17" frameY="-4" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-A0000" x="198" y="254" width="186" height="229" frameX="-20" frameY="-5" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-B0000" x="193" y="0" width="178" height="241" frameX="-33" frameY="-3" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-C0000" x="0" y="254" width="198" height="233" frameX="-12" frameY="-2" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-D0000" x="371" y="0" width="205" height="235" frameX="-5" frameY="-2" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-E0000" x="576" y="212" width="210" height="189" frameX="-2" frameY="-29" frameWidth="212" frameHeight="261" />
+<SubTexture name="Rating-F0000" x="576" y="0" width="211" height="212" frameX="0" frameY="-20" frameWidth="212" frameHeight="261" />
+</TextureAtlas>

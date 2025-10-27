@@ -402,6 +402,10 @@ class ModchartEditorState extends MusicBeatState
 
 		generateSong(PlayState.SONG);
 
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+		NoteMovement.getDefaultStrumPosEditor(this);
+
 		strumLineNotes.visible = false;
 		notes.visible = false;
 
@@ -454,10 +458,6 @@ class ModchartEditorState extends MusicBeatState
 		line = new FlxSprite().makeGraphic(10, gridSize);
 		line.color = FlxColor.BLACK;
 		add(line);
-
-		generateStaticArrows(0);
-		generateStaticArrows(1);
-		NoteMovement.getDefaultStrumPosEditor(this);
 
 		// gridGap = FlxMath.remapToRange(Conductor.stepCrochet, 0, Conductor.stepCrochet, 0, gridSize); //idk why i even thought this was how i do it
 		// trace(gridGap);

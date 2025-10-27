@@ -175,18 +175,9 @@ class ModchartFile
 		if (data == null || renderer == null)
 			return;
 
-		try
-		{
-			renderer.noteFields.clear();
-			trace(data.playfields == null, data.playfields);
-			for (i in 0...data.playfields)
-			{
-				trace(i, data.playfields);
-				renderer.addPlayfield();
-			}
-		}
-		catch (e:haxe.Exception)
-			trace(e.message, e.stack);
+		renderer.noteFields.clear();
+		for (i in 0...data.playfields)
+			renderer.addPlayfield(i);
 	}
 
 	public function loadProxiefields()

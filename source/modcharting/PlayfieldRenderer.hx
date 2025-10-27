@@ -92,12 +92,7 @@ class PlayfieldRenderer extends FlxBasic
 		timerManager = new FlxTimerManager();
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
-		trace(noteFields, noteFields == null, noteFields.length);
-		addPlayfield();
-		addPlayfield();
-		addPlayfield();
-		addPlayfield();
-		trace(noteFields, noteFields == null, noteFields.length);
+		addPlayfield(0);
 
 		// why ??
 
@@ -105,13 +100,10 @@ class PlayfieldRenderer extends FlxBasic
 		modchart = new ModchartFile(this);
 	}
 
-	public function addPlayfield()
-	{
-		try
-			noteFields.add(new NoteField(this, noteFields?.members?.length ?? 0))
-		catch (e:haxe.Exception)
-			trace(e.message, e.stack);
-	}
+	public function addPlayfield(?index:Int)
+		noteFields.add(new NoteField(this, index ?? noteFields?.members?.length - 1));
+	public function removePlayfield(index:Int)
+		noteFields.remove(noteFields.members[index]);
 
 	public function addNewProxiefield(proxy:Proxy)
 		proxiefields.push(new Proxiefield(proxy));

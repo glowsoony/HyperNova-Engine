@@ -93,10 +93,10 @@ class ModTable
 		if (table != null)
 			table.fill(null);
 
-		if (table == null || table.length < renderer.playfields.length)
-			table = new Vector<Vector<Vector<Modifier>>>(renderer.playfields.length);
+		if (table == null || table.length < renderer.noteFields.length)
+			table = new Vector<Vector<Vector<Modifier>>>(renderer.noteFields.length);
 
-		for (pf in 0...renderer.playfields.length)
+		for (pf in 0...renderer.noteFields.length)
 		{
 			if (table[pf] == null)
 				table[pf] = new Vector<Vector<Modifier>>(NoteMovement.totalKeyCount);

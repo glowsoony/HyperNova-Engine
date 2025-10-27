@@ -4,14 +4,15 @@ xmlns="http://lime.openfl.org/project/1.0.4"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
-	
-	<app unless="PROFILE_BUILD || mobile" title="Friday Night Funkin': P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" />
+
+	<app title="Friday Night Funkin': Supernova Engine" file="SupernovaEngine" packageName="com.edwhakKB.supernova" package="com.edwhakKB.supernova" main="Main" version="2.2.2" company="edwhakKB" />
+	<!-- <app unless="PROFILE_BUILD || mobile" title="Friday Night Funkin': P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" />
 	<app if="PROFILE_BUILD" title="P-Slice Engine Profiling build" file="PSliceEngine" packageName="com.mikolka9144.testPslice" package="com.mikolka9144.testPslice" main="Main" version="3.2"  company="mikolka9144" />
-	<app if="mobile" unless="PROFILE_BUILD" title="P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" />
+	<app if="mobile" unless="PROFILE_BUILD" title="P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" /> -->
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
-	<meta build-number="331"/>
-	<config type="android" gradle-version="8.10.2" gradle-plugin="8.8.0" ndkVersion="27.0"  minimum-sdk-version="26" target-sdk-version="35" />
+	<meta build-number="320"/>
+
 	<!-- NOTE TO SELF: DISABLE THIS IF ISSUES ARE FOUND -->
 	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/> <!-- stable luas PUT AFTER FIRST LINE WITH APP NAME AND ETC -->
 
@@ -44,7 +45,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<define name="DISCORD_ALLOWED" if="desktop" unless="hl"/>
 	
 	<!-- Adds a Base game content to your build. Feel free to disable if you're making a source mod. -->
-	<define name="BASE_GAME_FILES" unless="NO_BASEGAME_FILES" />
+	<define name="BASE_GAME_FILES" />
 
 	<!-- Adds support for touchscreen devices (like mobiles)-->
 	<define name="TOUCH_CONTROLS_ALLOWED" if="mobile || web || debug" />
@@ -54,24 +55,14 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 
 	<!-- Do you want to support playing videos in your build?-->
 	<define name="VIDEOS_ALLOWED" if="desktop || mobile" unless="32bits || hl"/> 
-
-	<!-- Do we want to use ATSC compression?-->
-	<!-- <define name="ATSC_SUPPORT" if="android"/>  -->
 	
 	<!-- Displays a "Touch here to play" screen-->
-	<define name="TOUCH_HERE_TO_PLAY" if="TOUCH_CONTROLS_ALLOWED debug"/>
+	<define name="TOUCH_HERE_TO_PLAY" if="TOUCH_CONTROLS_ALLOWED"/>
 
 	<!-- Other stuff -->
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="TRANSLATIONS_ALLOWED" unless="web" />
-
-	<!-- Allows the game to display a loading screen when loading songs-->
 	<define name="SHOW_LOADING_SCREEN" />
-
-	<!-- Forces the game to unload UI assets before loading the song assets -->
-	<!-- <define name="STRICT_LOADING_SCREEN" /> -->
-	<define name="STRICT_LOADING_SCREEN" if="mobile SHOW_LOADING_SCREEN" />
-
 	<define name="MULTITHREADED_LOADING" if="cpp" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED LOADING, WHICH IMPROVES LOADING TIMES, BUT WITH A LOW CHANCE FOR THE GAME FREEZE ON SONG LOAD -->
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE THE PSYCH LOGO FROM LOADING SCREEN -->
 	<define name="TITLE_SCREEN_EASTER_EGG"/>
@@ -81,27 +72,19 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<!-- For testing file access times-->
 		<define name="OPENFL_LOOKUP" />
 		<define name="NATIVE_LOOKUP" />
-		
+
 		<define name="IRIS_DEBUG"/>
-		<define name="FEATURE_DEBUG_FUNCTIONS" />
+		<define name="PROFILE_BUILD"/>
 		<haxedef name="HXVLC_VERBOSE" value="2" />
 		<haxedef name="HXVLC_LOGGING" />
-		<!-- Pico will always kill the other (unless you skip the cutscene) -->
-		<define name="pico_always_kill" />
 	</section>
 
 	 <!-- Flags for the profile builds (used for assessing performance and such)-->
 	<section if="PROFILE_BUILD">
-		<!-- Enables tracy -->
-		<define name="HXCPP_TRACY" />
-		<define name="HXCPP_TELEMETRY" />
-		<define name="HXCPP_TRACY_MEMORY" />
-		<define name="HXCPP_TRACY_ON_DEMAND" />
-		<define name="STRICT_LOADING_SCREEN" />
-		<!-- <define name="HXCPP_TRACY_INCLUDE_CALLSTACKS" /> -->
-		
-		<!-- Pico will always kill the other (unless you skip the cutscene) -->
+		<define name="nativesys_profile" />
+
 		<define name="pico_always_kill" />
+		<define name="freeplay_profile" />
 	</section>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
@@ -124,12 +107,10 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
-	<set name="BUILD_DIR" value="export/tracy" if="HXCPP_TRACY" />
-	<set name="BUILD_DIR" value="export/release" unless="debug || HXCPP_TRACY" />
+	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<set name="BUILD_DIR" value="export/32bit" if="32bits" />
 
 	<classpath name="source" />
-	<java if="android" path="source/mobile/external/android/java" />
 
 	<!-- __________________________ Game Assets & Etc. __________________________ -->
 
@@ -164,24 +145,17 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<assets path="assets/translations" rename="assets"   unless="web"/>
 	</section>
 
-
-	<assets path="assets/atsc_shared" rename="assets/shared" if="ATSC_SUPPORT" exclude="*.png"/>
-	<assets path="assets/atsc_shared" rename="assets/shared"  exclude="*.astc" unless="ATSC_SUPPORT"/>
-
 	<section if="BASE_GAME_FILES">
-
-		<section if="ATSC_SUPPORT">
-			<assets path="assets/base_game/week_data" rename="assets"   exclude="*.png"/>
-			<assets path="assets/base_game/week_data/week6" rename="assets/week6"   include="*.png"/>
-			<assets path="assets/base_game/characters" rename="assets/shared/images/characters" exclude="*.png"/>
+		<section if="web">
+			<assets path="assets/base_game/week_data"   rename="assets" include="*.png|*.ogg" embed="false"/>
+			<assets path="assets/base_game/week_data"   rename="assets" include="*.xml|*.json" embed="true"/>
+			<assets path="assets/base_game/characters"   rename="assets/shared/images/characters" include="*.xml|*.json" embed="true"/>
+			<assets path="assets/base_game/characters"   rename="assets/shared/images/characters" include="*.png" embed="false"/>
+			<assets path="assets/base_game/shared" rename="assets/shared" embed="true"/>
 		</section>
-
-		<section unless="ATSC_SUPPORT">
-			<assets path="assets/base_game/week_data" rename="assets"   exclude="*.astc"/>
-			<assets path="assets/base_game/characters" rename="assets/shared/images/characters" exclude="*.astc"/>
-		</section>
-		<assets path="assets/base_game/shared" rename="assets/shared" />
-		<assets path="assets/base_game/characters_pixel" rename="assets/shared/images/characters" />
+		<assets path="assets/base_game/week_data" rename="assets"   unless="web"/>
+		<assets path="assets/base_game/characters" rename="assets/shared/images/characters"   unless="web"/>
+		<assets path="assets/base_game/shared" rename="assets/shared"   unless="web"/>
 	</section>
 
 	<section if="MODS_ALLOWED">
@@ -194,16 +168,25 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel"/>
-	<haxelib name="flixel-addons" version="3.3.2"/>
-	<haxelib name="hxcpp"/>
-	<haxelib name="extension-haptics" if="mobile"/>
-	<haxelib name="tjson" version="1.4.0"/>
+	<haxelib name="flixel-addons"/>
+	<haxelib name="tjson"/>
+	<haxelib name="FlxPartialSound" version="git"/>
 	<haxelib name="grig.audio" />
 	<haxelib name="funkin.vis" />
+	<!-- <haxelib name="fnf-modcharting-tools" /> -->
+	<haxelib name="hscript-improved" />
+	<haxelib name="compiletime" />
+
+	<define name="PSYCH" />
+	<!-- <haxeflag name="macro" value="include('modcharting.modifiers')" /> -->
+
+	<!-- el adapter de pslice tiene unas cositas extra xd -->
+
+	<!-- <haxelib name="funkin-modchart" /> -->
+	<!-- <haxeflag name="macro" value="modchart.backend.macros.Macro.includeFiles()"/> -->
 
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<!-- <haxeflag name="macro" value="modchart.backend.macros.Macro.includeFiles()"/> -->
 	<haxelib name="hscript-iris" if="HSCRIPT_ALLOWED" version="1.1.3"/>
 	<section if="VIDEOS_ALLOWED">
 		<haxelib name="hxCodec" if="linux"/>
@@ -224,7 +207,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<section if="debug">
 		<!--These defines are mostly for testing (aren't required to be used)-->
 		<haxelib name="hxcpp-debug-server" />
-		<!-- <haxelib name="flixel-studio" /> -->
+		<haxelib name="flixel-studio" />
 		<haxelib name="hscript"/>
 	</section>
 	
@@ -255,37 +238,24 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
-
-	<!-- Let user access P-Slice files-->
-	<haxedef name="SHARE_MOBILE_FILES" if="mobile" />
 	
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="PROFILE_BUILD || debug" />
-	<haxedef name="analyzer-optimize" unless="debug" />
-	<!--Enable this for Nape release builds for a serious performance improvement-->
-	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+	<haxedef name="FLX_NO_DEBUG" unless="PROFILE_BUILD" />
 
+	<!--Enable this for Nape release builds for a serious peformance improvement-->
+	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 	<!-- I hate you @superpowers04 for changing commits like that -->
 	<define name="SHUT_UP_LINC_LUAJIT" />
-
 	<!--Used for crash handler-->
 	<section if="cpp">
 		<haxedef name="HXCPP_CHECK_POINTER" />
-		<!-- <haxedef name="HXCPP_GC_MOVING" unless="HXCPP_TRACY_MEMORY"/> -->
 		<haxedef name="HXCPP_STACK_LINE" />
 		<haxedef name="HXCPP_STACK_TRACE" />
 		<haxedef name="HXCPP_CATCH_SEGV" />
 	</section>
-	<section if="ios">
-		<!-- Compile for ARM (hopefully should fix the sim screaming about libs)-->
-		<haxedef name="HXCPP_ARM64" />
-	</section>
-	
 	
 	<!--Disable deprecated warnings-->
 	<haxedef name='no-deprecation-warnings' />	
-	<!-- for lime to not recompile asset cache on every build-->
-	<haxedef name='lime_disable_assets_version' />	
 	<!--Disable deprecated warnings-->
 	<haxedef name='no_ssl' if="hl" />
 
@@ -294,7 +264,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxedef name="message.reporting" value="pretty" />
 
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
-	<certificate path="key.keystore" password="pslice" alias="pslice" alias-password="pslice" if="android" unless="debug" />
+	<certificate path="key.keystore" password="supernova" alias="supernovaAndroid" alias-password="supernova" if="android" unless="debug" />
 
 	<!--Macro fixes-->
 	<haxeflag name="--macro" value="allowPackage('flash')" />
@@ -313,13 +283,14 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<icon path="art/desktop/icon16.png"/>
 	</section>
 	<section unless="PROFILE_BUILD">
-		<section if="mobile || mac">
-			<config type="android" pslice-mono-icon="art/mobile/iconMono.png" />
-			<config type="ios" pslice-icon-dir="art/mobile/PSlice.appiconset" />
+		<section if="mobile">
 			<icon path="art/mobile/iconAdaptive.png" if="android" />
 			<icon path="art/mobile/iconMobile.png" unless="android" />
+			<icon path="art/mobile/icon32.png" size='32'/>
+			<icon path="art/mobile/icon64.png" size='64'/>
+			<icon path="art/mobile/icon128.png" size='128'/>
 		</section>
-		<section unless="mobile || mac">
+		<section unless="mobile">
 
 			<assets path='art/desktop/iconOG.png' rename='icon.png' if="linux" />
 			<icon path="art/desktop/icon16.png" size='16'/>

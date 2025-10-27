@@ -38,9 +38,12 @@ class NoteField extends flixel.FlxBasic
 		}
 		catch (e:haxe.Exception)
 			trace(e.message, e.stack);
+		trace(pfIndex);
+		trace(notes.length);
+		trace(strums.length);
 	}
 
-	private var debuggingMode:Bool = true; // to make tracing errors easier instead of a vague "null object reference"
+	private var debuggingMode:Bool = false; // to make tracing errors easier instead of a vague "null object reference"
 
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
