@@ -78,6 +78,7 @@ class Note extends modcharting.NewModchartArrow
 	public var sustainRGB:Bool = true; // so if it have only 1 sustain and colored it loads this LOL
 
 	public var mesh:modcharting.SustainStrip = null;
+	public var newMesh:modcharting.graphics.SustainTrail = null;
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
 	public var strumTime:Float = 0;

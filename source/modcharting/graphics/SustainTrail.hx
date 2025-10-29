@@ -1,4 +1,4 @@
-package objects;
+package modcharting.graphics;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -226,7 +226,7 @@ class SustainTrail extends FlxSprite
 
 	var usingHazModHolds:Bool = true;
 
-	public var songTime:Float = Conductor.songPosition;
+	public var songTime:Float = 0.0;
 
 	/**
 	 * Sets up new vertex and UV data to clip the trail.
@@ -243,6 +243,16 @@ class SustainTrail extends FlxSprite
 		updateClipping_mods(fakeNote, songT);
 	}
 
+	public function setNoteIndex(index:Int = 0):Void
+	{
+		storedIndex = index;
+	}
+
+	public function drawForIndex(noteData:NotePositionData):Void {
+		
+	}
+
+	var storedIndex:Int = 0;
 	var fakeNote:NotePositionData = new NotePositionData();
 	var perspectiveShift:Vector2 = new Vector2(0, 0);
 
@@ -290,9 +300,9 @@ class SustainTrail extends FlxSprite
 		NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 		// move the x and y to properly be in the center of the strum graphic
-		var strumNote = pfr.strumGroup.members[lane]; // first we need to know what the strum is though lol
-		fakeNote.x += strumNote.width / 2 - frameWidth / 15;
-		fakeNote.y += strumNote.height / 2 - frameHeight / 15;
+		var daNote = pfr.notes.members[lane]; // first we need to know what the strum is though lol
+		fakeNote.x += daNote.width / 2;
+		fakeNote.y += daNote.height / 2;
 
 		// add offsets to data with modifiers
 		pfr.modifierTable.applyNoteMods(fakeNote, lane, curPos, pf);
@@ -401,17 +411,18 @@ class SustainTrail extends FlxSprite
 	 * @param songTime	The time to clip the note at, in milliseconds.
 	 * @param uvSetup	Should UV's be updated?.
 	 */
-	public function updateClipping_mods(noteData:NotePositionData, songTime:Float = 0, uvSetup:Bool = true):Void
+	public function updateClipping_mods(noteData:NotePositionData, songTime:Float = 0.0, uvSetup:Bool = true):Void
 	{
 		trace(noteData.index);
-		
-		if (fakeNote == null)
-			fakeNote = new NotePositionData();
+		// if (fakeNote == null)
+		// 	fakeNote = new NotePositionData();
 
-		var holdGrain:Float = 50 +
-			noteData.pathGrain; // Seems to use my grain format, neat. Higher default grain then my Modchart fork cuz this engine can actually do the math without dying
+		// var holdGrain:Float = 50 +
+		//	noteData.pathGrain; // Seems to use my grain format, neat. Higher default grain then my Modchart fork cuz this engine can actually do the math without dying
+
+		var holdGrain:Float = 50;
 		var songTimmy:Float = songTime;
-		var scale:Float = 0.5 * noteData.arrowPathWidth;
+		var scale:Float = 0.75;
 
 		var longHolds:Float = 0;
 		longHolds += 1;
@@ -424,7 +435,7 @@ class SustainTrail extends FlxSprite
 		}
 
 		// var spiralHolds:Bool = parentStrumline?.mods?.spiralHolds[noteDirection % 4] ?? false;
-		var spiralHolds:Bool = true;
+		var spiralHolds:Bool = (noteData.spiralHold >= 0.5);
 
 		var testCol:Array<Int> = [];
 		var vertices:Array<Float> = [];
@@ -538,7 +549,7 @@ class SustainTrail extends FlxSprite
 		// this.color = fakeNote.color;
 		// if (!isArrowPath)
 		// {
-		this.alpha = noteData.arrowPathAlpha;
+		this.alpha = noteData.alpha;
 		// }
 		this.z = fakeNote.z; // for z ordering
 
@@ -687,7 +698,7 @@ class SustainTrail extends FlxSprite
 			// testCol[(i + 1) * 2] = fakeNote.color;
 			// testCol[(i + 1) * 2 + 1] = fakeNote.color;
 		}
-		
+
 		//trace("Post Hold Resolution");
 
 		if (uvSetup)
@@ -742,7 +753,7 @@ class SustainTrail extends FlxSprite
 		// scaleTest = fakeNote.scale.x;
 		// holdLeftSide = (holdWidth * (scaleTest - 1)) * -1;
 		// holdRightSide = holdWidth * scaleTest;
-		
+
 		//trace("Scale Change Post.");
 
 		// Top left
@@ -866,7 +877,7 @@ class SustainTrail extends FlxSprite
 			uvtData[(highestNumSoFar + 3) * 2 + 1] = uvtData[(highestNumSoFar + 2) * 2 + 1]; // bottom bound
 		}
 
-		//trace("post UVTData");
+		// trace("post UVTData");
 		for (k in 0...vertices.length)
 		{
 			if (k % 2 == 1)
@@ -959,7 +970,7 @@ class SustainTrail extends FlxSprite
 	 * If flipY is true, top and bottom bounds swap places.
 	 * @param songTime	The time to clip the note at, in milliseconds.
 	 */
-	public function updateClipping_Legacy(songTime:Float = 0):Void
+	public function updateClipping_Legacy(songTime:Float = 0.0):Void
 	{
 		var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), 1.0), 0, graphicHeight);
 		if (clipHeight <= 0.1)

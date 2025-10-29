@@ -12,6 +12,7 @@ import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
 import objects.StrumNote;
 import objects.SustainTrail;
+import modcharting.graphics.SustainTrail as SustainMesh;
 import openfl.geom.Vector3D;
 import states.PlayState;
 
@@ -583,6 +584,57 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.mesh.draw();
 	}
 
+	private function drawNewSustainNote(noteData:NotePositionData)
+	{
+		if (noteData.alpha <= 0)
+			return;
+
+		//trace("drawNewSustainNote");
+
+		var daNote = notes.members[noteData.index];
+		if (daNote.newMesh == null)
+			daNote.newMesh = new SustainMesh(noteData.index, daNote.sustainLength, this);
+		//trace("Created sus");
+
+		daNote.newMesh.alpha = noteData.alpha;
+		daNote.newMesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
+
+		var songSpeed = getCorrectScrollSpeed();
+		// var lane = noteData.lane;
+
+		// // makes the sustain match the center of the parent note when at weird angles
+		// var yOffsetThingy = (NoteMovement.arrowSizes[lane] / 2);
+
+		//trace("Halfway there");
+
+		//daNote.newMesh.strumTime -= arrowPathBackLength;
+		//daNote.newMesh.x = 0;
+		//daNote.newMesh.y = 0;
+
+		//daNote.newMesh.updateClipping_mods(noteData);
+
+		daNote.newMesh.fullSustainLength = daNote.sustainLength;
+		daNote.newMesh.strumTime = daNote.strumTime;
+		var distance = 0.45 * (Conductor.songPosition - daNote.newMesh.strumTime) * songSpeed;
+
+		//daNote.newMesh.updateClipping_Legacy();
+		daNote.newMesh.setNoteIndex(noteData.index);
+		daNote.newMesh.updateClipping();
+		//daNote.newMesh.updateClipping_mods(noteData);
+
+		daNote.newMesh.cameras = this.cameras;
+		daNote.newMesh.draw();
+
+		//daNote.newMesh.x = daNote.x;
+		//daNote.newMesh.y = daNote.y + distance;
+
+		if ((daNote.wasGoodHit) || (daNote.prevNote.wasGoodHit)){
+			daNote.newMesh.sustainLength = (daNote.newMesh.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition*0.01;
+		}
+
+		//trace("Drawn");
+	}
+
 	private function drawArrowPathNew(noteData:NotePositionData)
 	{ // this one is unused since i have no clue what to do.
 		if (noteData.arrowPathAlpha <= 0)
@@ -622,18 +674,28 @@ class PlayfieldRenderer extends FlxBasic
 
 	private function drawStuff(notePositions:Array<NotePositionData>)
 	{
-		for (noteData in notePositions)
-		{
-			if (noteData.isStrum) // make sure we draw the path for each before we even draw each?
-				drawArrowPathNew(noteData);
+		for (noteData in notePositions) {
+            if (!noteData.isStrum) continue; // make sure we draw the path for each before we even draw each?
+            drawArrowPathNew(noteData);
+        }
 
-			if (noteData.isStrum) // draw strum
-				drawStrum(noteData);
-			else if (!notes.members[noteData.index].isSustainNote) // draw note
-				drawNote(noteData);
-			else // draw Sustain
-				drawSustainNote(noteData);
-		}
+        for (noteData in notePositions)
+        {
+            if (noteData.isStrum) // draw strum
+                drawStrum(noteData);
+            else if (!notes.members[noteData.index].isSustainNote){
+				if (notes.members[noteData.index].sustainLength > 0) drawNewSustainNote(noteData);
+				else drawNote(noteData);
+            }
+
+            // else if (!notes.members[noteData.index].isSustainNote) // draw note
+            //     drawNote(noteData);
+            // else
+			// { // draw Sustain
+			// 	if (notes.members[noteData.index].sustainLength > 0 && !notes.members[noteData.index].isSustainNote) drawNewSustainNote(noteData);
+            //     //drawSustainNote(noteData);
+			// }
+        }
 	}
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData
