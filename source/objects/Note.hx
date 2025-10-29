@@ -71,6 +71,8 @@ class Note extends modcharting.NewModchartArrow
 	public var hurtNote:Bool = false;
 	public var mimicNote:Bool = false;
 	public var tlove:Bool = false;
+	public var rendererIndex:Int = 0;
+	public var ogIndex:Int = 0;
 
 	public var quantizedNotes:Bool = false;
 

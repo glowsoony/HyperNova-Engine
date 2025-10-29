@@ -9,7 +9,7 @@ class NotePositionData implements IFlxDestroyable
 {
 	static var pool:FlxPool<NotePositionData> = new FlxPool(NotePositionData);
 
-	//Set+axis variables are to force position rather than adding (added for customPathModifier, can be useful for other mods tho)
+	// Set+axis variables are to force position rather than adding (added for customPathModifier, can be useful for other mods tho)
 	public var setX:Float;
 	public var setY:Float;
 	public var setZ:Float;
@@ -40,6 +40,7 @@ class NotePositionData implements IFlxDestroyable
 	public var incomingAngleY:Float;
 	public var strumTime:Float;
 	public var isSus:Bool;
+	public var noteIndex:Int;
 
 	public var stealthGlow:Float;
 	public var glowRed:Float;
@@ -92,7 +93,7 @@ class NotePositionData implements IFlxDestroyable
 
 	public function setupStrum(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int)
 	{
-		this.setX = x; //by default they will be same as the base
+		this.setX = x; // by default they will be same as the base
 		this.setY = y;
 		this.setZ = z;
 
@@ -150,9 +151,10 @@ class NotePositionData implements IFlxDestroyable
 		// this.straightHold = 0; //why tf does a strum need a damn "straightHold" value XD?
 	}
 
-	public function setupNote(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int, alpha:Float, curPos:Float,noteDist:Float, iaX:Float, iaY:Float, strumTime:Float, index:Int, isSus:Bool)
+	public function setupNote(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int, alpha:Float, curPos:Float,
+			noteDist:Float, iaX:Float, iaY:Float, strumTime:Float, index:Int, isSus:Bool, noteIndex:Int)
 	{
-		this.setX = x; //by default they will be same as the base
+		this.setX = x; // by default they will be same as the base
 		this.setY = y;
 		this.setZ = z;
 		this.x = x;
@@ -175,6 +177,7 @@ class NotePositionData implements IFlxDestroyable
 		this.incomingAngleY = iaY;
 		this.strumTime = strumTime;
 		this.isSus = isSus;
+		this.noteIndex = noteIndex;
 
 		this.stealthGlow = 0;
 		this.glowRed = 1;

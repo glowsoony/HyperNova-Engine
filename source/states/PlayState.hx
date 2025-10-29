@@ -2127,6 +2127,20 @@ class PlayState extends MusicBeatState
 				oldNote = swagNote;
 			}
 		}
+
+		var notes:Array<Note> = unspawnNotes.filter(function(note:Note) return !note.isSustainNote);
+		for (index => note in notes)
+		{
+			note.ogIndex = unspawnNotes.indexOf(note);
+			note.rendererIndex = index;
+			trace(note.rendererIndex);
+		}
+		var sustains:Array<Note> = unspawnNotes.filter(function(note:Note) return note.isSustainNote);
+		for (index => sustain in sustains)
+			sustain.ogIndex = unspawnNotes.indexOf(sustain);
+
+		unspawnNotes = notes.concat(sustains);
+		unspawnNotes.sort(byOGIndex);
 		trace('["${SONG.song.toUpperCase()}" CHART INFO]: Ghost Notes Cleared: $ghostNotesCaught');
 		for (event in songData.events) // Event Notes
 			for (i in 0...event[1].length)
@@ -2135,6 +2149,9 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByTime);
 		generatedMusic = true;
 	}
+
+	function byOGIndex(a:Note, b:Note):Int
+		return FlxSort.byValues(FlxSort.ASCENDING, a.ogIndex, b.ogIndex);
 
 	// called only once per different event (Used for precaching)
 	function eventPushed(event:EventNote)
@@ -2617,7 +2634,12 @@ class PlayState extends MusicBeatState
 			while (unspawnNotes.length > 0 && unspawnNotes[0].strumTime - Conductor.songPosition < time)
 			{
 				var dunceNote:Note = unspawnNotes[0];
+				final oldIndex:Int = dunceNote.rendererIndex;
+				trace(oldIndex);
 				notes.insert(0, dunceNote);
+				trace(notes.members[0].rendererIndex);
+				notes.members[0].rendererIndex = oldIndex;
+				trace(notes.members[0].rendererIndex);
 				dunceNote.spawned = true;
 
 				callOnLuas('onSpawnNote', [
