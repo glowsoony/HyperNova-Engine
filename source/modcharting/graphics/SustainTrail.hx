@@ -243,18 +243,27 @@ class SustainTrail extends FlxSprite
 		updateClipping_mods(fakeNote, songT);
 	}
 
-	public function setNoteIndex(index:Int = 0):Void
+	var storedIndex:Int = 0;
+	var indexNote:NotePositionData = null;
+	var fakeNote:NotePositionData = new NotePositionData();
+	var perspectiveShift:Vector2 = new Vector2(0, 0);
+
+	public function setNoteIndex(index:Int = 0)
 	{
 		storedIndex = index;
+		// return storedIndex;
 	}
 
 	public function drawForIndex(noteData:NotePositionData):Void
 	{
-	}
+		if (indexNote == null)
+			indexNote = new NotePositionData();
 
-	var storedIndex:Int = 0;
-	var fakeNote:NotePositionData = new NotePositionData();
-	var perspectiveShift:Vector2 = new Vector2(0, 0);
+		indexNote = noteData;
+		indexNote.index = storedIndex;
+
+		updateClipping_mods(indexNote);
+	}
 
 	function resetFakeNote():Void
 	{

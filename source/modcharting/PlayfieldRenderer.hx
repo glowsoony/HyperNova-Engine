@@ -359,10 +359,10 @@ class PlayfieldRenderer extends FlxBasic
 
 				curPos = modifierTable.applyCurPosMods(lane, curPos, pf);
 
-				if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit))
-					&& curPos >= 0
-					&& notes.members[i].isSustainNote)
-					curPos = 0; // sustain clip
+				// if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit))
+				// 	&& curPos >= 0
+				// 	&& notes.members[i].isSustainNote)
+				// 	curPos = 0; // sustain clip
 
 				var incomingAngle:Array<Float> = modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 				if (noteDist < 0)
@@ -589,9 +589,21 @@ class PlayfieldRenderer extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 
+		// trace("drawNewSustainNote");
+
+		// var daNote = notes.members[noteData.index];
+		// //var index = noteData.index;
+
+		// if (daNote.newMesh == null){
+		// 	daNote.newMesh = new SustainMesh(noteData.index, daNote.sustainLength, this);
+		// 	daNote.newMesh.setNoteIndex(noteData.index);
+		// }
+
 		var daNote:Note = notes.members[noteData.index];
 		if (daNote.newMesh == null)
 			daNote.newMesh = new SustainMesh(noteData.lane, daNote.sustainLength, this);
+
+		// noteData.index = index;
 		// trace("Created sus");
 
 		daNote.newMesh.alpha = noteData.alpha;
@@ -623,13 +635,12 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.newMesh.cameras = this.cameras;
 		daNote.newMesh.draw();
 
-		// daNote.newMesh.x = daNote.x;
+		// daNote.newMesh.x = daNote.x - daNote.newMesh.width;
 		// daNote.newMesh.y = daNote.y + distance;
 
-		if ((daNote.wasGoodHit) || (daNote.prevNote.wasGoodHit))
-		{
-			daNote.newMesh.sustainLength = (daNote.newMesh.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition * 0.01;
-		}
+		// if ((daNote.wasGoodHit) || (daNote.prevNote.wasGoodHit)){
+		// 	daNote.newMesh.sustainLength = (daNote.newMesh.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition*0.01;
+		// }
 
 		// trace("Drawn");
 	}
