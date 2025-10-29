@@ -243,18 +243,26 @@ class SustainTrail extends FlxSprite
 		updateClipping_mods(fakeNote, songT);
 	}
 
-	public function setNoteIndex(index:Int = 0):Void
+	var storedIndex:Int = 0;
+	var indexNote:NotePositionData = null;
+	var fakeNote:NotePositionData = new NotePositionData();
+	var perspectiveShift:Vector2 = new Vector2(0, 0);
+
+	public function setNoteIndex(index:Int = 0)
 	{
 		storedIndex = index;
+		//return storedIndex;
 	}
 
 	public function drawForIndex(noteData:NotePositionData):Void {
-		
-	}
+		if (indexNote == null)
+			indexNote = new NotePositionData();
 
-	var storedIndex:Int = 0;
-	var fakeNote:NotePositionData = new NotePositionData();
-	var perspectiveShift:Vector2 = new Vector2(0, 0);
+		indexNote = noteData;
+		indexNote.index = storedIndex;
+
+		updateClipping_mods(indexNote);
+	}
 
 	function resetFakeNote():Void
 	{
@@ -300,9 +308,9 @@ class SustainTrail extends FlxSprite
 		NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 		// move the x and y to properly be in the center of the strum graphic
-		var daNote = pfr.notes.members[lane]; // first we need to know what the strum is though lol
-		fakeNote.x += daNote.width / 2;
-		fakeNote.y += daNote.height / 2;
+		// var daNote = pfr.strumGroup.members[lane]; // first we need to know what the strum is though lol
+		// fakeNote.x += daNote.width;
+		// fakeNote.y += daNote.height;
 
 		// add offsets to data with modifiers
 		pfr.modifierTable.applyNoteMods(fakeNote, lane, curPos, pf);
@@ -413,9 +421,9 @@ class SustainTrail extends FlxSprite
 	 */
 	public function updateClipping_mods(noteData:NotePositionData, songTime:Float = 0.0, uvSetup:Bool = true):Void
 	{
-		trace(noteData.index);
-		// if (fakeNote == null)
-		// 	fakeNote = new NotePositionData();
+		//trace(noteData.index);
+		if (fakeNote == null)
+		 	fakeNote = new NotePositionData();
 
 		// var holdGrain:Float = 50 +
 		//	noteData.pathGrain; // Seems to use my grain format, neat. Higher default grain then my Modchart fork cuz this engine can actually do the math without dying
