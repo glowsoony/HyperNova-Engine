@@ -592,55 +592,29 @@ class PlayfieldRenderer extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 
-		// trace("drawNewSustainNote");
-
-		// var daNote = notes.members[noteData.index];
-		// //var index = noteData.index;
-
-		// if (daNote.newMesh == null){
-		// 	daNote.newMesh = new SustainMesh(noteData.index, daNote.sustainLength, this);
-		// 	daNote.newMesh.setNoteIndex(noteData.index);
-		// }
-
 		var daNote:Note = notes.members[noteData.index];
 		if (daNote.newMesh == null)
 			daNote.newMesh = new SustainMesh(noteData.lane, Math.ffloor(daNote.sustainLength), this);
 
-		// noteData.index = index;
-		// trace("Created sus");
 
-		daNote.newMesh.alpha = noteData.alpha;
+		daNote.newMesh.alpha = 0.6 * noteData.alpha;
 		daNote.newMesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 
 		var songSpeed = getCorrectScrollSpeed();
 		// var lane = noteData.lane;
 
-		// // makes the sustain match the center of the parent note when at weird angles
-		// var yOffsetThingy = (NoteMovement.arrowSizes[lane] / 2);
-
-		// trace("Halfway there");
-
 		// daNote.newMesh.strumTime -= arrowPathBackLength;
-		// daNote.newMesh.x = 0;
-		// daNote.newMesh.y = 0;
-
-		// daNote.newMesh.updateClipping_mods(noteData);
+		//daNote.newMesh.x = 0;
+		//daNote.newMesh.y = 0;
 
 		daNote.newMesh.strumTime = daNote.strumTime;
-		var distance = 0.45 * (Conductor.songPosition - daNote.newMesh.strumTime) * songSpeed;
-
-		// daNote.newMesh.updateClipping_Legacy();
-		// daNote.newMesh.setNoteIndex(noteData.index);
-		// daNote.newMesh.updateClipping();
-		// noteData.curPos = 0;
-		// daNote.newMesh.sustainLength = (daNote.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition;
 
 		daNote.newMesh.updateClipping_mods(noteData);
 
 		daNote.newMesh.cameras = this.cameras;
 		daNote.newMesh.draw();
 
-		// daNote.newMesh.x = daNote.x - daNote.newMesh.width;
+		// daNote.newMesh.x = daNote.x + daNote.newMesh.width/2;
 		// daNote.newMesh.y = daNote.y + distance;
 
 		// trace("Drawn");
