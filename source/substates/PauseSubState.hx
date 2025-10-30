@@ -294,6 +294,9 @@ class PauseSubState extends MusicBeatSubstate
 			MusicBeatState.resetState();
 		}
 
+		if (inCountDown)
+			return;
+
 		updateSkipTextStuff();
 		if (controls.UI_UP_P)
 		{
@@ -426,6 +429,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					Paths.clearUnusedMemory();
 					specialAction = RESUME;
+					menuItems = [];
 					inCountDown = true;
 					hideCameraOverlay(true);
 					regenMenu();
