@@ -309,6 +309,10 @@ class SustainTrail extends FlxSprite
 
 			curPos = pfr.modifierTable.applyCurPosMods(lane, curPos, pf);
 
+			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
+			
+			if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && curPos >= 0) curPos = 0.0;
+
 			var incomingAngle:Array<Float> = pfr.modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 			if (noteDist < 0)
 				incomingAngle[0] += 180; // make it match for both scrolls
@@ -317,7 +321,6 @@ class SustainTrail extends FlxSprite
 			NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// move the x and y to properly be in the center of the strum graphic
-			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
 			fakeNote.x += daNote.width / 2 - frameWidth / 15;
 			fakeNote.y += daNote.height / 2 - frameHeight / 15;
 
@@ -447,7 +450,7 @@ class SustainTrail extends FlxSprite
 
 			var holdGrain:Float = 50;
 			var songTimmy:Float = songTime;
-			var scale:Float = 0.75;
+			var scale:Float = 0.7;
 
 			var longHolds:Float = 0;
 			longHolds += 1;
