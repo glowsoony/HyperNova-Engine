@@ -359,9 +359,10 @@ class PlayfieldRenderer extends FlxBasic
 
 				curPos = modifierTable.applyCurPosMods(lane, curPos, pf);
 
-				if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0)
+				//if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0)
+				 	// sustain clip
 					// && notes.members[i].isSustainNote)
-					curPos = 0; // sustain clip
+					//curPos = 0; // sustain clip
 
 				var incomingAngle:Array<Float> = modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 				if (noteDist < 0)
@@ -507,6 +508,9 @@ class PlayfieldRenderer extends FlxBasic
 		// }
 		// else
 		// daNote.applyNoteData(noteData);
+
+		if ((daNote.wasGoodHit)) daNote.alpha = 0;
+
 		daNote.draw();
 	}
 
@@ -600,7 +604,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		var daNote:Note = notes.members[noteData.index];
 		if (daNote.newMesh == null)
-			daNote.newMesh = new SustainMesh(noteData.lane, daNote.sustainLength - Conductor.stepCrochet * 0.25, this);
+			daNote.newMesh = new SustainMesh(noteData.lane, daNote.sustainLength - (ModchartUtil.getFakeCrochet()/3), this);
 
 		// noteData.index = index;
 		// trace("Created sus");
@@ -628,7 +632,7 @@ class PlayfieldRenderer extends FlxBasic
 		// daNote.newMesh.updateClipping_Legacy();
 		// daNote.newMesh.setNoteIndex(noteData.index);
 		// daNote.newMesh.updateClipping();
-		noteData.curPos = 0;
+		// noteData.curPos = 0;
 		// daNote.newMesh.sustainLength = (daNote.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition;
 
 		daNote.newMesh.updateClipping_mods(noteData);

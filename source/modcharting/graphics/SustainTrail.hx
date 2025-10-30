@@ -321,8 +321,8 @@ class SustainTrail extends FlxSprite
 			NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// move the x and y to properly be in the center of the strum graphic
-			fakeNote.x += daNote.width / 2 - frameWidth / 15;
-			fakeNote.y += daNote.height / 2 - frameHeight / 15;
+			fakeNote.x += daNote.width / 2 - frameWidth / 16;
+			fakeNote.y += daNote.height / 2 - frameHeight / 16;
 
 			// add offsets to data with modifiers
 			pfr.modifierTable.applyNoteMods(fakeNote, lane, curPos, pf);
@@ -348,8 +348,8 @@ class SustainTrail extends FlxSprite
 				fakeNote.scaleY *= (1 / -thisNotePos.z);
 			}
 		}
-		catch (e:Exception)
-			trace(e.message, e.stack);
+		catch (e:Exception){}
+			//trace(e.message, e.stack);
 	}
 
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ?pf:Int = 0)
@@ -506,7 +506,7 @@ class SustainTrail extends FlxSprite
 			// }
 
 			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), PlayState.SONG.speed).clamp(0, graphicHeight);
-			trace(clipHeight);
+			//trace(clipHeight);
 			if (clipHeight <= 0.1)
 			{
 				//	trace('INVISIBLE HOLD!');
@@ -753,7 +753,7 @@ class SustainTrail extends FlxSprite
 			var sillyEndOffset = (graphic.height * (endOffset) * zoom);
 
 			// just some random magic number for now. Don't know how to convert the pixels / height into strumTime
-			sillyEndOffset = sillyEndOffset / (0.45 * 1.0);
+			sillyEndOffset = sillyEndOffset / (0.45 * pfr?.getCorrectScrollSpeed() ?? 1.0);
 
 			sillyEndOffset *= 1.9; // MAGIC NUMBER IDFK
 
