@@ -232,7 +232,7 @@ class SustainTrail extends FlxSprite
 	public var songTime:Float = 0.0;
 
 	public function updateLength()
-		sustainLength = (strumTime + fullSustainLength) - (Conductor.songPosition * 0.45);
+		sustainLength = (strumTime + fullSustainLength) - Conductor.songPosition;
 
 	/**
 	 * Sets up new vertex and UV data to clip the trail.
@@ -351,7 +351,7 @@ class SustainTrail extends FlxSprite
 
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ?pf:Int = 0)
 	{
-		var distance = (Conductor.songPosition) - strumTimeOffset;
+		var distance = Conductor.songPosition - strumTimeOffset;
 		return distance * pfr.getCorrectScrollSpeed();
 	}
 
@@ -503,6 +503,7 @@ class SustainTrail extends FlxSprite
 			// }
 
 			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), PlayState.SONG.speed).clamp(0, graphicHeight);
+			trace(clipHeight);
 			if (clipHeight <= 0.1)
 			{
 				//	trace('INVISIBLE HOLD!');

@@ -2698,8 +2698,14 @@ class PlayState extends MusicBeatState
 							if (daNote.isSustainNote && strum.sustainReduce)
 								daNote.clipToStrumNote(strum);
 
-							// Kill extremely late notes and cause misses
-							if (Conductor.songPosition - daNote.strumTime > noteKillOffset)
+							if (daNote.newMesh != null)
+							{
+								if (daNote.newMesh.sustainLength > 0.1)
+									daNote.newMesh.updateLength();
+								else
+									invalidateNote(daNote);
+							}
+							else if (Conductor.songPosition - daNote.strumTime > noteKillOffset) // Kill extremely late notes and cause misses
 							{
 								if (daNote.mustPress && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit))
 									noteMiss(daNote);
@@ -4057,6 +4063,9 @@ class PlayState extends MusicBeatState
 					if (guitarHeroSustains)
 						canHit = canHit && n.parent != null && n.parent.wasGoodHit;
 
+					// if (!n.isSustainNote && n.wasGoodHit && holdArray[n.noteData])
+					// 	n.newMesh.updateLength();
+
 					if (canHit && n.isSustainNote)
 					{
 						var released:Bool = !holdArray[n.noteData];
@@ -4407,7 +4416,7 @@ class PlayState extends MusicBeatState
 
 		spawnHoldSplashOnNote(note);
 
-		if (!note.isSustainNote)
+		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= .10))
 			invalidateNote(note);
 	}
 
@@ -4623,7 +4632,7 @@ class PlayState extends MusicBeatState
 		if (result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll)
 			callOnHScript('goodNoteHit', [note]);
 		spawnHoldSplashOnNote(note);
-		if (!note.isSustainNote)
+		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= .10))
 			invalidateNote(note);
 	}
 
