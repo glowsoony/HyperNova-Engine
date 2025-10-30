@@ -10,6 +10,9 @@ import lime.math.Vector2;
 import modcharting.*;
 import openfl.display.TriangleCulling;
 import openfl.geom.Vector3D;
+
+using mikolka.funkin.utils.FloatTools;
+
 #if sys
 import sys.FileSystem;
 #end
@@ -396,6 +399,9 @@ class SustainTrail extends FlxSprite
 	// The angle the hold note is coming from with spiral holds! used for hold covers!
 	public var baseAngle:Float = 0;
 
+	public function updateLength()
+		sustainLength = (strumTime + fullSustainLength) - Conductor.songPosition;
+
 	/**
 	 * Sets up new vertex and UV data to clip the trail.
 	 * @param songTime	The time to clip the note at, in milliseconds.
@@ -404,7 +410,7 @@ class SustainTrail extends FlxSprite
 	public function updateClipping_mods(noteData:NotePositionData, songTime:Float = 0, uvSetup:Bool = true):Void
 	{
 		trace(noteData.index);
-		
+
 		if (fakeNote == null)
 			fakeNote = new NotePositionData();
 
@@ -468,10 +474,11 @@ class SustainTrail extends FlxSprite
 		//  noteIndices.push(highestNumSoFar_ + k + 2);
 		// }
 
-		var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), 1.0), 0, graphicHeight);
+		var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), pfr.getCorrectScrollSpeed()).clamp(0, graphicHeight);
+		trace(clipHeight);
 		if (clipHeight <= 0.1)
 		{
-		//	trace('INVISIBLE HOLD!');
+			//	trace('INVISIBLE HOLD!');
 			visible = false;
 			return;
 		}
@@ -487,7 +494,7 @@ class SustainTrail extends FlxSprite
 		// var holdRightSide = holdWidth * scaleTest;
 
 		var clippingTimeOffset:Float = clipTimeThing(songTimmy, strumTime);
-		//trace("testing sussyL, holdWidth, and clippingTimeOffset", sussyLength, holdWidth, clippingTimeOffset);
+		// trace("testing sussyL, holdWidth, and clippingTimeOffset", sussyLength, holdWidth, clippingTimeOffset);
 
 		var bottomHeight:Float = graphic.height * zoom * endOffset;
 		var partHeight:Float = clipHeight - bottomHeight;
@@ -687,8 +694,8 @@ class SustainTrail extends FlxSprite
 			// testCol[(i + 1) * 2] = fakeNote.color;
 			// testCol[(i + 1) * 2 + 1] = fakeNote.color;
 		}
-		
-		//trace("Post Hold Resolution");
+
+		// trace("Post Hold Resolution");
 
 		if (uvSetup)
 		{
@@ -742,8 +749,8 @@ class SustainTrail extends FlxSprite
 		// scaleTest = fakeNote.scale.x;
 		// holdLeftSide = (holdWidth * (scaleTest - 1)) * -1;
 		// holdRightSide = holdWidth * scaleTest;
-		
-		//trace("Scale Change Post.");
+
+		// trace("Scale Change Post.");
 
 		// Top left
 		vertices[highestNumSoFar * 2] = vertices[endvertsoftrail * 2]; // Inline with bottom left vertex of hold
@@ -866,7 +873,7 @@ class SustainTrail extends FlxSprite
 			uvtData[(highestNumSoFar + 3) * 2 + 1] = uvtData[(highestNumSoFar + 2) * 2 + 1]; // bottom bound
 		}
 
-		//trace("post UVTData");
+		// trace("post UVTData");
 		for (k in 0...vertices.length)
 		{
 			if (k % 2 == 1)
@@ -888,10 +895,10 @@ class SustainTrail extends FlxSprite
 		if (uvSetup)
 		{
 			this.uvtData = new DrawData<Float>(uvtData.length - 0, true, uvtData);
-		//	trace(uvtData);
+			//	trace(uvtData);
 			uvtData = null;
 		}
-		//trace(vertices, indices, colors, uvtData);
+		// trace(vertices, indices, colors, uvtData);
 		testCol = null;
 		noteIndices = null;
 		vertices = null;

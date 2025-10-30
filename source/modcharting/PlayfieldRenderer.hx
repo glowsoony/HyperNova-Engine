@@ -139,9 +139,9 @@ class PlayfieldRenderer extends FlxBasic
 			{
 				drawStuff(getNotePositions());
 			}
-			catch (e)
+			catch (e:Exception)
 			{
-				trace(e);
+				trace(e.message, e.stack);
 			}
 		}
 	}
@@ -638,9 +638,8 @@ class PlayfieldRenderer extends FlxBasic
 		// daNote.newMesh.x = daNote.x - daNote.newMesh.width;
 		// daNote.newMesh.y = daNote.y + distance;
 
-		// if ((daNote.wasGoodHit) || (daNote.prevNote.wasGoodHit)){
-		// 	daNote.newMesh.sustainLength = (daNote.newMesh.strumTime + daNote.newMesh.fullSustainLength) - Conductor.songPosition*0.01;
-		// }
+		if ((daNote.wasGoodHit) || (daNote.prevNote.wasGoodHit))
+			daNote.newMesh.updateLength();
 
 		// trace("Drawn");
 	}

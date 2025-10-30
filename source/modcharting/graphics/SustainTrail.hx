@@ -10,6 +10,9 @@ import lime.math.Vector2;
 import modcharting.*;
 import openfl.display.TriangleCulling;
 import openfl.geom.Vector3D;
+
+using mikolka.funkin.utils.FloatTools;
+
 #if sys
 import sys.FileSystem;
 #end
@@ -210,7 +213,7 @@ class SustainTrail extends FlxSprite
 
 	function triggerRedraw():Void
 	{
-		graphicHeight = sustainHeight(sustainLength, 1.0);
+		graphicHeight = sustainHeight(sustainLength, PlayState.SONG.speed);
 		updateClipping();
 		updateHitbox();
 	}
@@ -227,6 +230,9 @@ class SustainTrail extends FlxSprite
 	var usingHazModHolds:Bool = true;
 
 	public var songTime:Float = 0.0;
+
+	public function updateLength()
+		sustainLength = (strumTime + fullSustainLength) - (Conductor.songPosition * 0.45);
 
 	/**
 	 * Sets up new vertex and UV data to clip the trail.
@@ -496,7 +502,7 @@ class SustainTrail extends FlxSprite
 			//  noteIndices.push(highestNumSoFar_ + k + 2);
 			// }
 
-			var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), 1.0), 0, graphicHeight);
+			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), PlayState.SONG.speed).clamp(0, graphicHeight);
 			if (clipHeight <= 0.1)
 			{
 				//	trace('INVISIBLE HOLD!');
