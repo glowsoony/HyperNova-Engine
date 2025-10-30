@@ -318,8 +318,8 @@ class SustainTrail extends FlxSprite
 
 			// move the x and y to properly be in the center of the strum graphic
 			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
-			fakeNote.x += daNote.width / 2;
-			fakeNote.y += daNote.height / 2;
+			fakeNote.x += daNote.width / 2 - frameWidth / 15;
+			fakeNote.y += daNote.height / 2 - frameHeight / 15;
 
 			// add offsets to data with modifiers
 			pfr.modifierTable.applyNoteMods(fakeNote, lane, curPos, pf);
@@ -436,9 +436,9 @@ class SustainTrail extends FlxSprite
 	{
 		try
 		{
-			trace(noteData.noteIndex);
-			trace(noteDirection);
-			trace(noteData.lane);
+			// trace(noteData.noteIndex);
+			// trace(noteDirection);
+			// trace(noteData.lane);
 			if (fakeNote == null)
 				fakeNote = new NotePositionData();
 

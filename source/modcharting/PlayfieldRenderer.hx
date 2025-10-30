@@ -696,9 +696,10 @@ class PlayfieldRenderer extends FlxBasic
 				drawStrum(noteData);
 			else if (!notes.members[noteData.index].isSustainNote)
 			{
-				drawNote(noteData);
 				if (notes.members[noteData.index].sustainLength > 0)
 					drawNewSustainNote(noteData);
+				
+				drawNote(noteData);
 			}
 
 			// else if (!notes.members[noteData.index].isSustainNote) // draw note

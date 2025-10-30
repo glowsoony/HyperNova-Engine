@@ -2635,11 +2635,11 @@ class PlayState extends MusicBeatState
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				final oldIndex:Int = dunceNote.rendererIndex;
-				trace(oldIndex);
+				// trace(oldIndex);
 				notes.insert(0, dunceNote);
-				trace(notes.members[0].rendererIndex);
+				// trace(notes.members[0].rendererIndex);
 				notes.members[0].rendererIndex = oldIndex;
-				trace(notes.members[0].rendererIndex);
+				// trace(notes.members[0].rendererIndex);
 				dunceNote.spawned = true;
 
 				callOnLuas('onSpawnNote', [
