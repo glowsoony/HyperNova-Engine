@@ -311,7 +311,7 @@ class SustainTrail extends FlxSprite
 
 			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
 			
-			if (daNote.wasGoodHit || daNote.prevNote.wasGoodHit) curPos = 0.0;
+			if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && curPos >= 0) curPos = 0.0;
 
 			var incomingAngle:Array<Float> = pfr.modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 			if (noteDist < 0)
