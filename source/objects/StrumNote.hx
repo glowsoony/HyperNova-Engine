@@ -7,7 +7,7 @@ import shaders.RGBPalette;
 
 class StrumNote extends modcharting.NewModchartArrow
 {
-	public var arrowPath:SustainTrail = null;
+	public var arrowPath:modcharting.graphics.SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
 	public var resetAnim:Float = 0;
 	public var noteData:Int = 0;

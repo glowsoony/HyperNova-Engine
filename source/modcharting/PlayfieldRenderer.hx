@@ -12,7 +12,7 @@ import modcharting.Proxiefield.Proxie as Proxy;
 import modcharting.graphics.SustainTrail as SustainMesh;
 import objects.Note;
 import objects.StrumNote;
-import objects.SustainTrail;
+// import objects.SustainTrail;
 import openfl.geom.Vector3D;
 import states.PlayState;
 
@@ -639,7 +639,7 @@ class PlayfieldRenderer extends FlxBasic
 		var arrowPathBackLength:Float = noteData.arrowPathBackwardsLength * 100;
 
 		if (strumNote.arrowPath == null)
-			strumNote.arrowPath = new SustainTrail(noteData.index, arrowPathLength, this);
+			strumNote.arrowPath = new SustainMesh(noteData.index, arrowPathLength, this);
 
 		strumNote.arrowPath.alpha = noteData.arrowPathAlpha;
 
@@ -649,7 +649,7 @@ class PlayfieldRenderer extends FlxBasic
 		strumNote.arrowPath.x = 0;
 		strumNote.arrowPath.y = 0;
 
-		strumNote.arrowPath.shader = strumNote.rgbShader.parent.shader; // idfk if this works.
+		// strumNote.arrowPath.shader = strumNote.rgbShader.parent.shader; // idfk if this works.
 
 		strumNote.arrowPath.updateClipping_mods(noteData);
 

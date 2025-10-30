@@ -409,7 +409,7 @@ class SustainTrail extends FlxSprite
 	 */
 	public function updateClipping_mods(noteData:NotePositionData, songTime:Float = 0, uvSetup:Bool = true):Void
 	{
-		trace(noteData.index);
+		//trace(noteData.index);
 
 		if (fakeNote == null)
 			fakeNote = new NotePositionData();
@@ -475,7 +475,7 @@ class SustainTrail extends FlxSprite
 		// }
 
 		var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), pfr.getCorrectScrollSpeed()).clamp(0, graphicHeight);
-		trace(clipHeight);
+		//trace(clipHeight);
 		if (clipHeight <= 0.1)
 		{
 			//	trace('INVISIBLE HOLD!');

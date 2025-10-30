@@ -472,9 +472,10 @@ class SustainTrail extends FlxSprite
 
 			curPos = pfr.modifierTable.applyCurPosMods(lane, curPos, pf);
 
-			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
+			var daNote = !isArrowPath ? pfr.notes.members[fakeNote.index] : pfr.strumGroup.members[lane]; // first we need to know what the strum is though lol
 
-			if ((daNote.wasGoodHit) && curPos >= 0) curPos = 0.0;
+			if (!isArrowPath)
+				if ((daNote.wasGoodHit) && curPos >= 0) curPos = 0.0;
 
 			var incomingAngle:Array<Float> = pfr.modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 			if (noteDist < 0)
@@ -485,7 +486,7 @@ class SustainTrail extends FlxSprite
 
 			// move the x and y to properly be in the center of the strum graphic
 			fakeNote.x += daNote.width / 2 - frameWidth / 15;
-			fakeNote.y += daNote.height / 2 - frameHeight / 20;
+			fakeNote.y += daNote.height / 2 - frameHeight / 15;
 
 			// add offsets to data with modifiers
 			pfr.modifierTable.applyNoteMods(fakeNote, lane, curPos, pf);
@@ -638,10 +639,10 @@ class SustainTrail extends FlxSprite
 			// trace(noteData.lane);
 			if (fakeNote == null) fakeNote = new NotePositionData();
 
-			grain = 50; //TODO: add a new "grain" setting inside noteposdata
+			grain = 50 + isArrowPath ? noteData.pathGrain : 0; //TODO: add a new "grain" setting inside noteposdata
 
 			var songTimmy:Float = songTime;
-			var scale:Float = 45;
+			var scale:Float = 45 + isArrowPath ? noteData.arrowPathWidth : 1; //TODO: add a new "grain" setting inside noteposdata
 
 			var longHolds:Float = 0;
 			longHolds += 1;
@@ -652,7 +653,7 @@ class SustainTrail extends FlxSprite
 				holdResolution = 1;
 
 			// var spiralHolds:Bool = parentStrumline?.mods?.spiralHolds[noteDirection % 4] ?? false;
-			var spiralHolds:Bool = (noteData.spiralHold >= 0.5);
+			var spiralHolds:Bool = (noteData.spiralHold >= 0.5); //TODO: make spiralPaths modifier
 
 			var testCol:Array<Int> = [];
 			var vertices:Array<Float> = [];
@@ -696,7 +697,7 @@ class SustainTrail extends FlxSprite
 			//  noteIndices.push(highestNumSoFar_ + k + 2);
 			// }
 
-			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), PlayState.SONG.speed).clamp(0, graphicHeight);
+			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), pfr?.getCorrectScrollSpeed() ?? 1.0).clamp(0, graphicHeight);
 			// trace(clipHeight);
 			if (clipHeight <= 0.0)
 			{
@@ -768,7 +769,7 @@ class SustainTrail extends FlxSprite
 			// this.color = fakeNote.color;
 			// if (!isArrowPath)
 			// {
-			this.alpha = noteData.alpha;
+			this.alpha = isArrowPath ? noteData.arrowPathAlpha : 0.6 * noteData.alpha;
 			// }
 			this.z = fakeNote.z; // for z ordering
 			
