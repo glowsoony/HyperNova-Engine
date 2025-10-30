@@ -2700,7 +2700,7 @@ class PlayState extends MusicBeatState
 
 							if (daNote.newMesh != null)
 							{
-								if (daNote.newMesh.sustainLength > 0.1)
+								if (daNote.newMesh.sustainLength > 0.0)
 									daNote.newMesh.updateLength();
 								else
 									invalidateNote(daNote);
@@ -4416,7 +4416,7 @@ class PlayState extends MusicBeatState
 
 		spawnHoldSplashOnNote(note);
 
-		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= .10))
+		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 	}
 
@@ -4632,7 +4632,7 @@ class PlayState extends MusicBeatState
 		if (result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll)
 			callOnHScript('goodNoteHit', [note]);
 		spawnHoldSplashOnNote(note);
-		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= .10))
+		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 	}
 

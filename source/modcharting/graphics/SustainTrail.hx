@@ -310,8 +310,9 @@ class SustainTrail extends FlxSprite
 			curPos = pfr.modifierTable.applyCurPosMods(lane, curPos, pf);
 
 			var daNote = pfr.notes.members[fakeNote.index]; // first we need to know what the strum is though lol
-			
-			if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && curPos >= 0) curPos = 0.0;
+
+			if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && curPos >= 0)
+				curPos = 0.0;
 
 			var incomingAngle:Array<Float> = pfr.modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 			if (noteDist < 0)
@@ -348,8 +349,10 @@ class SustainTrail extends FlxSprite
 				fakeNote.scaleY *= (1 / -thisNotePos.z);
 			}
 		}
-		catch (e:Exception){}
-			//trace(e.message, e.stack);
+		catch (e:Exception)
+		{
+		}
+		// trace(e.message, e.stack);
 	}
 
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0, ?pf:Int = 0)
@@ -506,8 +509,8 @@ class SustainTrail extends FlxSprite
 			// }
 
 			var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), PlayState.SONG.speed).clamp(0, graphicHeight);
-			//trace(clipHeight);
-			if (clipHeight <= 0.1)
+			// trace(clipHeight);
+			if (clipHeight <= 0.0)
 			{
 				//	trace('INVISIBLE HOLD!');
 				visible = false;
@@ -1004,7 +1007,7 @@ class SustainTrail extends FlxSprite
 	public function updateClipping_Legacy(songTime:Float = 0.0):Void
 	{
 		var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), 1.0), 0, graphicHeight);
-		if (clipHeight <= 0.1)
+		if (clipHeight <= 0.0)
 		{
 			visible = false;
 			return;

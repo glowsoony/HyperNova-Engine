@@ -81,6 +81,8 @@ class PauseSubState extends MusicBeatSubstate
 		this.inVid = inCutscene;
 	}
 
+	var bg:FlxSprite;
+
 	override function create()
 	{
 		controls.isInSubstate = true;
@@ -135,7 +137,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
 		bg.scale.set(FlxG.width, FlxG.height);
 		bg.updateHitbox();
 		bg.alpha = 0;
@@ -431,6 +433,7 @@ class PauseSubState extends MusicBeatSubstate
 					specialAction = RESUME;
 					menuItems = [];
 					inCountDown = true;
+					bg.alpha = 0;
 					hideCameraOverlay(true);
 					regenMenu();
 					deleteSkipTimeText();
@@ -721,6 +724,9 @@ class PauseSubState extends MusicBeatSubstate
 			grpMenuShit.remove(obj, true);
 			obj.destroy();
 		}
+
+		if (inCountDown)
+			return;
 
 		for (num => str in menuItems)
 		{
