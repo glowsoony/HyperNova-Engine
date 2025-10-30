@@ -27,6 +27,20 @@ import sys.FileSystem;
  *
  * @author MtH
  */
+
+ //TODO:
+ /*
+	- Make sure sustains are ALWAYS centered uppon their note/strum
+	- Make XML support for sustain rather than sprite override (can use NewModchartArrow as base since they are the same class lmao)
+	- ^^^ In case XML does not exist we can use the "basic default" one
+	- Make sure math for the sustains work properly uppon modifier math (such as how Z changes it, incoming mods and etc etc)
+	- If sustain is too long and we are using a modifier that makes Z go over screen use something to make it invisible, either "Stealth" shader forced for them, or smth
+	- Make the rest "modifierVariables" for this (such as noteData.holdGrain, noteData.holdWidth and etc)
+	
+	- That'll be all ig.
+
+	-Ed
+ */
 class SustainTrail extends FlxSprite
 {
 	/**

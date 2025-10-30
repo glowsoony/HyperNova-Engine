@@ -642,6 +642,7 @@ class PlayfieldRenderer extends FlxBasic
 			strumNote.arrowPath = new SustainMesh(noteData.index, arrowPathLength, this);
 
 		strumNote.arrowPath.alpha = noteData.arrowPathAlpha;
+		strumNote.arrowPath.isArrowPath = true;
 
 		strumNote.arrowPath.fullSustainLength = strumNote.arrowPath.sustainLength = arrowPathLength + arrowPathBackLength;
 		strumNote.arrowPath.strumTime = Conductor.songPosition;
