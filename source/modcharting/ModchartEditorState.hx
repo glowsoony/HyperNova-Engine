@@ -878,8 +878,8 @@ class ModchartEditorState extends MusicBeatState
 			ClientPrefs.toggleVolumeKeys(false);
 		}
 
-		if (playbackSpeed <= 0.5)
-			playbackSpeed = 0.5;
+		if (playbackSpeed <= 0.1)
+			playbackSpeed = 0.1;
 		if (playbackSpeed >= 3)
 			playbackSpeed = 3;
 
