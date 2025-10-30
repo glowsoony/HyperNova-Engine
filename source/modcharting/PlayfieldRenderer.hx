@@ -604,7 +604,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		var daNote:Note = notes.members[noteData.index];
 		if (daNote.newMesh == null)
-			daNote.newMesh = new SustainMesh(noteData.lane, daNote.sustainLength - (ModchartUtil.getFakeCrochet()/3), this);
+			daNote.newMesh = new SustainMesh(noteData.lane, Math.ffloor(daNote.sustainLength), this);
 
 		// noteData.index = index;
 		// trace("Created sus");
