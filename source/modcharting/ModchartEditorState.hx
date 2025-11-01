@@ -93,25 +93,25 @@ class ModchartEditorState extends MusicBeatState
 	// 		cls
 	// ];
 	// public static var modifierList:Array<Class<Modifier>> = [for (cls in CompileTime.getAllClasses('modcharting.modifiers', true, modcharting.Modifier)) cls];
-	// public static var modifierList:Array<Class<Modifier>> = (function() {
-	// 	var modifiers:Array<Class<Modifier>> = [];
-	// 	var packagePath = "modcharting.modifiers";
-	// 	#if haxe_boot
-	// 	var classNames:Array<String> = Reflect.field(Type, "allClassesInPackage").get(packagePath);
-	// 	#else
-	// 	var classNames:Array<String> = [];
-	// 	#end
-	// 	for (className in classNames) {
-	// 		if (className.indexOf("Modifier") != -1) {
-	// 			var cls = Type.resolveClass(packagePath + "." + className);
-	// 			if (cls != null && Std.is(Type.createEmptyInstance(cls), Modifier)) {
-	// 				modifiers.push(cast cls);
-	// 			}
-	// 		}
-	// 	}
-	// 	return modifiers;
-	// })();
-	public static var modifierList:Array<Class<Modifier>> = [
+	public static var modifierList:Array<Class<Modifier>> = (function() {
+		var modifiers:Array<Class<Modifier>> = [];
+		var packagePath = "modcharting.modifiers";
+		#if haxe_boot
+		var classNames:Array<String> = Reflect.field(Type, "allClassesInPackage").get(packagePath);
+		#else
+		var classNames:Array<String> = [];
+		#end
+		for (className in classNames) {
+			if (className.indexOf("Modifier") != -1) {
+				var cls = Type.resolveClass(packagePath + "." + className);
+				if (cls != null && Std.is(Type.createEmptyInstance(cls), Modifier)) {
+					modifiers.push(cast cls);
+				}
+			}
+		}
+		return modifiers;
+	})();
+	/*public static var modifierList:Array<Class<Modifier>> = [
 		modcharting.modifiers.Transform.TransformModifier,
 		modcharting.modifiers.Transform.NoteOffsetModifier,
 		modcharting.modifiers.Transform.StrumOffsetModifier,
@@ -477,6 +477,7 @@ class ModchartEditorState extends MusicBeatState
 		modcharting.modifiers.ExtraMods.CustomPathModifier,
 		modcharting.modifiers.ExtraMods.SpiralHoldsModifier,
 	];
+	*/
 	public static var easeList:Array<String> = ImprovedEases.easeList;
 
 	// used for indexing

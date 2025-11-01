@@ -47,15 +47,17 @@ class NotePositionData implements IFlxDestroyable
 	public var glowGreen:Float;
 	public var glowBlue:Float;
 
+	public var sustainWidth:Float = 1;
+	public var sustainGrain:Float = 0;
+
 	public var arrowPathAlpha:Float = 0;
 	public var arrowPathLength:Float = 14;
 	public var arrowPathBackwardsLength:Float = 2;
-
 	public var arrowPathWidth:Float = 1;
-
 	public var pathGrain:Float = 0;
 
 	public var spiralHold:Float = 0;
+	public var spiralPath:Float = 0;
 
 	public var orient:Float = 0;
 

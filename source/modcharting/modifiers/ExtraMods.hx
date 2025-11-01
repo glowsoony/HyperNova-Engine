@@ -106,6 +106,40 @@ class ArrowPathModifier extends Modifier // used but unstable (as old way)
 	}
 }
 
+class SpiralHoldsModifier extends Modifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.spiralHold += currentValue;
+	}
+}
+
+class SustainChangersModifier extends Modifier
+{
+	override function setupSubValues()
+	{
+		setSubMod("grain", 5.0);
+		setSubMod("width", 1.0);
+	}
+
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.sustainGrain += getSubMod('grain');
+		noteData.sustainWidth *= getSubMod('width');
+	}
+}
+
+class SpiralPathsModifier extends Modifier
+{
+	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
+	{
+		noteData.spiralPath += currentValue;
+	}
+}
+
+
+
+
 // OH MY FUCKING GOD, thanks to @noamlol for the code of this thing//
 class CustomPathModifier extends Modifier // wow. it sucks when you spend time trying to add something you wanted a lot, to end scrapping it because a single error.
 {
@@ -303,13 +337,5 @@ class CustomPathModifier extends Modifier // wow. it sucks when you spend time t
 	public function getOtherPercent(modName:String, player:Int):Float
 	{
 		return 1;
-	}
-}
-
-class SpiralHoldsModifier extends Modifier
-{
-	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
-	{
-		noteData.spiralHold += currentValue;
 	}
 }

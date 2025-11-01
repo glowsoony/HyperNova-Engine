@@ -178,7 +178,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="compiletime" />
 
 	<define name="PSYCH" />
-	<!-- <haxeflag name="macro" value="include('modcharting.modifiers')" /> -->
+	<haxeflag name="--macro" value="include('modcharting.modifiers')" />
 
 	<!-- el adapter de pslice tiene unas cositas extra xd -->
 	<haxedef name="FM_ENGINE" value="PSLICE"/>

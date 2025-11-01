@@ -211,6 +211,7 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
 		daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
 		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
+
 	}
 
 	private function createDataFromNote(noteIndex:Int, playfieldIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
@@ -499,6 +500,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		addDataToNote(noteData, daNote);
 
+		//daNote.updateHitbox(); //not sure if using updateHitbox every frame is a good idea
 		daNote.cameras = this.cameras;
 		// Same as strums case
 		// if (daNote != null)
@@ -614,8 +616,8 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.newMesh.cameras = this.cameras;
 		daNote.newMesh.draw();
 
-		// daNote.newMesh.x = daNote.x + daNote.newMesh.width/2;
-		// daNote.newMesh.y = daNote.y + distance;
+		daNote.newMesh.x = daNote.width/2 - daNote.newMesh.frameWidth / 15;
+		daNote.newMesh.y = daNote.height/2 - daNote.newMesh.frameHeight / 16;
 
 		// trace("Drawn");
 	}

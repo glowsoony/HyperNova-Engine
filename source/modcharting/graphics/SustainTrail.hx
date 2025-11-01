@@ -35,7 +35,7 @@ import sys.FileSystem;
 	- ^^^ In case XML does not exist we can use the "basic default" one
 	- Make sure math for the sustains work properly uppon modifier math (such as how Z changes it, incoming mods and etc etc)
 	- If sustain is too long and we are using a modifier that makes Z go over screen use something to make it invisible, either "Stealth" shader forced for them, or smth
-	- Make the rest "modifierVariables" for this (such as noteData.holdGrain, noteData.holdWidth and etc)
+	- Make the rest "modifierVariables" for this (such as noteData.holdGrain, noteData.holdWidth and etc) (DONE PARTIALLY)
 	
 	- That'll be all ig.
 
@@ -501,13 +501,13 @@ class SustainTrail extends FlxSprite
 			NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// move the x and y to properly be in the center of the strum graphic
-			if (!isArrowPath){
-				fakeNote.x += daNote.width / 2 - frameWidth / 15;
-				fakeNote.y += daNote.height / 2 - frameHeight / 15;
-			}else{
-				fakeNote.x += daStrum.width / 2 - frameWidth / 15;
-				fakeNote.y += daStrum.height / 2 - frameHeight / 15;
-			}
+			// if (!isArrowPath){
+			// 	fakeNote.x += daNote.width / 2 - frameWidth / 15;
+			// 	fakeNote.y += daNote.height / 2 - frameHeight / 15;
+			// }else{
+			// 	fakeNote.x += daStrum.width / 2 - frameWidth / 15;
+			// 	fakeNote.y += daStrum.height / 2 - frameHeight / 15;
+			// }
 
 
 			// add offsets to data with modifiers
@@ -661,10 +661,10 @@ class SustainTrail extends FlxSprite
 			// trace(noteData.lane);
 			if (fakeNote == null) fakeNote = new NotePositionData();
 
-			grain = 50 + (isArrowPath ? noteData.pathGrain : 0); //TODO: add a new "grain" setting inside noteposdata
+			grain = 50 + (isArrowPath ? noteData.pathGrain : noteData.sustainGrain);
 
 			var songTimmy:Float = songTime;
-			var scale:Float = 45 + (isArrowPath ? noteData.arrowPathWidth : 1); //TODO: add a new "grain" setting inside noteposdata
+			var scale:Float = 45 + (isArrowPath ? noteData.arrowPathWidth : noteData.sustainWidth);
 
 			var longHolds:Float = 0;
 			longHolds += 1;
@@ -675,7 +675,7 @@ class SustainTrail extends FlxSprite
 				holdResolution = 1;
 
 			// var spiralHolds:Bool = parentStrumline?.mods?.spiralHolds[noteDirection % 4] ?? false;
-			var spiralHolds:Bool = (noteData.spiralHold >= 0.5); //TODO: make spiralPaths modifier
+			var spiralHolds:Bool = (isArrowPath ? noteData.spiralPath >= 0.5 : noteData.spiralHold >= 0.5);
 
 			var testCol:Array<Int> = [];
 			var vertices:Array<Float> = [];
