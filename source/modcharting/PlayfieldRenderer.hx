@@ -450,14 +450,6 @@ class PlayfieldRenderer extends FlxBasic
 
 		strumNote.cameras = this.cameras;
 
-		// Same as strums case
-		// if (strumNote != null)
-		// {
-		// 	strumNote.setupMesh(noteData);
-		// 	strumNote.draw();
-		// }
-		// else
-		// strumNote.applyNoteData(noteData);
 		strumNote.draw();
 	}
 
@@ -500,16 +492,7 @@ class PlayfieldRenderer extends FlxBasic
 
 		addDataToNote(noteData, daNote);
 
-		//daNote.updateHitbox(); //not sure if using updateHitbox every frame is a good idea
 		daNote.cameras = this.cameras;
-		// Same as strums case
-		// if (daNote != null)
-		// {
-		// 	daNote.setupMesh(noteData);
-		// 	daNote.draw();
-		// }
-		// else
-		// daNote.applyNoteData(noteData);
 
 		if ((daNote.wasGoodHit)) daNote.alpha = 0;
 

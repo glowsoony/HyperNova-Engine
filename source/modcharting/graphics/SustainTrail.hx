@@ -292,7 +292,7 @@ class SustainTrail extends FlxSprite
 	function triggerRedraw():Void
 	{
 		graphicHeight = sustainHeight(sustainLength, pfr?.getCorrectScrollSpeed() ?? 1.0);
-		if (!usingHazModHolds) //since we have this thingy ig?
+		//if (!usingHazModHolds) //since we have this thingy ig?
 			updateClipping();
 		updateHitbox();
 	}
