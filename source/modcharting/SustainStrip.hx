@@ -14,11 +14,11 @@ class SustainStrip extends FlxStrip
 {
 	private static final noteUV:Array<Float> = [
 		0,     0, // top left
-		1,    0, // top right
-		0,  0.5, // half left
-		1, 0.5, // half right
-		0,  1, // bottom left
-		1, 1, // bottom right
+		1,     0, // top right
+		0,     0.5, // half left
+		1,     0.5, // half right
+		0,     1, // bottom left
+		1,     1, // bottom right
 	];
 	private static final noteIndices:Array<Int> = [
 		0,
@@ -67,7 +67,7 @@ class SustainStrip extends FlxStrip
 		var length = Math.sqrt(unitX * unitX + unitY * unitY);
 		unitX /= length;
 		unitY /= length;
-		holdSize *= .5 * (1 / -pos.z) * pos.scaleX;
+		holdSize *= .5 * (1 / -pos.z) * pos.scaleX - FlxMath.fastCos(pos.angleY * (Math.PI / 180));
 
 		return [
 			//  left
@@ -77,6 +77,24 @@ class SustainStrip extends FlxStrip
 			pos.x + unitY * holdSize,
 			pos.y + -unitX * holdSize,
 		];
+	}
+
+	public function applyPerspective(noteData:NotePositionData, pos:Vector3D, rotatePivot:Vector2):Array<Float>
+	{
+		var vect3D:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
+		var vect2:Vector2 = new Vector2(vect3D.x, vect3D.z);
+		var rotModPivot:Vector2 = new Vector2(rotatePivot.x, vect3D.z);
+
+		vect2 = ModchartUtil.rotateAround(rotModPivot, vect2, noteData.angleY);
+		vect3D.x = vect2.x;
+		vect3D.z = vect2.y;
+
+		var thisNotePos:Vector3D = ModchartUtil.calculatePerspective(vect3D, ModchartUtil.defaultFOV * (Math.PI / 180), 0, 0);
+
+		var returnFloat:Array<Float> = [];
+		returnFloat.push(thisNotePos.x);
+		returnFloat.push(thisNotePos.y);
+		return returnFloat;
 	}
 
 	public function constructVertices(noteData:NotePositionData, topPositions:Array<NotePositionData>, middlePositions:Array<NotePositionData>,
@@ -113,18 +131,25 @@ class SustainStrip extends FlxStrip
 				var zScaleTop = 1 / -topPositions[0].z;
 				var zScaleMid = 1 / -middlePositions[0].z;
 				var zScaleBottom = 1 / -bottomPositions[0].z;
+				
+				var angleYTop = FlxMath.fastCos(topPositions[0].angleY * (Math.PI / 180)) * 15;
+				var angleYMid = FlxMath.fastCos(middlePositions[0].angleY * (Math.PI / 180)) * 15;
+				var angleYBottom = FlxMath.fastCos(bottomPositions[0].angleY * (Math.PI / 180)) * 15;
 
+				//topPositions[0].x + holdWidth * .5 * zScaleTop * topPositions[0].scaleX, topPositions[0].y
 				top = [
-					topPositions[0].x - holdWidth * .5 * zScaleTop * topPositions[0].scaleX, topPositions[0].y,
-					topPositions[0].x + holdWidth * .5 * zScaleTop * topPositions[0].scaleX, topPositions[0].y
+					topPositions[0].x - holdWidth * .5 * zScaleTop * topPositions[0].scaleX - angleYTop, topPositions[0].y,
+					topPositions[0].x + holdWidth * .5 * zScaleTop * topPositions[0].scaleX + angleYTop, topPositions[0].y
 				];
+				//middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y
 				mid = [
-					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y,
-					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y
+					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX - angleYMid, middlePositions[0].y,
+					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX + angleYMid, middlePositions[0].y
 				];
+				//bottomPositions[0].x + holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX, bottomPositions[0].y
 				bottom = [
-					bottomPositions[0].x - holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX, bottomPositions[0].y,
-					bottomPositions[0].x + holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX, bottomPositions[0].y
+					bottomPositions[0].x - holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX - angleYBottom, bottomPositions[0].y,
+					bottomPositions[0].x + holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX + angleYBottom, bottomPositions[0].y
 				];
 			}
 		}
@@ -142,17 +167,21 @@ class SustainStrip extends FlxStrip
 				var zScaleMid = 1 / -middlePositions[0].z;
 				var zScaleBottom = 1 / -topPositions[0].z;
 
+				var angleYTop = FlxMath.fastCos(topPositions[0].angleY * (Math.PI / 180)) * 15;
+				var angleYMid = FlxMath.fastCos(middlePositions[0].angleY * (Math.PI / 180)) * 15;
+				var angleYBottom = FlxMath.fastCos(bottomPositions[0].angleY * (Math.PI / 180)) * 15;
+
 				top = [
-					bottomPositions[0].x - holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX, bottomPositions[0].y,
-					bottomPositions[0].x + holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX, bottomPositions[0].y
+					bottomPositions[0].x - holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX - angleYBottom, bottomPositions[0].y,
+					bottomPositions[0].x + holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX + angleYBottom, bottomPositions[0].y
 				];
 				mid = [
-					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y,
-					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y
+					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX - angleYMid, middlePositions[0].y,
+					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX + angleYMid, middlePositions[0].y
 				];
 				bottom = [
-					topPositions[0].x - holdWidth * .5 * zScaleBottom * topPositions[0].scaleX, topPositions[0].y,
-					topPositions[0].x + holdWidth * .5 * zScaleBottom * topPositions[0].scaleX, topPositions[0].y
+					topPositions[0].x - holdWidth * .5 * zScaleBottom * topPositions[0].scaleX - angleYTop, topPositions[0].y,
+					topPositions[0].x + holdWidth * .5 * zScaleBottom * topPositions[0].scaleX + angleYTop, topPositions[0].y
 				];
 			}
 		}

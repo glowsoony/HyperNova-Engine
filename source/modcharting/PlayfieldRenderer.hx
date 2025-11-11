@@ -64,6 +64,8 @@ class PlayfieldRenderer extends FlxBasic
 
 	public var isEditor:Bool = false;
 
+	public var usingSusTrail:Bool = false;
+
 	// public var aftCapture:MultiCamCapture = null;
 
 	private function get_modifiers():Map<String, Modifier>
@@ -581,7 +583,7 @@ class PlayfieldRenderer extends FlxBasic
 		if (daNote.newMesh == null)
 			daNote.newMesh = new SustainMesh(noteData.lane, Math.ffloor(daNote.sustainLength), this);
 
-
+		//noteData.isSus = true; //forcing the math to be called as "sustain"
 		daNote.newMesh.alpha = 0.6 * noteData.alpha;
 		daNote.newMesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 
@@ -598,9 +600,6 @@ class PlayfieldRenderer extends FlxBasic
 
 		daNote.newMesh.cameras = this.cameras;
 		daNote.newMesh.draw();
-
-		daNote.newMesh.x = daNote.width/2 - daNote.newMesh.frameWidth / 15;
-		daNote.newMesh.y = daNote.height/2 - daNote.newMesh.frameHeight / 16;
 
 		// trace("Drawn");
 	}
@@ -658,20 +657,16 @@ class PlayfieldRenderer extends FlxBasic
 				drawStrum(noteData);
 			else if (!notes.members[noteData.index].isSustainNote)
 			{
-				if (notes.members[noteData.index].sustainLength > 0)
-					drawNewSustainNote(noteData);
+				if (usingSusTrail)
+					if (notes.members[noteData.index].sustainLength > 0)
+						drawNewSustainNote(noteData);
 
 				drawNote(noteData);
 			}
-
-			// else if (!notes.members[noteData.index].isSustainNote) // draw note
-			//     drawNote(noteData);
-			// else
-			// { // draw Sustain
-			// 	// if (notes.members[noteData.index].sustainLength > 0 && !notes.members[noteData.index].isSustainNote)
-			// 	drawNewSustainNote(noteData);
-			//     //drawSustainNote(noteData);
-			// }
+			else if (notes.members[noteData.index].isSustainNote && !usingSusTrail)
+			{
+				drawSustainNote(noteData);
+			}
 		}
 	}
 

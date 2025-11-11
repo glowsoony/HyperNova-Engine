@@ -292,7 +292,7 @@ class SustainTrail extends FlxSprite
 	function triggerRedraw():Void
 	{
 		graphicHeight = sustainHeight(sustainLength, pfr?.getCorrectScrollSpeed() ?? 1.0);
-		//if (!usingHazModHolds) //since we have this thingy ig?
+		if (!usingHazModHolds) //since we have this thingy ig?
 			updateClipping();
 		updateHitbox();
 	}
@@ -501,13 +501,13 @@ class SustainTrail extends FlxSprite
 			NoteMovement.setNotePath_positionData(fakeNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// move the x and y to properly be in the center of the strum graphic
-			// if (!isArrowPath){
-			// 	fakeNote.x += daNote.width / 2 - frameWidth / 15;
-			// 	fakeNote.y += daNote.height / 2 - frameHeight / 15;
-			// }else{
-			// 	fakeNote.x += daStrum.width / 2 - frameWidth / 15;
-			// 	fakeNote.y += daStrum.height / 2 - frameHeight / 15;
-			// }
+			if (!isArrowPath){
+				fakeNote.x += (daNote.width / 2) - (frameWidth / 15);
+				fakeNote.y += (daNote.height / 2) - (frameHeight / 20);
+			}else{
+				fakeNote.x += (daStrum.width / 2) - (frameWidth / 15);
+				fakeNote.y += (daStrum.height / 2) - (frameHeight / 20);
+			}
 
 
 			// add offsets to data with modifiers
@@ -746,7 +746,7 @@ class SustainTrail extends FlxSprite
 
 			extraHoldRootInfo(noteData);
 			susSample(noteData, this.strumTime + clippingTimeOffset, noteData.lane, noteData.playfieldIndex);
-			var scaleTest = fakeNote.scaleX;
+			var scaleTest = noteData.scaleX;
 			var widthScaled = holdWidth * scaleTest + scale;
 			var scaleChange = widthScaled - holdWidth;
 			var holdLeftSide = 0 - (scaleChange / 2);
@@ -838,7 +838,7 @@ class SustainTrail extends FlxSprite
 				// holdLeftSide = (holdWidth * (scaleTest - 1)) * -1;
 				// holdRightSide = holdWidth * scaleTest;
 
-				scaleTest = fakeNote.scaleX;
+				scaleTest = noteData.scaleX;
 				widthScaled = holdWidth * scaleTest + scale;
 				scaleChange = widthScaled - holdWidth;
 				holdLeftSide = 0 - (scaleChange / 2);
@@ -1004,7 +1004,7 @@ class SustainTrail extends FlxSprite
 				}
 				susSample(noteData, tm_end + clipTimeThing(songTimmy, holdPieceStrumTime), noteData.lane, noteData.playfieldIndex);
 
-				scaleTest = fakeNote.scaleX;
+				scaleTest = noteData.scaleX;
 				widthScaled = holdWidth * scaleTest + scale;
 				scaleChange = widthScaled - holdWidth;
 				holdLeftSide = 0 - (scaleChange / 2);
