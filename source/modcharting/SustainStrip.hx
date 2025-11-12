@@ -64,15 +64,16 @@ class SustainStrip extends FlxStrip
 		var unitX = nextFramePos.x - pos.x;
 		var unitY = nextFramePos.y - pos.y;
 		// normalizing
-		var length = Math.sqrt(unitX * unitX + unitY * unitY);
+		var length = Math.sqrt((unitX * unitX) + (unitY * unitY));
 		unitX /= length;
 		unitY /= length;
-		holdSize *= .5 * (1 / -pos.z) * pos.scaleX - FlxMath.fastCos(pos.angleY * (Math.PI / 180));
+		holdSize *= .5 * (1 / -pos.z) * pos.scaleX * FlxMath.fastCos(pos.angleY * (1 / 180 * Math.PI));
 
 		return [
-			//  left
+			// left
 			pos.x + -unitY * holdSize,
 			pos.y + unitX * holdSize,
+
 			// right
 			pos.x + unitY * holdSize,
 			pos.y + -unitX * holdSize,
@@ -126,9 +127,9 @@ class SustainStrip extends FlxStrip
 		}
 		else
 		{
-			var zScaleTop = 1 / -topPositions[0].z;
-			var zScaleMid = 1 / -middlePositions[0].z;
-			var zScaleBottom = 1 / -bottomPositions[0].z;
+			var zScaleTop:Float = 1 / -topPositions[0].z;
+			var zScaleMid:Float = 1 / -middlePositions[0].z;
+			var zScaleBottom:Float = 1 / -bottomPositions[0].z;
 
 			var scaleToTop:Float = topPositions[0].scaleX * holdWidth * .5 * zScaleTop;
 			var scaleToMid:Float = middlePositions[0].scaleX * holdWidth * .5 * zScaleMid;

@@ -213,7 +213,6 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
 		daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
 		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
-
 	}
 
 	private function createDataFromNote(noteIndex:Int, playfieldIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
@@ -362,10 +361,10 @@ class PlayfieldRenderer extends FlxBasic
 
 				curPos = modifierTable.applyCurPosMods(lane, curPos, pf);
 
-				//if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0)
-				 	// sustain clip
-					// && notes.members[i].isSustainNote)
-					//curPos = 0; // sustain clip
+				// if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0)
+				// sustain clip
+				// && notes.members[i].isSustainNote)
+				// curPos = 0; // sustain clip
 
 				var incomingAngle:Array<Float> = modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 				if (noteDist < 0)
@@ -496,7 +495,8 @@ class PlayfieldRenderer extends FlxBasic
 
 		daNote.cameras = this.cameras;
 
-		if ((daNote.wasGoodHit)) daNote.alpha = 0;
+		if ((daNote.wasGoodHit))
+			daNote.alpha = 0;
 
 		daNote.draw();
 	}
@@ -583,7 +583,7 @@ class PlayfieldRenderer extends FlxBasic
 		if (daNote.newMesh == null)
 			daNote.newMesh = new SustainMesh(noteData.lane, Math.ffloor(daNote.sustainLength), this);
 
-		//noteData.isSus = true; //forcing the math to be called as "sustain"
+		// noteData.isSus = true; //forcing the math to be called as "sustain"
 		daNote.newMesh.alpha = 0.6 * noteData.alpha;
 		daNote.newMesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 
@@ -591,8 +591,8 @@ class PlayfieldRenderer extends FlxBasic
 		// var lane = noteData.lane;
 
 		// daNote.newMesh.strumTime -= arrowPathBackLength;
-		//daNote.newMesh.x = 0;
-		//daNote.newMesh.y = 0;
+		// daNote.newMesh.x = 0;
+		// daNote.newMesh.y = 0;
 
 		daNote.newMesh.strumTime = daNote.strumTime;
 
