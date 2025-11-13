@@ -2,7 +2,8 @@ package modcharting.utils;
 
 import objects.Note;
 
-class RGBPalette {
+class RGBPalette
+{
 	public var shader(default, null):RGBPaletteShader = new RGBPaletteShader();
 	public var r(default, set):FlxColor;
 	public var g(default, set):FlxColor;
@@ -14,83 +15,228 @@ class RGBPalette {
 	public var stealthGlowGreen(default, set):Float;
 	public var stealthGlowBlue(default, set):Float;
 
-	public var isHoldNote(default, set):Bool;
+	public var isHold(default, set):Bool;
+
+	public var bottomStealth(default, set):Float;
+	public var bottomAlpha(default, set):Float;
+	public var bottomRed(default, set):Float;
+	public var bottomGreen(default, set):Float;
+	public var bottomBlue(default, set):Float;
+	public var bottomStealthRed(default, set):Float;
+	public var bottomStealthGreen(default, set):Float;
+	public var bottomStealthBlue(default, set):Float;
+
+	public var topStealth(default, set):Float;
+	public var topAlpha(default, set):Float;
+	public var topRed(default, set):Float;
+	public var topGreen(default, set):Float;
+	public var topBlue(default, set):Float;
+	public var topStealthRed(default, set):Float;
+	public var topStealthGreen(default, set):Float;
+	public var topStealthBlue(default, set):Float;
 
 	public var enabled(default, set):Bool;
 
-	public function copyValues(tempShader:RGBPalette) {
-		if (tempShader != null) {
-			for (i in 0...3) {
+	public function copyValues(tempShader:RGBPalette)
+	{
+		if (tempShader != null)
+		{
+			for (i in 0...3)
+			{
 				shader.r.value[i] = tempShader.shader.r.value[i];
 				shader.g.value[i] = tempShader.shader.g.value[i];
 				shader.b.value[i] = tempShader.shader.b.value[i];
 			}
 			shader.mult.value[0] = tempShader.shader.mult.value[0];
-		} else
+		}
+		else
 			shader.mult.value[0] = 0.0;
 	}
 
-	private function set_r(color:FlxColor) {
+	private function set_r(color:FlxColor)
+	{
 		r = color;
 		shader.r.value = [color.redFloat, color.greenFloat, color.blueFloat];
 		return color;
 	}
 
-	private function set_g(color:FlxColor) {
+	private function set_g(color:FlxColor)
+	{
 		g = color;
 		shader.g.value = [color.redFloat, color.greenFloat, color.blueFloat];
 		return color;
 	}
 
-	private function set_b(color:FlxColor) {
+	private function set_b(color:FlxColor)
+	{
 		b = color;
 		shader.b.value = [color.redFloat, color.greenFloat, color.blueFloat];
 		return color;
 	}
 
-	private function set_mult(value:Float) {
+	private function set_mult(value:Float)
+	{
 		mult = Math.max(0, Math.min(1, value));
 		shader.mult.value = [mult];
 		return value;
 	}
 
-	private function set_stealthGlow(value:Float) {
+	private function set_stealthGlow(value:Float)
+	{
 		stealthGlow = value;
 		shader._stealthGlow.value = [stealthGlow];
 		return value;
 	}
 
-	private function set_stealthGlowRed(value:Float) {
+	private function set_stealthGlowRed(value:Float)
+	{
 		stealthGlowRed = value;
 		shader._stealthR.value = [stealthGlowRed];
 		return value;
 	}
 
-	private function set_stealthGlowGreen(value:Float) {
+	private function set_stealthGlowGreen(value:Float)
+	{
 		stealthGlowGreen = value;
 		shader._stealthG.value = [stealthGlowGreen];
 		return value;
 	}
 
-	private function set_stealthGlowBlue(value:Float) {
+	private function set_stealthGlowBlue(value:Float)
+	{
 		stealthGlowBlue = value;
 		shader._stealthB.value = [stealthGlowBlue];
 		return value;
 	}
 
-	private function set_isHoldNote(value:Bool) {
-		isHoldNote = value;
-		shader._isHold.value = [isHoldNote];
+	private function set_isHold(value:Bool)
+	{
+		isHold = value;
+		shader._isHold.value = [isHold];
 		return value;
 	}
 
-	private function set_enabled(value:Bool) {
+	private function set_bottomStealth(value:Float):Float
+	{
+		bottomStealth = value;
+		shader._bottomStealth.value = [value];
+		return value;
+	}
+
+	private function set_bottomAlpha(value:Float):Float
+	{
+		bottomAlpha = value;
+		shader._bottomAlpha.value = [value];
+		return value;
+	}
+
+	private function set_bottomRed(value:Float):Float
+	{
+		bottomRed = value;
+		shader._bottomRed.value = [value];
+		return value;
+	}
+
+	private function set_bottomGreen(value:Float):Float
+	{
+		bottomGreen = value;
+		shader._bottomGreen.value = [value];
+		return value;
+	}
+
+	private function set_bottomBlue(value:Float):Float
+	{
+		bottomBlue = value;
+		shader._bottomBlue.value = [value];
+		return value;
+	}
+
+	private function set_bottomStealthRed(value:Float):Float
+	{
+		bottomStealthRed = value;
+		shader._bottomStealthRed.value = [value];
+		return value;
+	}
+
+	private function set_bottomStealthGreen(value:Float):Float
+	{
+		bottomStealthGreen = value;
+		shader._bottomStealthGreen.value = [value];
+		return value;
+	}
+
+	private function set_bottomStealthBlue(value:Float):Float
+	{
+		bottomStealthBlue = value;
+		shader._bottomStealthBlue.value = [value];
+		return value;
+	}
+
+	private function set_topStealth(value:Float):Float
+	{
+		topStealth = value;
+		shader._topStealth.value = [value];
+		return value;
+	}
+
+	private function set_topAlpha(value:Float):Float
+	{
+		topAlpha = value;
+		shader._topAlpha.value = [value];
+		return value;
+	}
+
+	private function set_topRed(value:Float):Float
+	{
+		topRed = value;
+		shader._topRed.value = [value];
+		return value;
+	}
+
+	private function set_topGreen(value:Float):Float
+	{
+		topGreen = value;
+		shader._topGreen.value = [value];
+		return value;
+	}
+
+	private function set_topBlue(value:Float):Float
+	{
+		topBlue = value;
+		shader._topBlue.value = [value];
+		return value;
+	}
+
+	private function set_topStealthRed(value:Float):Float
+	{
+		topStealthRed = value;
+		shader._topStealthRed.value = [value];
+		return value;
+	}
+
+	private function set_topStealthGreen(value:Float):Float
+	{
+		topStealthGreen = value;
+		shader._topStealthGreen.value = [value];
+		return value;
+	}
+
+	private function set_topStealthBlue(value:Float):Float
+	{
+		topStealthBlue = value;
+		shader._topStealthBlue.value = [value];
+		return value;
+	}
+
+	private function set_enabled(value:Bool)
+	{
 		enabled = value;
 		shader.enableRGB.value = [enabled];
 		return value;
 	}
 
-	public function new() {
+	public function new()
+	{
 		r = 0xFFFF0000;
 		g = 0xFF00FF00;
 		b = 0xFF0000FF;
@@ -101,14 +247,17 @@ class RGBPalette {
 		stealthGlowGreen = 1.0;
 		stealthGlowBlue = 1.0;
 
-		isHoldNote = false;
+		isHold = false;
+		bottomStealth = bottomAlpha = bottomRed = bottomGreen = bottomBlue = bottomStealthRed = bottomStealthGreen = bottomStealthBlue = 0;
+		topStealth = topAlpha = topRed = topGreen = topBlue = topStealthRed = topStealthGreen = topStealthBlue = 0;
 
 		enabled = true;
 	}
 }
 
 // automatic handler for easy usability
-class RGBShaderReference {
+class RGBShaderReference
+{
 	public var r(default, set):FlxColor;
 	public var g(default, set):FlxColor;
 	public var b(default, set):FlxColor;
@@ -119,7 +268,25 @@ class RGBShaderReference {
 	public var stealthGlowGreen(default, set):Float;
 	public var stealthGlowBlue(default, set):Float;
 
-	public var isHoldNote(default, set):Bool = false;
+	public var isHold(default, set):Bool = false;
+
+	public var bottomStealth(default, set):Float;
+	public var bottomAlpha(default, set):Float;
+	public var bottomRed(default, set):Float;
+	public var bottomGreen(default, set):Float;
+	public var bottomBlue(default, set):Float;
+	public var bottomStealthRed(default, set):Float;
+	public var bottomStealthGreen(default, set):Float;
+	public var bottomStealthBlue(default, set):Float;
+
+	public var topStealth(default, set):Float;
+	public var topAlpha(default, set):Float;
+	public var topRed(default, set):Float;
+	public var topGreen(default, set):Float;
+	public var topBlue(default, set):Float;
+	public var topStealthRed(default, set):Float;
+	public var topStealthGreen(default, set):Float;
+	public var topStealthBlue(default, set):Float;
 
 	public var enabled(default, set):Bool = true;
 
@@ -128,7 +295,8 @@ class RGBShaderReference {
 	private var _owner:FlxSprite;
 	private var _original:RGBPalette;
 
-	public function new(owner:FlxSprite, ref:RGBPalette) {
+	public function new(owner:FlxSprite, ref:RGBPalette)
+	{
 		parent = ref;
 		_owner = owner;
 		_original = ref;
@@ -146,74 +314,216 @@ class RGBShaderReference {
 			stealthGlowGreen = parent.stealthGlowGreen;
 			stealthGlowBlue = parent.stealthGlowBlue;
 
-			isHoldNote = parent.isHoldNote;
+			isHold = parent.isHold;
+
+			bottomStealth = parent.bottomStealth;
+			bottomAlpha = parent.bottomAlpha;
+			bottomRed = parent.bottomRed;
+			bottomGreen = parent.bottomGreen;
+			bottomBlue = parent.bottomBlue;
+			bottomStealthRed = parent.bottomStealthRed;
+			bottomStealthGreen = parent.bottomStealthGreen;
+			bottomStealthBlue = parent.bottomStealthBlue;
+
+			topStealth = parent.topStealth;
+			topAlpha = parent.topAlpha;
+			topRed = parent.topRed;
+			topGreen = parent.topGreen;
+			topBlue = parent.topBlue;
+			topStealthRed = parent.topStealthRed;
+			topStealthGreen = parent.topStealthGreen;
+			topStealthBlue = parent.topStealthBlue;
 		}
 	}
 
-	private function set_r(value:FlxColor) {
+	private function set_r(value:FlxColor)
+	{
 		if (allowNew && value != _original.r)
 			cloneOriginal();
 		return (r = parent.r = value);
 	}
 
-	private function set_g(value:FlxColor) {
+	private function set_g(value:FlxColor)
+	{
 		if (allowNew && value != _original.g)
 			cloneOriginal();
 		return (g = parent.g = value);
 	}
 
-	private function set_b(value:FlxColor) {
+	private function set_b(value:FlxColor)
+	{
 		if (allowNew && value != _original.b)
 			cloneOriginal();
 		return (b = parent.b = value);
 	}
 
-	private function set_mult(value:Float) {
+	private function set_mult(value:Float)
+	{
 		if (allowNew && value != _original.mult)
 			cloneOriginal();
 		return (mult = parent.mult = value);
 	}
 
-	private function set_enabled(value:Bool) {
+	private function set_enabled(value:Bool)
+	{
 		if (allowNew && value != _original.enabled)
 			cloneOriginal();
 		return (enabled = parent.enabled = value);
 	}
 
-	private function set_stealthGlow(value:Float) {
+	private function set_stealthGlow(value:Float)
+	{
 		if (allowNew && value != _original.stealthGlow)
 			cloneOriginal();
 		return (stealthGlow = parent.stealthGlow = value);
 	}
 
-	private function set_stealthGlowRed(value:Float) {
+	private function set_stealthGlowRed(value:Float)
+	{
 		if (allowNew && value != _original.stealthGlowRed)
 			cloneOriginal();
 		return (stealthGlowRed = parent.stealthGlowRed = value);
 	}
 
-	private function set_stealthGlowGreen(value:Float) {
+	private function set_stealthGlowGreen(value:Float)
+	{
 		if (allowNew && value != _original.stealthGlowGreen)
 			cloneOriginal();
 		return (stealthGlowGreen = parent.stealthGlowGreen = value);
 	}
 
-	private function set_stealthGlowBlue(value:Float) {
+	private function set_stealthGlowBlue(value:Float)
+	{
 		if (allowNew && value != _original.stealthGlowBlue)
 			cloneOriginal();
 		return (stealthGlowBlue = parent.stealthGlowBlue = value);
 	}
 
-	private function set_isHoldNote(value:Bool) {
-		if (allowNew && value != _original.isHoldNote)
+	private function set_isHold(value:Bool)
+	{
+		if (allowNew && value != _original.isHold)
 			cloneOriginal();
-		return (isHoldNote = parent.isHoldNote = value);
+		return (isHold = parent.isHold = value);
+	}
+
+	private function set_bottomStealth(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomStealth)
+			cloneOriginal();
+		return (bottomStealth = parent.bottomStealth = value);
+	}
+
+	private function set_bottomAlpha(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomAlpha)
+			cloneOriginal();
+		return (bottomAlpha = parent.bottomAlpha = value);
+	}
+
+	private function set_bottomRed(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomRed)
+			cloneOriginal();
+		return (bottomRed = parent.bottomRed = value);
+	}
+
+	private function set_bottomGreen(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomGreen)
+			cloneOriginal();
+		return (bottomGreen = parent.bottomGreen = value);
+	}
+
+	private function set_bottomBlue(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomBlue)
+			cloneOriginal();
+		return (bottomBlue = parent.bottomBlue = value);
+	}
+
+	private function set_bottomStealthRed(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomStealthRed)
+			cloneOriginal();
+		return (bottomStealthRed = parent.bottomStealthRed = value);
+	}
+
+	private function set_bottomStealthGreen(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomStealthGreen)
+			cloneOriginal();
+		return (bottomStealthGreen = parent.bottomStealthGreen = value);
+	}
+
+	private function set_bottomStealthBlue(value:Float):Float
+	{
+		if (allowNew && value != _original.bottomStealthBlue)
+			cloneOriginal();
+		return (bottomStealthBlue = parent.bottomStealthBlue = value);
+	}
+
+	private function set_topStealth(value:Float):Float
+	{
+		if (allowNew && value != _original.topStealth)
+			cloneOriginal();
+		return (topStealth = parent.topStealth = value);
+	}
+
+	private function set_topAlpha(value:Float):Float
+	{
+		if (allowNew && value != _original.topAlpha)
+			cloneOriginal();
+		return (topAlpha = parent.topAlpha = value);
+	}
+
+	private function set_topRed(value:Float):Float
+	{
+		if (allowNew && value != _original.topRed)
+			cloneOriginal();
+		return (topRed = parent.topRed = value);
+	}
+
+	private function set_topGreen(value:Float):Float
+	{
+		if (allowNew && value != _original.topGreen)
+			cloneOriginal();
+		return (topGreen = parent.topGreen = value);
+	}
+
+	private function set_topBlue(value:Float):Float
+	{
+		if (allowNew && value != _original.topBlue)
+			cloneOriginal();
+		return (topBlue = parent.topBlue = value);
+	}
+
+	private function set_topStealthRed(value:Float):Float
+	{
+		if (allowNew && value != _original.topStealthRed)
+			cloneOriginal();
+		return (topStealthRed = parent.topStealthRed = value);
+	}
+
+	private function set_topStealthGreen(value:Float):Float
+	{
+		if (allowNew && value != _original.topStealthGreen)
+			cloneOriginal();
+		return (topStealthGreen = parent.topStealthGreen = value);
+	}
+
+	private function set_topStealthBlue(value:Float):Float
+	{
+		if (allowNew && value != _original.topStealthBlue)
+			cloneOriginal();
+		return (topStealthBlue = parent.topStealthBlue = value);
 	}
 
 	public var allowNew = true;
 
-	private function cloneOriginal() {
-		if (allowNew) {
+	private function cloneOriginal()
+	{
+		if (allowNew)
+		{
 			allowNew = false;
 			if (_original != parent)
 				return;
@@ -229,7 +539,25 @@ class RGBShaderReference {
 			parent.stealthGlowGreen = _original.stealthGlowGreen;
 			parent.stealthGlowBlue = _original.stealthGlowBlue;
 
-			parent.isHoldNote = _original.isHoldNote;
+			parent.isHold = _original.isHold;
+
+			parent.bottomStealth = _original.bottomStealth;
+			parent.bottomAlpha = _original.bottomAlpha;
+			parent.bottomRed = _original.bottomRed;
+			parent.bottomGreen = _original.bottomGreen;
+			parent.bottomBlue = _original.bottomBlue;
+			parent.bottomStealthRed = _original.bottomStealthRed;
+			parent.bottomStealthGreen = _original.bottomStealthGreen;
+			parent.bottomStealthBlue = _original.bottomStealthBlue;
+
+			parent.topStealth = _original.topStealth;
+			parent.topAlpha = _original.topAlpha;
+			parent.topRed = _original.topRed;
+			parent.topGreen = _original.topGreen;
+			parent.topBlue = _original.topBlue;
+			parent.topStealthRed = _original.topStealthRed;
+			parent.topStealthGreen = _original.topStealthGreen;
+			parent.topStealthBlue = _original.topStealthBlue;
 
 			parent.enabled = _original.enabled;
 			_owner.shader = parent.shader;
@@ -238,7 +566,8 @@ class RGBShaderReference {
 	}
 }
 
-class RGBPaletteShader extends FlxShader {
+class RGBPaletteShader extends FlxShader
+{
 	@:glFragmentHeader('
 		#pragma header
 
@@ -277,7 +606,6 @@ class RGBPaletteShader extends FlxShader {
 		uniform float _stealthR;
 		uniform float _stealthG;
 		uniform float _stealthB;
-
 
 		uniform bool _isHold;
 
@@ -348,7 +676,8 @@ class RGBPaletteShader extends FlxShader {
 			gl_FragColor = color;
 
 		}')
-	public function new() {
+	public function new()
+	{
 		super();
 	}
 }
