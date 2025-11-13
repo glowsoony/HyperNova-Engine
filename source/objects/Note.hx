@@ -5,8 +5,8 @@ import backend.animation.PsychAnimationController;
 import flixel.addons.effects.FlxSkewedSprite;
 import flixel.math.FlxRect;
 import objects.StrumNote;
-import shaders.RGBPalette.RGBShaderReference;
-import shaders.RGBPalette;
+import modcharting.utils.RGBPalette.RGBShaderReference;
+import modcharting.utils.RGBPalette;
 
 using StringTools;
 

@@ -213,6 +213,8 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
 		daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
 		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
+
+		daNote.rgbShader.isHoldNote = daNote.isSustainNote;
 	}
 
 	private function createDataFromNote(noteIndex:Int, playfieldIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
@@ -361,10 +363,8 @@ class PlayfieldRenderer extends FlxBasic
 
 				curPos = modifierTable.applyCurPosMods(lane, curPos, pf);
 
-				// if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0)
-				// sustain clip
-				// && notes.members[i].isSustainNote)
-				// curPos = 0; // sustain clip
+				if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0&& notes.members[i].isSustainNote)
+					curPos = 0; // sustain clip
 
 				var incomingAngle:Array<Float> = modifierTable.applyIncomingAngleMods(lane, curPos, pf);
 				if (noteDist < 0)
@@ -516,6 +516,7 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.mesh.alpha = daNote.alpha;
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
+		//daNote.mesh.shader.isHoldNote = true;
 
 		var songSpeed = getCorrectScrollSpeed();
 		var lane = noteData.lane;

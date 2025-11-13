@@ -2,7 +2,7 @@ package objects;
 
 import backend.animation.PsychAnimationController;
 import flixel.system.FlxAssets.FlxShader;
-import shaders.RGBPalette;
+import modcharting.utils.RGBPalette;
 
 typedef RGB =
 {
