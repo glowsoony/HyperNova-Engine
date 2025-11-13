@@ -215,6 +215,18 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
 
 		daNote.rgbShader.isHold = daNote.isSustainNote;
+
+		daNote.rgbShader.bottomStealth = noteData.stealthGlow;
+		daNote.rgbShader.bottomAlpha = noteData.alpha;
+		daNote.rgbShader.bottomStealthRed = noteData.glowRed;
+		daNote.rgbShader.bottomStealthGreen = noteData.glowGreen;
+		daNote.rgbShader.bottomStealthBlue = noteData.glowBlue;
+
+		daNote.rgbShader.topStealth = noteData.stealthGlow;
+		daNote.rgbShader.topAlpha = noteData.alpha;
+		daNote.rgbShader.topStealthRed = noteData.glowRed;
+		daNote.rgbShader.topStealthGreen = noteData.glowGreen;
+		daNote.rgbShader.topStealthBlue = noteData.glowBlue;
 	}
 
 	private function createDataFromNote(noteIndex:Int, playfieldIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
