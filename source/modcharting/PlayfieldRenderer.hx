@@ -662,10 +662,10 @@ class PlayfieldRenderer extends FlxBasic
 		strumNote.arrowPath.y = 0;
 
 		strumNote.arrowPath.shader = strumNote.rgbShader.parent.shader; // idfk if this works.
-		strumNote.rgbShader.enabled = true;
-		strumNote.rgbShader.r = 0xFFFFFF;
-		strumNote.rgbShader.g = 0xFFFFFF;
-		strumNote.rgbShader.b = 0xFFFFFF;
+		// strumNote.rgbShader.enabled = true;
+		// strumNote.rgbShader.r = 0xFFFFFF;
+		// strumNote.rgbShader.g = 0xFFFFFF;
+		// strumNote.rgbShader.b = 0xFFFFFF;
 
 		strumNote.arrowPath.updateClipping_mods(noteData);
 
