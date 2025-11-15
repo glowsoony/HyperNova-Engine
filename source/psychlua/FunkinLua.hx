@@ -145,6 +145,7 @@ class FunkinLua
 			lua_Cameras.set("proxy", {cam: game.camProxy, shaders: [], shaderNames: []});
 			lua_Cameras.set("hud", {cam: game.camHUD, shaders: [], shaderNames: []});
 			lua_Cameras.set("other", {cam: game.camOther, shaders: [], shaderNames: []});
+			lua_Cameras.set("background", {cam: game.camBackground, shaders: [], shaderNames: []});
 
 			var curSection:SwagSection = PlayState.SONG.notes[game.curSection];
 			set('curSection', game.curSection);

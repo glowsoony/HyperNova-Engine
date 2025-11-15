@@ -682,6 +682,8 @@ class LuaUtils
 					return PlayState.instance.camInterfaz;
 				case 'camvisuals' | 'visuals':
 					return PlayState.instance.camVisuals;
+				case 'cambackground' | 'background':
+					return PlayState.instance.camBackground;
 			}
 
 			// modded cameras
@@ -714,6 +716,8 @@ class LuaUtils
 				return FunkinLua.lua_Cameras.get("interfaz");
 			case 'camvisuals' | 'visuals':
 				return FunkinLua.lua_Cameras.get("visuals");
+			case 'cambackground' | 'background':
+				return FunkinLua.lua_Cameras.get("background");
 			case 'camgame' | 'game':
 				return FunkinLua.lua_Cameras.get('game');
 		}
