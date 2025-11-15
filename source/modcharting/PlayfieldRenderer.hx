@@ -213,8 +213,6 @@ class PlayfieldRenderer extends FlxBasic
 		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
 		daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
 		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
-
-		daNote.rgbShader.isHold = daNote.isSustainNote;
 	}
 
 	private function createDataFromNote(noteIndex:Int, playfieldIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
@@ -514,8 +512,8 @@ class PlayfieldRenderer extends FlxBasic
 
 		var spiral = (noteData.spiralHold >= 0.5);
 
-		daNote.alpha = noteData.alpha;
-		daNote.mesh.alpha = daNote.alpha;
+		//daNote.alpha = noteData.alpha;
+		//daNote.mesh.alpha = daNote.alpha;
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
 		// daNote.mesh.shader.isHoldNote = true;
@@ -529,6 +527,32 @@ class PlayfieldRenderer extends FlxBasic
 		var timeToNextSustain = ModchartUtil.getFakeCrochet() / 4;
 		if (noteData.noteDist < 0)
 			timeToNextSustain *= -1; // weird shit that fixes upscroll lol
+
+		var prevSustainNoteData = getSustainPoint(noteData, 0);
+		var midSusPointData = getSustainPoint(noteData, timeToNextSustain * .5);
+		var nextSustainNoteData = getSustainPoint(noteData, timeToNextSustain);
+
+		daNote.rgbShader.isHold = true;
+
+		daNote.rgbShader.bottomStealth = prevSustainNoteData.stealthGlow;
+		daNote.rgbShader.bottomAlpha = prevSustainNoteData.alpha;
+		daNote.rgbShader.bottomStealthRed = prevSustainNoteData.glowRed;
+		daNote.rgbShader.bottomStealthGreen = prevSustainNoteData.glowGreen;
+		daNote.rgbShader.bottomStealthBlue = prevSustainNoteData.glowBlue;
+
+		daNote.rgbShader.topStealth = nextSustainNoteData.stealthGlow;
+		daNote.rgbShader.topAlpha = nextSustainNoteData.alpha;
+		daNote.rgbShader.topStealthRed = nextSustainNoteData.glowRed;
+		daNote.rgbShader.topStealthGreen = nextSustainNoteData.glowGreen;
+		daNote.rgbShader.topStealthBlue = nextSustainNoteData.glowBlue;
+
+		daNote.rgbShader.topRed = 1;
+		daNote.rgbShader.topGreen = 1;
+		daNote.rgbShader.topBlue = 1;
+
+		daNote.rgbShader.bottomRed = 1;
+		daNote.rgbShader.bottomGreen = 1;
+		daNote.rgbShader.bottomBlue = 1;
 
 		var top = [];
 		var mid = [];
