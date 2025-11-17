@@ -37,6 +37,11 @@ using StringTools;
 // ^^^ this also happens in "McMadness mod" in combo-meal song when notes goes timeStop (added playfields and got same result!!) interesting.
 
 typedef StrumNoteType = objects.StrumNote;
+typedef NotefieldData = {
+	var field:NoteField;
+	var index:Int;
+	var memberIndex:Int;
+}
 
 class PlayfieldRenderer extends FlxBasic
 {
@@ -57,6 +62,7 @@ class PlayfieldRenderer extends FlxBasic
 	public var inEditor:Bool = false;
 	public var editorPaused:Bool = false;
 
+	public var rate:Float = 1.0;
 	public var speed:Float = 1.0;
 
 	public var modifiers(get, default):Map<String, Modifier>;
@@ -70,12 +76,28 @@ class PlayfieldRenderer extends FlxBasic
 		return modifierTable.modifiers; // back compat with lua modcharts
 	}
 
-	public var noteFields:FlxTypedGroup<NoteField> = new FlxTypedGroup<NoteField>();
+	public var noteFields:Array<NoteField> = [];
+	public var onAddPlayfield:?Int->Void;
+	public var allObjects:FlxTypedGroup<NewModchartArrow>;
+	public var killOffset:Float = 350;
 
-	public function new(instance:ModchartMusicBeatState)
+	override public function set_cameras(cameras:Array<flixel.FlxCamera>):Array<flixel.FlxCamera>
+	{
+		allObjects.cameras = cameras;
+		for (field in noteFields)
+		{
+			field.cameras = cameras;
+			field.strumLine.strums.cameras = cameras;
+			field.strumLine.notes.cameras = cameras;
+		}
+		return super.set_cameras(cameras);
+	}
+
+	public function new(strums:FlxTypedGroup<StrumNote>, notes:FlxTypedGroup<Note>, unspawnNotes:Array<Note>, instance:ModchartMusicBeatState)
 	{
 		super();
 
+		strums.visible = notes.visible = false;
 		this.instance = instance;
 		if (Std.isOfType(instance, PlayState))
 			playStateInstance = cast instance; // so it just casts once
@@ -92,18 +114,25 @@ class PlayfieldRenderer extends FlxBasic
 		timerManager = new FlxTimerManager();
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
-<<<<<<< Updated upstream
-		addPlayfield(0);
-=======
-		trace(noteFields, noteFields == null, noteFields.length);
-		
-		addPlayfield();
-		addPlayfield();
-		addPlayfield();
-		addPlayfield();
+		allObjects = new FlxTypedGroup<NewModchartArrow>();
+		noteFields = [];
+		onAddPlayfield = function(?index:Int) {
+			try
+			{
+				final field:NoteField = new NoteField(this, index, strums, notes, unspawnNotes);
+				field.pfIndex = index;
+				noteFields.push(field);
+				return field;
+			}
+			catch(e:haxe.Exception)
+			{
+				trace(e.message, e.stack);
+				return null;
+			}
+			return null;
+		}
 
 		trace(noteFields, noteFields == null, noteFields.length);
->>>>>>> Stashed changes
 
 		// why ??
 
@@ -111,24 +140,113 @@ class PlayfieldRenderer extends FlxBasic
 		modchart = new ModchartFile(this);
 	}
 
+	public var oldFields:Array<NotefieldData> = [];
+
+	public function rescaleNotes(ratio:Float)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.rescaleNotes(ratio);
+	}
+
+	public function clearNotesBefore(time:Float)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.clearNotesBefore(time);
+	}
+
+	public function keyPress(key:Int)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.keyPress(key);
+	}
+
+	public function keyRelease(key:Int)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.keyRelease(key);
+	}
+
+	public function updateNotes(elapsed:Float)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.updateNotes(elapsed);
+	}
+
+	public function prepareNotes()
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.prepareNotes();
+	}
+
+	public function skipIntro()
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.skipIntro();
+	}
+
+	public function killNotes()
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.killNotes();
+	}
+
+	public function spawnNotes()
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length - 1)
+			noteFields[i].strumLine.spawnNotes();
+	}
+
 	public function addPlayfield(?index:Int)
-		noteFields.add(new NoteField(this, index ?? noteFields?.members?.length - 1));
-	public function removePlayfield(index:Int)
-		noteFields.remove(noteFields.members[index]);
+		onAddPlayfield(index);
+
+	public function insertPlayfield(playfield:NoteField, index:Int)
+		noteFields.insert(index, playfield);
+
+	public function removePlayfield(index:Int) // Use Playfield Index, NOT MEMBER INDEX!
+	{
+		final field:NoteField = noteFields[index];
+		field.strumLine.strums.forEach(function(strum:NewModchartArrow) {
+			allObjects.remove(strum);
+		});
+		field.strumLine.notes.forEach(function(note:NewModchartArrow) {
+			allObjects.remove(note);
+		});
+		noteFields.remove(field);
+	}
 
 	public function addNewProxiefield(proxy:Proxy)
 		proxiefields.push(new Proxiefield(proxy));
+
+	public function compareZ(order:Int, a:NewModchartArrow, b:NewModchartArrow):Int
+		return flixel.util.FlxSort.byValues(order, a.z, b.z);
+
+	public function resortZ()
+		allObjects.sort(compareZ, flixel.util.FlxSort.ASCENDING);
 
 	override function update(elapsed:Float)
 	{
 		eventManager.update(elapsed);
 		tweenManager.update(elapsed); // should be automatically paused when you pause in game
 		timerManager.update(elapsed);
-		noteFields.update(elapsed);
+		resortZ();
+		allObjects.update(elapsed);
 	}
 
 	override function draw()
-		noteFields.draw();
+	{
+		for (field in noteFields)
+			field.draw();
+		allObjects.draw();
+	}
 
 	public function getCorrectScrollSpeed()
 		return ModchartUtil.getScrollSpeed(inEditor ? null : playStateInstance);

@@ -473,6 +473,11 @@ class HScript extends Iris
 			set('addBehindDad', PlayState.instance.addBehindDad);
 			set('addBehindBF', PlayState.instance.addBehindBF);
 		}
+
+		if (PlayState.instance != null && PlayState.SONG != null && PlayState.SONG.notITG && PlayState.instance.notITGMod)
+			modcharting.ModchartFuncs.loadHScriptFunctions(this);
+		// else if (EditorPlayState.instance != null && PlayState.SONG != null && PlayState.SONG.notITG)
+		// 	modcharting.ModchartFuncs.loadHScriptFunctions(this);
 	}
 
 	#if LUA_ALLOWED

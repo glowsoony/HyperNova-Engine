@@ -152,8 +152,8 @@ class ModchartFile
 	{
 		data.modifiers = [];
 		data.events = [];
-		data.playfields = 1;
-		data.proxiefields = 1;
+		data.playfields = 0;
+		data.proxiefields = 0;
 	}
 
 	public function loadModifiers()
@@ -175,9 +175,27 @@ class ModchartFile
 		if (data == null || renderer == null)
 			return;
 
-		renderer.noteFields.clear();
-		for (i in 0...data.playfields)
-			renderer.addPlayfield(i);
+		try
+		{
+			if (data.playfields < renderer.noteFields.length - 1)
+			{
+				var i:Int = renderer.noteFields.length - 1;
+				while (i > data.playfields)
+					renderer.removePlayfield(i--);
+			}
+			else {
+				renderer.allObjects.clear();
+				renderer.noteFields = [];
+				for (i in 0...data.playfields)
+				{
+					trace(i, data.playfields);
+					renderer.addPlayfield(i);
+					trace("post add");
+				}
+				trace('aver');
+			}
+		}catch(e:haxe.Exception)
+			trace(e.message, e.stack);
 	}
 
 	public function loadProxiefields()

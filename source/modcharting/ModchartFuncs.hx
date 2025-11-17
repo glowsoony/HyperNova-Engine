@@ -398,7 +398,7 @@ class ModchartFuncs
 			instance.playfieldRenderer.modifierTable.modifiers.get(name).playfield = value;
 	}
 
-	public static function addPlayfield(?index, ?instance:ModchartMusicBeatState = null)
+	public static function addPlayfield(?index:Int, ?instance:ModchartMusicBeatState = null)
 	{
 		if (instance == null)
 		{
@@ -407,7 +407,7 @@ class ModchartFuncs
 			// else
 			instance = PlayState.instance;
 		}
-		instance.playfieldRenderer.addPlayfield(index ?? instance.playfieldRenderer.noteFields.length - 1);
+		instance.playfieldRenderer.addPlayfield(index ?? instance.playfieldRenderer.noteFields.length);
 	}
 
 	public static function removePlayfield(idx:Int, ?instance:ModchartMusicBeatState = null)
@@ -419,7 +419,7 @@ class ModchartFuncs
 			// else
 			instance = PlayState.instance;
 		}
-		instance.playfieldRenderer.noteFields.remove(instance.playfieldRenderer.noteFields.members[idx]);
+		instance.playfieldRenderer.removePlayfield(idx);
 	}
 
 	public static function tweenModifier(modifier:String, val:Float, time:Float, ease:String, ?instance:ModchartMusicBeatState = null)

@@ -33,6 +33,8 @@ class NewModchartArrow extends FlxSkewedSprite
 	public var vertOffsetY:Array<Float> = [];
 	public var vertOffsetZ:Array<Float> = [];
 
+	public var field:NoteField;
+
 	public var z:Float = 0.0;
 
 	public var z2:Float = 0.0;

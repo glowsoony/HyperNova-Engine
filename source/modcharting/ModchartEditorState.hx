@@ -352,6 +352,8 @@ class ModchartEditorState extends MusicBeatState
 		super();
 	}
 
+
+	public static var instance:ModchartEditorState = null;
 	override public function create()
 	{
 		Paths.clearStoredMemory();
@@ -389,6 +391,7 @@ class ModchartEditorState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 
+		instance = this;
 		strumLine = new FlxSprite(ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if (ModchartUtil.getDownscroll(this))
 			strumLine.y = FlxG.height - 150;
@@ -409,8 +412,8 @@ class ModchartEditorState extends MusicBeatState
 		strumLineNotes.visible = false;
 		notes.visible = false;
 
-		playfieldRenderer = new PlayfieldRenderer(this);
-		playfieldRenderer.cameras = playfieldRenderer.noteFields.cameras = [camHUD];
+		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
+		playfieldRenderer.cameras = playfieldRenderer.allObjects.cameras = [camHUD];
 		playfieldRenderer.inEditor = true;
 		// playfieldRenderer.aftCapture = new HazardAFT_Capture.HazardAFT_CaptureMultiCam([camHUD]);
 		// playfieldRenderer.aftCapture.updateRate = 0.0;
@@ -677,8 +680,8 @@ class ModchartEditorState extends MusicBeatState
 			ClientPrefs.toggleVolumeKeys(false);
 		}
 
-		if (playbackSpeed <= 0.5)
-			playbackSpeed = 0.5;
+		if (playbackSpeed <= 0.1)
+			playbackSpeed = 0.1;
 		if (playbackSpeed >= 3)
 			playbackSpeed = 3;
 
@@ -885,6 +888,8 @@ class ModchartEditorState extends MusicBeatState
 				leText += "\n";
 			}
 		}
+
+		songSlider.value = Conductor.songPosition;
 
 		activeModifiersText.text = leText;
 	}
@@ -2594,6 +2599,7 @@ class ModchartEditorState extends MusicBeatState
 		var resetSpeed:PsychUIButton = new PsychUIButton(sliderRate.x + 300, sliderRate.y, 'Reset', function()
 		{
 			playbackSpeed = 1.0;
+			sliderRate.value = 1.0;
 		});
 
 		var saveJson:PsychUIButton = new PsychUIButton(20, 300, 'Save Modchart', function()

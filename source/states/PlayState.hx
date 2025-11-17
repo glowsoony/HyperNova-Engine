@@ -783,11 +783,17 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notITG && !SONG.newModchartTool)
 			{
-				strumLineNotes.visible = false;
-				notes.visible = false;
-				playfieldRenderer = new PlayfieldRenderer(this);
-				playfieldRenderer.cameras = playfieldRenderer.noteFields.cameras = [camHUD];
+				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
+				playfieldRenderer.cameras = [camHUD];
 				add(playfieldRenderer);
+
+				strumLineNotes.forEachAlive(strum -> {
+					if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+					{
+						strum.field = playfieldRenderer?.noteFields[0];
+						playfieldRenderer?.allObjects?.add(strum);
+					}
+				});
 			}
 			#if funkin_modchart
 			else if (SONG.notITG && SONG.newModchartTool)
@@ -834,6 +840,7 @@ class PlayState extends MusicBeatState
 		add(hitmansHud);
 
 		startingSong = true;
+		camZooming = true;
 
 		strumLineNotes.cameras = notes.cameras = grpNoteSplashes.cameras = grpHoldSplashes.cameras = [camHUD];
 
@@ -998,17 +1005,20 @@ class PlayState extends MusicBeatState
 	{
 		if (generatedMusic)
 		{
+			if (notITGMod && SONG.notITG && !SONG.newModchartTool && playfieldRenderer != null)
+				playfieldRenderer.speed = songSpeed; // LMAO IT LOOKS SOO GOOFY AS FUCK
 			var ratio:Float = value / songSpeed; // funny word huh
-			if (ratio != 1)
-			{
-				for (note in notes.members)
-					note.resizeByRatio(ratio);
-				for (note in unspawnNotes)
-					note.resizeByRatio(ratio);
-			}
+			if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+				playfieldRenderer.rescaleNotes(ratio);
+			for (note in notes.members)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
 		}
 		songSpeed = value;
 		noteKillOffset = Math.max(Conductor.stepCrochet, 350 / songSpeed * playbackRate);
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.killOffset = noteKillOffset;
 		return value;
 	}
 
@@ -1020,10 +1030,14 @@ class PlayState extends MusicBeatState
 			vocals.pitch = value;
 			opponentVocals.pitch = value;
 			FlxG.sound.music.pitch = value;
+			if (notITGMod && SONG.notITG && !SONG.newModchartTool && playfieldRenderer != null)
+				playfieldRenderer.rate = playbackRate; // LMAO IT LOOKS SOO GOOFY AS FUCK
 
 			var ratio:Float = playbackRate / value; // funny word huh
 			if (ratio != 1)
 			{
+				if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+					playfieldRenderer.rescaleNotes(ratio);
 				for (note in notes.members)
 					note.resizeByRatio(ratio);
 				for (note in unspawnNotes)
@@ -1554,6 +1568,8 @@ class PlayState extends MusicBeatState
 
 	public function clearNotesBefore(time:Float)
 	{
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.clearNotesBefore(time);
 		var i:Int = unspawnNotes.length - 1;
 		while (i >= 0)
 		{
@@ -1828,6 +1844,8 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition = introSkip * 1000;
 		else
 			Conductor.songPosition = songPosToGoTo;
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.skipIntro();
 		notes.forEachAlive(function(daNote:Note)
 		{
 			if (daNote.strumTime + 800 < Conductor.songPosition)
@@ -2036,7 +2054,7 @@ class PlayState extends MusicBeatState
 					for (evilNote in unspawnNotes)
 					{
 						var matches:Bool = (noteColumn == evilNote.noteData && gottaHitNote == evilNote.mustPress && evilNote.noteType == noteType);
-						if (matches && Math.abs(spawnTime - evilNote.strumTime) < flixel.math.FlxMath.EPSILON)
+						if (matches && Math.abs(spawnTime - evilNote.strumTime) == 0.0)
 						{
 							if (evilNote.tail.length > 0)
 								for (tail in evilNote.tail)
@@ -2062,6 +2080,7 @@ class PlayState extends MusicBeatState
 
 				swagNote.scrollFactor.set();
 				unspawnNotes.push(swagNote);
+				swagNote.rendererIndex = i;
 
 				var curStepCrochet:Float = 60 / daBpm * 1000 / 4.0;
 				final roundSus:Int = Math.round(swagNote.sustainLength / curStepCrochet);
@@ -2445,8 +2464,6 @@ class PlayState extends MusicBeatState
 			FlxG.camera.followLerp = 0;
 		callOnScripts('onUpdate', [elapsed]);
 
-		if (notITGMod && SONG.notITG && !SONG.newModchartTool)
-			playfieldRenderer.speed = playbackRate; // LMAO IT LOOKS SOO GOOFY AS FUCK
 		// if (aftBitmap != null) aftBitmap.update(elapsed); //if it fail this don't load
 
 		if (drain)
@@ -2608,6 +2625,8 @@ class PlayState extends MusicBeatState
 		}
 		doDeathCheck();
 
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.spawnNotes();
 		if (unspawnNotes[0] != null)
 		{
 			var time:Float = spawnTime * playbackRate;
@@ -2620,6 +2639,11 @@ class PlayState extends MusicBeatState
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				notes.insert(0, dunceNote);
+				if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+				{
+					dunceNote.field = playfieldRenderer?.noteFields[0];
+					playfieldRenderer?.allObjects?.add(dunceNote);
+				}
 				dunceNote.spawned = true;
 
 				callOnLuas('onSpawnNote', [
@@ -2645,6 +2669,14 @@ class PlayState extends MusicBeatState
 				else
 					playerDance();
 
+				if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+				{
+					if (startedCountdown)
+						playfieldRenderer.updateNotes(elapsed);
+					else
+						playfieldRenderer.prepareNotes();
+				}
+
 				if (notes.length > 0)
 				{
 					if (startedCountdown)
@@ -2657,7 +2689,7 @@ class PlayState extends MusicBeatState
 								strumGroup = opponentStrums;
 
 							var strum:StrumNote = strumGroup.members[daNote.noteData];
-							daNote.followStrumNote(strum, fakeCrochet, songSpeed / playbackRate);
+							daNote.followStrumNote(strum, songSpeed / playbackRate);
 
 							if (daNote.extraData.get("constantHealth") != null)
 							{
@@ -3454,7 +3486,7 @@ class PlayState extends MusicBeatState
 		#end
 		// Should kill you if you tried to cheat
 		if (!startingSong)
-		{
+		{	
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.strumTime < songLength - Conductor.safeZoneOffset)
@@ -3465,7 +3497,7 @@ class PlayState extends MusicBeatState
 				if (daNote != null && daNote.strumTime < songLength - Conductor.safeZoneOffset)
 					health -= 0.05 * healthLoss;
 			}
-
+		
 			if (doDeathCheck())
 			{
 				return false;
@@ -3755,6 +3787,11 @@ class PlayState extends MusicBeatState
 	////////////////////////////////////////
 	public function KillNotes()
 	{
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+		{
+			playfieldRenderer.killNotes();
+			return;
+		}
 		while (notes.length > 0)
 		{
 			var daNote:Note = notes.members[0];
@@ -3871,9 +3908,13 @@ class PlayState extends MusicBeatState
 		if (touchPad?.buttonP.justPressed)
 			return;
 		#end
+		
 		var ret:Dynamic = callOnScripts('onKeyPressPre', [key]);
 		if (ret == LuaUtils.Function_Stop)
 			return;
+
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.keyPress(key);
 
 		// more accurate hit time for the ratings?
 		var lastTime:Float = Conductor.songPosition;
@@ -3961,6 +4002,9 @@ class PlayState extends MusicBeatState
 		var ret:Dynamic = callOnScripts('onKeyReleasePre', [key]);
 		if (ret == LuaUtils.Function_Stop)
 			return;
+
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+			playfieldRenderer.keyRelease(key);
 
 		var spr:StrumNote = playerStrums.members[key];
 		if (spr != null)

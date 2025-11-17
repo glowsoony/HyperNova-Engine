@@ -10,6 +10,7 @@ import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
 import objects.StrumNote;
 import objects.SustainTrail;
+import objects.Strumline;
 import openfl.geom.Vector3D;
 import states.PlayState;
 
@@ -17,30 +18,30 @@ using StringTools;
 
 class NoteField extends FlxBasic
 {
-	public var strums:FlxTypedGroup<StrumNote>;
-	public var notes:FlxTypedGroup<Note>;
 	public var renderer:PlayfieldRenderer = null;
 	public var pfIndex:Int = 0;
+	public var strumLine:Strumline = null;
 
-	public function new(renderer:PlayfieldRenderer, pfIndex:Int = 0)
+	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
+		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null)
 	{
-		super();
 		this.renderer = renderer;
 		this.pfIndex = pfIndex;
-
-		try
+		strumLine = new Strumline(this);
+		super();
+		if (pfIndex == 0)
 		{
-			if (Reflect.getProperty(renderer.instance, 'strumLineNotes') != null)
-				this.strums = Reflect.getProperty(renderer.instance, 'strumLineNotes');
-
-			if (Reflect.getProperty(renderer.instance, 'notes') != null)
-				this.notes = Reflect.getProperty(renderer.instance, 'notes');
+			strumLine.strums = strumNotes;
+			strumLine.notes = notes;
+			strumLine.unspawnNotes = unspawnNotes;
 		}
-		catch (e:haxe.Exception)
-			trace(e.message, e.stack);
-		trace(pfIndex);
-		trace(notes.length);
-		trace(strums.length);
+		else
+		{
+			strumLine.loadUnspawnNotes();
+			strumLine.loadStrums();
+		}
+		strumLine.strums.cameras = this.cameras;
+		strumLine.notes.cameras = this.cameras;
 	}
 
 	private var debuggingMode:Bool = false; // to make tracing errors easier instead of a vague "null object reference"
@@ -111,25 +112,25 @@ class NoteField extends FlxBasic
 
 	private function createDataFromNote(noteIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
 	{
-		var noteX = notes.members[noteIndex].x;
-		var noteY = notes.members[noteIndex].y;
-		var noteZ = notes.members[noteIndex].z;
+		var noteX = strumLine.notes.members[noteIndex].x;
+		var noteY = strumLine.notes.members[noteIndex].y;
+		var noteZ = strumLine.notes.members[noteIndex].z;
 		var lane = getLane(noteIndex);
 		var noteScaleX = NoteMovement.defaultScale[lane];
 		var noteScaleY = NoteMovement.defaultScale[lane];
-		var noteSkewX = notes.members[noteIndex].skew.x;
-		var noteSkewY = notes.members[noteIndex].skew.y;
+		var noteSkewX = strumLine.notes.members[noteIndex].skew.x;
+		var noteSkewY = strumLine.notes.members[noteIndex].skew.y;
 
 		var noteAlpha:Float = 1;
 
 		// if (!notesGroup[field][noteIndex].specialHurt)
 		#if PSYCH
-		if (!notes.members[noteIndex].specialHurt)
+		if (!strumLine.notes.members[noteIndex].specialHurt)
 		{
-			noteAlpha = notes.members[noteIndex].multAlpha;
-			if (notes.members[noteIndex].hurtNote)
+			noteAlpha = strumLine.notes.members[noteIndex].multAlpha;
+			if (strumLine.notes.members[noteIndex].hurtNote)
 				noteAlpha = 0.55;
-			if (notes.members[noteIndex].mimicNote)
+			if (strumLine.notes.members[noteIndex].mimicNote)
 				noteAlpha = ClientPrefs.data.mimicNoteAlpha;
 		}
 		else
@@ -137,7 +138,7 @@ class NoteField extends FlxBasic
 			noteAlpha = 0;
 		}
 		#else
-		if (notes.members[noteIndex].isSustainNote)
+		if (strumLine.notes.members[noteIndex].isSustainNote)
 			noteAlpha = 0.6;
 		else
 			noteAlpha = 1;
@@ -152,20 +153,20 @@ class NoteField extends FlxBasic
 
 		final noteData:NotePositionData = NotePositionData.get();
 		noteData.setupNote(noteX, noteY, noteZ, lane, noteScaleX, noteScaleY, noteSkewX, noteSkewY, pfIndex, noteAlpha, curPos, noteDist, incomingAngle[0],
-			incomingAngle[1], notes.members[noteIndex].strumTime, noteIndex, notes.members[noteIndex].isSustainNote);
+			incomingAngle[1], strumLine.notes.members[noteIndex].strumTime, noteIndex, strumLine.notes.members[noteIndex].isSustainNote);
 		return noteData;
 	}
 
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0)
 	{
 		#if PSYCH
-		if (notes.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(renderer.instance))
+		if (strumLine.notes.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(renderer.instance))
 			strumTimeOffset -= Std.int(Conductor.stepCrochet / renderer.getCorrectScrollSpeed()); // psych does this to fix its sustains but that breaks the visuals so basically reverse it back to normal
 		#else
-		if (notes.members[noteIndex].isSustainNote && !ModchartUtil.getDownscroll(renderer.instance))
+		if (strumLine.notes.members[noteIndex].isSustainNote && !ModchartUtil.getDownscroll(renderer.instance))
 			strumTimeOffset += Conductor.stepCrochet; // fix upscroll lol
 		#end
-		if (notes.members[noteIndex].isSustainNote)
+		if (strumLine.notes.members[noteIndex].isSustainNote)
 		{
 			// moved those inside holdsMath cuz they are only needed for sustains ig?
 			var lane = getLane(noteIndex);
@@ -199,13 +200,13 @@ class NoteField extends FlxBasic
 			// FINALLY OMG I HATE THIS FUCKING MATH LMAO
 		}
 
-		var distance = (Conductor.songPosition - notes.members[noteIndex].strumTime) + strumTimeOffset;
+		var distance = (Conductor.songPosition - strumLine.notes.members[noteIndex].strumTime) + strumTimeOffset;
 		return distance * renderer.getCorrectScrollSpeed();
 	}
 
 	private function getLane(noteIndex:Int)
 	{
-		return (notes.members[noteIndex].mustPress ? notes.members[noteIndex].noteData + NoteMovement.keyCount : notes.members[noteIndex].noteData);
+		return (strumLine.notes.members[noteIndex].mustPress ? strumLine.notes.members[noteIndex].noteData + NoteMovement.keyCount : strumLine.notes.members[noteIndex].noteData);
 	}
 
 	// lol XD
@@ -221,9 +222,16 @@ class NoteField extends FlxBasic
 	private function getNotePositions()
 	{
 		var notePositions:Array<NotePositionData> = [];
-		for (i => strum in strums.members)
+		// trace(strumLine.strums == null, strumLine.notes == null);
+		for (i => strum in strumLine.strums.members)
+		{
+			// trace('ola');
+			// trace(strum, i);
 			notePositions.push(getDataForStrum(i));
-		for (i => note in notes.members)
+			// trace('post');
+			// trace(getDataForStrum(i));
+		}
+		for (i => note in strumLine.notes.members)
 		{
 			var songSpeed = renderer.getCorrectScrollSpeed();
 
@@ -248,7 +256,7 @@ class NoteField extends FlxBasic
 
 			curPos = renderer.modifierTable.applyCurPosMods(lane, curPos, pfIndex);
 
-			if ((notes.members[i].wasGoodHit || (notes.members[i].prevNote.wasGoodHit)) && curPos >= 0 && notes.members[i].isSustainNote)
+			if ((strumLine.notes.members[i].wasGoodHit || (strumLine.notes.members[i].prevNote.wasGoodHit)) && curPos >= 0 && strumLine.notes.members[i].isSustainNote)
 				curPos = 0; // sustain clip
 
 			var incomingAngle:Array<Float> = renderer.modifierTable.applyIncomingAngleMods(lane, curPos, pfIndex);
@@ -256,7 +264,7 @@ class NoteField extends FlxBasic
 				incomingAngle[0] += 180; // make it match for both scrolls
 
 			// get the general note path
-			NoteMovement.setNotePath(notes.members[i], lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
+			NoteMovement.setNotePath(strumLine.notes.members[i], lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// save the position data
 			var noteData = createDataFromNote(i, curPos, noteDist, incomingAngle);
@@ -269,7 +277,7 @@ class NoteField extends FlxBasic
 		}
 
 		// sort by z before drawing
-		notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
+		// notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
 		return notePositions;
 	}
 
@@ -288,7 +296,7 @@ class NoteField extends FlxBasic
 
 		 */
 		// var strumNote = targetGroup[0][noteData.index];
-		var strumNote = strums.members[noteData.index];
+		var strumNote = strumLine.strums.members[noteData.index];
 
 		// if (strumNote == null)
 		// {
@@ -336,7 +344,7 @@ class NoteField extends FlxBasic
 		// }
 		// else
 		// strumNote.applyNoteData(noteData);
-		strumNote.draw();
+		// strumNote.draw();
 	}
 
 	private function drawNote(noteData:NotePositionData)
@@ -344,7 +352,7 @@ class NoteField extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 		var changeX:Bool = noteData.z != 0;
-		var daNote = notes.members[noteData.index];
+		var daNote = strumLine.notes.members[noteData.index];
 
 		// if (daNote == null)
 		// {
@@ -389,7 +397,7 @@ class NoteField extends FlxBasic
 		// }
 		// else
 		// daNote.applyNoteData(noteData);
-		daNote.draw();
+		// daNote.draw();
 	}
 
 	private function drawSustainNote(noteData:NotePositionData)
@@ -397,7 +405,7 @@ class NoteField extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 
-		var daNote = notes.members[noteData.index];
+		var daNote = strumLine.notes.members[noteData.index];
 		if (daNote.mesh == null)
 			daNote.mesh = new SustainStrip(daNote);
 
@@ -462,7 +470,7 @@ class NoteField extends FlxBasic
 		daNote.mesh.constructVertices(noteData, top, mid, bot, flipGraphic, reverseClip);
 
 		daNote.mesh.cameras = this.cameras;
-		daNote.mesh.draw();
+		// daNote.mesh.draw();
 	}
 
 	private function drawArrowPathNew(noteData:NotePositionData)
@@ -478,7 +486,7 @@ class NoteField extends FlxBasic
 			- optimize the code to make it easier to understand
 		 */
 
-		var strumNote = strums.members[noteData.index];
+		var strumNote = strumLine.strums.members[noteData.index];
 
 		var arrowPathLength:Float = noteData.arrowPathLength * 100;
 		var arrowPathBackLength:Float = noteData.arrowPathBackwardsLength * 100;
@@ -511,7 +519,7 @@ class NoteField extends FlxBasic
 
 			if (noteData.isStrum) // draw strum
 				drawStrum(noteData);
-			else if (!notes.members[noteData.index].isSustainNote) // draw note
+			else if (!strumLine.notes.members[noteData.index].isSustainNote) // draw note
 				drawNote(noteData);
 			else // draw Sustain
 				drawSustainNote(noteData);
@@ -520,7 +528,7 @@ class NoteField extends FlxBasic
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData
 	{
-		var daNote:Note = notes.members[noteData.index];
+		var daNote:Note = strumLine.notes.members[noteData.index];
 		var songSpeed:Float = renderer.getCorrectScrollSpeed();
 		var lane:Int = noteData.lane;
 
@@ -559,7 +567,7 @@ class NoteField extends FlxBasic
 
 	function getNotePoss(noteData:NotePositionData, timeOffset:Float):NotePositionData
 	{
-		var daNote:Note = notes.members[noteData.index];
+		var daNote:Note = strumLine.notes.members[noteData.index];
 		var songSpeed:Float = renderer.getCorrectScrollSpeed();
 		var lane:Int = noteData.lane;
 

@@ -239,7 +239,7 @@ class EditorPlayState extends MusicBeatSubstate
 				if(!daNote.mustPress) strumGroup = opponentStrums;
 
 				var strum:StrumNote = strumGroup.members[daNote.noteData];
-				daNote.followStrumNote(strum, fakeCrochet, songSpeed / playbackRate);
+				daNote.followStrumNote(strum, songSpeed / playbackRate);
 
 				if(!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 					opponentNoteHit(daNote);

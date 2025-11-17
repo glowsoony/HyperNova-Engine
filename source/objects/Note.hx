@@ -71,6 +71,7 @@ class Note extends modcharting.NewModchartArrow
 	public var hurtNote:Bool = false;
 	public var mimicNote:Bool = false;
 	public var tlove:Bool = false;
+	public var rendererIndex:Int = 0;
 
 	public var quantizedNotes:Bool = false;
 
@@ -898,7 +899,7 @@ class Note extends modcharting.NewModchartArrow
 		// }
 	}
 
-	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)
+	public function followStrumNote(myStrum:StrumNote, songSpeed:Float = 1)
 	{
 		var strumX:Float = myStrum.x;
 		var strumY:Float = myStrum.y;
@@ -1068,6 +1069,15 @@ class Note extends modcharting.NewModchartArrow
 			frame = frames.frames[animation.frameIndex];
 
 		return rect;
+	}
+
+	@:allow(flixel.FlxCamera)
+	override function draw():Void
+	{
+		if (mesh == null)
+			super.draw();
+		else
+			mesh.draw();
 	}
 
 	public override function kill():Void
