@@ -201,7 +201,7 @@ class ModTable
                 modifiers.get(modifier).currentValue = finishPoint;
                 return;
             }
-            time /= renderer.speed;
+            time /= renderer.rate;
             var tween = renderer.createTween(modifiers.get(modifier), {currentValue: val}, time, { //average 0-1 tween LMAO
                 ease: easefunc,
                 onComplete: function(twn:FlxTween)
@@ -267,7 +267,7 @@ class ModTable
                     modifiers.get(modifier).subValues.get(subValue).value = finishPoint;
                     return;
                 }
-                time /= renderer.speed;
+                time /= renderer.rate;
                 var tween = renderer.createTweenNum(startPoint, val, time, {
                     ease: easefunc,
                     onComplete: function(twn:FlxTween)
@@ -314,7 +314,7 @@ class ModTable
                 modifiers.get(modifier).currentValue += val;
                 return;
             }
-            time /= renderer.speed;
+            time /= renderer.rate;
             var tween = renderer.createTween(modifiers.get(modifier), {currentValue: modifiers.get(modifier).currentValue + val}, time, {
                 ease: easefunc,
                 onComplete: function(twn:FlxTween)
@@ -359,7 +359,7 @@ class ModTable
                     modifiers.get(modifier).subValues.get(subValue).value += val;
                     return;
                 }
-                time /= renderer.speed;
+                time /= renderer.rate;
                 var tween = renderer.createTweenNum(startValue, val, time, {
                     ease: easefunc,
                     onComplete: function(twn:FlxTween)

@@ -342,6 +342,8 @@ class NoteField extends FlxBasic
 		if (noteData.stealthGlow != 0)
 			strumNote.rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
 
+		noteData.z -= 0.00001; //???
+
 		addDataToStrum(noteData, strumNote); // set position and stuff before drawing
 
 		strumNote.cameras = this.cameras;
