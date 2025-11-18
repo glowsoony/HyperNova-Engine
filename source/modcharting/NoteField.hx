@@ -280,6 +280,8 @@ class NoteField extends FlxBasic
 			// add offsets to data with modifiers
 			renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
 
+			noteData.z += 0.00001;
+
 			note.notePositionData = noteData;
 
 			// add position data to list
@@ -429,6 +431,8 @@ class NoteField extends FlxBasic
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
 
+		noteData.z += 0.00001;
+
 		var songSpeed = renderer.getCorrectScrollSpeed();
 		var lane = noteData.lane;
 
@@ -507,6 +511,8 @@ class NoteField extends FlxBasic
 		// daNote.newMesh.y = 0;
 
 		daNote.newMesh.strumTime = daNote.strumTime;
+
+		noteData.z += 0.00001;
 
 		daNote.newMesh.updateClipping_mods(noteData);
 
