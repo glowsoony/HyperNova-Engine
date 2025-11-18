@@ -445,6 +445,32 @@ class NoteField extends FlxBasic
 		if (noteData.noteDist < 0)
 			timeToNextSustain *= -1; // weird shit that fixes upscroll lol
 
+		var prevSustainNoteData = getSustainPoint(noteData, 0);
+		var midSusPointData = getSustainPoint(noteData, timeToNextSustain * .5);
+		var nextSustainNoteData = getSustainPoint(noteData, timeToNextSustain);
+
+		daNote.rgbShader.isHold = true;
+
+		daNote.rgbShader.bottomStealth = prevSustainNoteData.stealthGlow;
+		daNote.rgbShader.bottomAlpha = prevSustainNoteData.alpha;
+		daNote.rgbShader.bottomStealthRed = prevSustainNoteData.glowRed;
+		daNote.rgbShader.bottomStealthGreen = prevSustainNoteData.glowGreen;
+		daNote.rgbShader.bottomStealthBlue = prevSustainNoteData.glowBlue;
+
+		daNote.rgbShader.topStealth = nextSustainNoteData.stealthGlow;
+		daNote.rgbShader.topAlpha = nextSustainNoteData.alpha;
+		daNote.rgbShader.topStealthRed = nextSustainNoteData.glowRed;
+		daNote.rgbShader.topStealthGreen = nextSustainNoteData.glowGreen;
+		daNote.rgbShader.topStealthBlue = nextSustainNoteData.glowBlue;
+
+		daNote.rgbShader.topRed = 1;
+		daNote.rgbShader.topGreen = 1;
+		daNote.rgbShader.topBlue = 1;
+
+		daNote.rgbShader.bottomRed = 1;
+		daNote.rgbShader.bottomGreen = 1;
+		daNote.rgbShader.bottomBlue = 1;
+
 		var top = [];
 		var mid = [];
 		var bot = [];

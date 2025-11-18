@@ -1,7 +1,7 @@
 package states.editors.content;
 
 import objects.Note;
-import shaders.RGBPalette;
+import modcharting.utils.RGBPalette;
 import flixel.util.FlxDestroyUtil;
 
 class MetaNote extends Note
