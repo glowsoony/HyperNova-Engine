@@ -454,6 +454,24 @@ class Strumline
 		daNote.destroy();
 	}
 
+	public function handleSustainInput(hold:Array<Bool>) {
+		for (n in notes)
+		{ 
+			// I can't do a filter here, that's kinda awesome
+			var canHit:Bool = (n != null && !strumsBlocked[n.noteData] && n.canBeHit && n.mustPress && !n.tooLate && !n.wasGoodHit && !n.blockHit);
+
+			if (guitarHeroSustains)
+				canHit = canHit && n.parent != null && n.parent.wasGoodHit;
+
+			if (canHit && n.isSustainNote)
+			{
+				var released:Bool = !hold[n.noteData];
+				if (!released)
+					noteHit(n, true);
+			}
+		}
+	}
+
 	public function spawnNotes() {
 		if (unspawnNotes[0] == null) return;
 		final time:Float = (spawnTime * renderer.rate) / (renderer.speed < 1 ? renderer.speed : 1) / (unspawnNotes[0].multSpeed < 1 ? unspawnNotes[0].multSpeed : 1);
@@ -495,12 +513,27 @@ class Strumline
 	public function noteHit(note:Note, player:Bool = false) {
 		if (player && note.wasGoodHit) return;
 		if (!player)
+		{
 			note.hitByOpponent = true;
-		else
+			strumPlayAnim(note.noteData, Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
+		}
+		else {
 			note.wasGoodHit = true;
+			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
+		}
+		
 		//playSplash();
 		//playHold();
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
+	}
+
+	public function strumPlayAnim(id:Int, time:Float = -1)
+	{
+		final spr:StrumNote = strums.members[id];
+		if (spr == null) return;
+		spr.playAnim('confirm', true);
+		if (time != -1)
+			spr.resetAnim = time;
 	}
 }

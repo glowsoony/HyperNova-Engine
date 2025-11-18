@@ -85,11 +85,7 @@ class PlayfieldRenderer extends FlxBasic
 	{
 		allObjects.cameras = cameras;
 		for (field in noteFields)
-		{
 			field.cameras = cameras;
-			field.strumLine.strums.cameras = cameras;
-			field.strumLine.notes.cameras = cameras;
-		}
 		return super.set_cameras(cameras);
 	}
 
@@ -122,6 +118,7 @@ class PlayfieldRenderer extends FlxBasic
 				final field:NoteField = new NoteField(this, index, strums, notes, unspawnNotes);
 				field.pfIndex = index;
 				noteFields.push(field);
+				field.cameras = cameras;
 				return field;
 			}
 			catch(e:haxe.Exception)
@@ -175,6 +172,13 @@ class PlayfieldRenderer extends FlxBasic
 		if (noteFields == null || noteFields.length < 2) return;
 		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.updateNotes(elapsed);
+	}
+
+	public function handleSustainInput(hold:Array<Bool>)
+	{
+		if (noteFields == null || noteFields.length < 2) return;
+		for (i in 1...noteFields.length)
+			noteFields[i].strumLine.handleSustainInput(hold);
 	}
 
 	public function prepareNotes()
@@ -237,12 +241,12 @@ class PlayfieldRenderer extends FlxBasic
 		eventManager.update(elapsed);
 		tweenManager.update(elapsed); // should be automatically paused when you pause in game
 		timerManager.update(elapsed);
-		resortZ();
 		allObjects.update(elapsed);
 	}
 
 	override function draw()
 	{
+		resortZ();
 		for (field in noteFields)
 			field.draw();
 		allObjects.draw();

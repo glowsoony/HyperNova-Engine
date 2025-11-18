@@ -41,6 +41,8 @@ class NewModchartArrow extends FlxSkewedSprite
 	public var y2:Float = 0.0;
 	public var x2:Float = 0.0;
 
+	public var notePositionData:NotePositionData;
+
 	// Offset the perspective math center by this amount!
 	public var perspectiveCenterOffset:Vector2 = new Vector2(0, 0);
 

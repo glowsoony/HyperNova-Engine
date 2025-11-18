@@ -23,6 +23,13 @@ class NoteField extends FlxBasic
 	public var strumLine:Strumline = null;
 	public var usingSusTrail:Bool = false;
 
+	override public function set_cameras(cameras:Array<FlxCamera>):Array<FlxCamera>
+	{
+		strumLine.strums.cameras = cameras;
+		strumLine.notes.cameras = cameras;
+		return super.set_cameras(cameras);
+	}
+
 	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
 		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null)
 	{
@@ -41,8 +48,6 @@ class NoteField extends FlxBasic
 			strumLine.loadUnspawnNotes();
 			strumLine.loadStrums();
 		}
-		strumLine.strums.cameras = this.cameras;
-		strumLine.notes.cameras = this.cameras;
 	}
 
 	private var debuggingMode:Bool = false; // to make tracing errors easier instead of a vague "null object reference"
@@ -278,7 +283,7 @@ class NoteField extends FlxBasic
 		}
 
 		// sort by z before drawing
-		// notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
+		notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
 		return notePositions;
 	}
 

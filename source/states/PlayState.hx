@@ -4080,6 +4080,8 @@ class PlayState extends MusicBeatState
 		{
 			if (notes.length > 0)
 			{
+				if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+					playfieldRenderer.handleSustainInput(holdArray);
 				for (n in notes)
 				{ // I can't do a filter here, that's kinda awesome
 					var canHit:Bool = (n != null && !strumsBlocked[n.noteData] && n.canBeHit && n.mustPress && !n.tooLate && !n.wasGoodHit && !n.blockHit);
