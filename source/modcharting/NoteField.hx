@@ -55,9 +55,9 @@ class NoteField extends FlxBasic
 	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
 	{
 		// not really needed since we draw the shit manually now
-
 		strum.x = strumData.x;
 		strum.y = strumData.y;
+		strum.z = strumData.z;
 		strum.angle = strumData.angle;
 		// strum.angleZ = strumData.angleZ;
 		strum.angleY = strumData.angleY;
@@ -233,7 +233,9 @@ class NoteField extends FlxBasic
 		{
 			// trace('ola');
 			// trace(strum, i);
-			notePositions.push(getDataForStrum(i));
+			final data:NotePositionData = getDataForStrum(i);
+			notePositions.push(data);
+			strum.notePositionData = data;
 			// trace('post');
 			// trace(getDataForStrum(i));
 		}
@@ -277,6 +279,8 @@ class NoteField extends FlxBasic
 
 			// add offsets to data with modifiers
 			renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
+
+			note.notePositionData = noteData;
 
 			// add position data to list
 			notePositions.push(noteData);
@@ -549,26 +553,30 @@ class NoteField extends FlxBasic
 		// strumNote.arrowPath.draw();
 	}
 
-	private function drawStuff(notePositions:Array<NotePositionData>)
+	private function forEach(positions:Array<NotePositionData>, callback:NotePositionData->Void)
 	{
-		for (noteData in notePositions)
-		{
-			if (noteData.isStrum) // make sure we draw the path for each before we even draw each?
-				drawArrowPathNew(noteData);
+		for (noteData in positions)
+			callback(noteData);
+	}
 
-			if (noteData.isStrum) // draw strum
-				drawStrum(noteData);
-			else if (!strumLine.notes.members[noteData.index].isSustainNote)
+	private function drawStuff(positions:Array<NotePositionData>)
+	{
+		forEach(positions, data -> if (data.isStrum) drawArrowPathNew(data)); // make sure we draw the path for each before we even draw each?
+		forEach(positions, data -> if (data.isStrum) drawStrum(data)); // draw notes after strums
+		forEach(positions, data -> {
+			if (data.isStrum) return;
+			if (strumLine.notes.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
+		});
+		forEach(positions, data -> {
+			if (data.isStrum) return;
+			if (!strumLine.notes.members[data.index].isSustainNote)
 			{
 				if (usingSusTrail)
-					if (strumLine.notes.members[noteData.index].sustainLength > 0)
-						drawNewSustainNote(noteData);
-
-				drawNote(noteData);
+					if (strumLine.notes.members[data.index].sustainLength > 0)
+						drawNewSustainNote(data);
+				drawNote(data);
 			}
-			else if (strumLine.notes.members[noteData.index].isSustainNote && !usingSusTrail)
-				drawSustainNote(noteData);
-		}
+		});
 	}
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData

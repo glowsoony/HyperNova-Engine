@@ -1079,7 +1079,7 @@ class Note extends modcharting.NewModchartArrow
 	{
 		if (mesh == null)
 			super.draw();
-		else
+		else if (notePositionData.alpha != 0)
 			mesh.draw();
 	}
 
