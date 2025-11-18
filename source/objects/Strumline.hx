@@ -106,7 +106,7 @@ class Strumline
 			return this.loadedNotes = set.copy();
 		}
 		var oldNote:Note = null;
-		var sectionsData:Array<SwagSection> = given ?? PlayState.SONG.notes;
+		var sectionsData:Array<SwagSection> = given ?? PlayState.SONG.notes.copy();
 		var ghostNotesCaught:Int = 0;
 		var daBpm:Float = Conductor.bpm;
 		var unspawnedNotes:Array<Note> = [];
@@ -366,8 +366,14 @@ class Strumline
 			if (daNote.isSustainNote && strum.sustainReduce)
 				daNote.clipToStrumNote(strum);
 
-			// Kill extremely late notes and cause misses
-			if (Conductor.songPosition - daNote.strumTime > noteKillOffset)
+			if (daNote.newMesh != null)
+			{
+				if (daNote.newMesh.sustainLength > 0.0)
+					daNote.newMesh.updateLength();
+				else
+					invalidateNote(daNote);
+			}
+			else if (Conductor.songPosition - daNote.strumTime > noteKillOffset) // Kill extremely late notes and cause misses 
 			{
 				if (daNote.mustPress && !cpuControlled && !daNote.ignoreNote && (daNote.tooLate || !daNote.wasGoodHit))
 					noteMiss(daNote.noteData, daNote);
@@ -494,7 +500,7 @@ class Strumline
 			note.wasGoodHit = true;
 		//playSplash();
 		//playHold();
-		if (note.isSustainNote) return;
-		invalidateNote(note);
+		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
+			invalidateNote(note);
 	}
 }

@@ -9,7 +9,7 @@ import modcharting.Modifier;
 import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
 import objects.StrumNote;
-import objects.SustainTrail;
+import modcharting.graphics.SustainTrail;
 import objects.Strumline;
 import openfl.geom.Vector3D;
 import states.PlayState;
@@ -21,6 +21,7 @@ class NoteField extends FlxBasic
 	public var renderer:PlayfieldRenderer = null;
 	public var pfIndex:Int = 0;
 	public var strumLine:Strumline = null;
+	public var usingSusTrail:Bool = false;
 
 	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
 		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null)
@@ -153,7 +154,7 @@ class NoteField extends FlxBasic
 
 		final noteData:NotePositionData = NotePositionData.get();
 		noteData.setupNote(noteX, noteY, noteZ, lane, noteScaleX, noteScaleY, noteSkewX, noteSkewY, pfIndex, noteAlpha, curPos, noteDist, incomingAngle[0],
-			incomingAngle[1], strumLine.notes.members[noteIndex].strumTime, noteIndex, strumLine.notes.members[noteIndex].isSustainNote);
+			incomingAngle[1], strumLine.notes.members[noteIndex].strumTime, noteIndex, strumLine.notes.members[noteIndex].isSustainNote, strumLine.notes.members[noteIndex].rendererIndex);
 		return noteData;
 	}
 
@@ -389,6 +390,9 @@ class NoteField extends FlxBasic
 		addDataToNote(noteData, daNote);
 
 		daNote.cameras = this.cameras;
+
+		if (daNote.wasGoodHit)
+			daNote.alpha = 0;
 		// Same as strums case
 		// if (daNote != null)
 		// {
@@ -473,6 +477,36 @@ class NoteField extends FlxBasic
 		// daNote.mesh.draw();
 	}
 
+	private function drawNewSustainNote(noteData:NotePositionData)
+	{
+		if (noteData.alpha <= 0)
+			return;
+
+		var daNote:Note = strumLine.notes.members[noteData.index];
+		if (daNote.newMesh == null)
+			daNote.newMesh = new SustainTrail(noteData.lane, Math.ffloor(daNote.sustainLength), renderer, this);
+
+		// noteData.isSus = true; //forcing the math to be called as "sustain"
+		daNote.newMesh.alpha = 0.6 * noteData.alpha;
+		daNote.newMesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
+
+		var songSpeed = renderer.getCorrectScrollSpeed();
+		// var lane = noteData.lane;
+
+		// daNote.newMesh.strumTime -= arrowPathBackLength;
+		// daNote.newMesh.x = 0;
+		// daNote.newMesh.y = 0;
+
+		daNote.newMesh.strumTime = daNote.strumTime;
+
+		daNote.newMesh.updateClipping_mods(noteData);
+
+		daNote.newMesh.cameras = this.cameras;
+		// daNote.newMesh.draw();
+
+		// trace("Drawn");
+	}
+
 	private function drawArrowPathNew(noteData:NotePositionData)
 	{ // this one is unused since i have no clue what to do.
 		if (noteData.arrowPathAlpha <= 0)
@@ -492,7 +526,7 @@ class NoteField extends FlxBasic
 		var arrowPathBackLength:Float = noteData.arrowPathBackwardsLength * 100;
 
 		if (strumNote.arrowPath == null)
-			strumNote.arrowPath = new SustainTrail(noteData.index, arrowPathLength, renderer);
+			strumNote.arrowPath = new SustainTrail(noteData.index, arrowPathLength, renderer, this);
 
 		strumNote.arrowPath.alpha = noteData.arrowPathAlpha;
 
@@ -507,7 +541,7 @@ class NoteField extends FlxBasic
 		strumNote.arrowPath.updateClipping_mods(noteData);
 
 		strumNote.arrowPath.cameras = this.cameras;
-		strumNote.arrowPath.draw();
+		// strumNote.arrowPath.draw();
 	}
 
 	private function drawStuff(notePositions:Array<NotePositionData>)
@@ -519,9 +553,15 @@ class NoteField extends FlxBasic
 
 			if (noteData.isStrum) // draw strum
 				drawStrum(noteData);
-			else if (!strumLine.notes.members[noteData.index].isSustainNote) // draw note
+			else if (!strumLine.notes.members[noteData.index].isSustainNote)
+			{
+				if (usingSusTrail)
+					if (strumLine.notes.members[noteData.index].sustainLength > 0)
+						drawNewSustainNote(noteData);
+
 				drawNote(noteData);
-			else // draw Sustain
+			}
+			else if (strumLine.notes.members[noteData.index].isSustainNote && !usingSusTrail)
 				drawSustainNote(noteData);
 		}
 	}

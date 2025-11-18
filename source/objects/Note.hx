@@ -72,6 +72,7 @@ class Note extends modcharting.NewModchartArrow
 	public var mimicNote:Bool = false;
 	public var tlove:Bool = false;
 	public var rendererIndex:Int = 0;
+	public var ogIndex:Int = 0;
 
 	public var quantizedNotes:Bool = false;
 
@@ -152,6 +153,8 @@ class Note extends modcharting.NewModchartArrow
 	public var offsetAngle:Float = 0;
 	public var multAlpha:Float = 1;
 	public var multSpeed(default, set):Float = 1;
+	
+	public var newMesh:modcharting.graphics.SustainTrail = null;
 
 	public var copyX:Bool = true;
 	public var copyY:Bool = true;

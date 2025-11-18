@@ -64,19 +64,38 @@ class SustainStrip extends FlxStrip
 		var unitX = nextFramePos.x - pos.x;
 		var unitY = nextFramePos.y - pos.y;
 		// normalizing
-		var length = Math.sqrt(unitX * unitX + unitY * unitY);
+		var length = Math.sqrt((unitX * unitX) + (unitY * unitY));
 		unitX /= length;
 		unitY /= length;
-		holdSize *= .5 * (1 / -pos.z) * pos.scaleX;
+		holdSize *= .5 * (1 / -pos.z) * pos.scaleX * FlxMath.fastCos(pos.angleY * (1 / 180 * Math.PI));
 
 		return [
-			//  left
+			// left
 			pos.x + -unitY * holdSize,
 			pos.y + unitX * holdSize,
+
 			// right
 			pos.x + unitY * holdSize,
 			pos.y + -unitX * holdSize,
 		];
+	}
+
+	public function applyPerspective(noteData:NotePositionData, pos:Vector3D, rotatePivot:Vector2):Array<Float>
+	{
+		var vect3D:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
+		var vect2:Vector2 = new Vector2(vect3D.x, vect3D.z);
+		var rotModPivot:Vector2 = new Vector2(rotatePivot.x, vect3D.z);
+
+		vect2 = ModchartUtil.rotateAround(rotModPivot, vect2, noteData.angleY);
+		vect3D.x = vect2.x;
+		vect3D.z = vect2.y;
+
+		var thisNotePos:Vector3D = ModchartUtil.calculatePerspective(vect3D, ModchartUtil.defaultFOV * (Math.PI / 180), 0, 0);
+
+		var returnFloat:Array<Float> = [];
+		returnFloat.push(thisNotePos.x);
+		returnFloat.push(thisNotePos.y);
+		return returnFloat;
 	}
 
 	public function constructVertices(noteData:NotePositionData, topPositions:Array<NotePositionData>, middlePositions:Array<NotePositionData>,
@@ -100,64 +119,41 @@ class SustainStrip extends FlxStrip
 		var mid = [];
 		var bottom = [];
 
-		if (!flipGraphic)
+		if (spiralHolds)
 		{
-			if (spiralHolds)
-			{
-				top = getPointsNormal(topPositions[0], topPositions[1], holdWidth);
-				mid = getPointsNormal(middlePositions[0], middlePositions[1], holdWidth);
-				bottom = getPointsNormal(bottomPositions[0], bottomPositions[1], holdWidth);
-			}
-			else
-			{
-				var zScaleTop = 1 / -topPositions[0].z;
-				var zScaleMid = 1 / -middlePositions[0].z;
-				var zScaleBottom = 1 / -bottomPositions[0].z;
-
-				top = [
-					topPositions[0].x - holdWidth * .5 * zScaleTop * topPositions[0].scaleX, topPositions[0].y,
-					topPositions[0].x + holdWidth * .5 * zScaleTop * topPositions[0].scaleX, topPositions[0].y
-				];
-				mid = [
-					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y,
-					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y
-				];
-				bottom = [
-					bottomPositions[0].x - holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX, bottomPositions[0].y,
-					bottomPositions[0].x + holdWidth * .5 * zScaleBottom * bottomPositions[0].scaleX, bottomPositions[0].y
-				];
-			}
+			top = getPointsNormal(topPositions[0], topPositions[1], holdWidth);
+			mid = getPointsNormal(middlePositions[0], middlePositions[1], holdWidth);
+			bottom = getPointsNormal(bottomPositions[0], bottomPositions[1], holdWidth);
 		}
 		else
 		{
-			if (spiralHolds)
-			{
-				top = getPointsNormal(bottomPositions[0], bottomPositions[1], holdWidth);
-				mid = getPointsNormal(middlePositions[0], middlePositions[1], holdWidth);
-				bottom = getPointsNormal(topPositions[0], topPositions[1], holdWidth);
-			}
-			else
-			{
-				var zScaleTop = 1 / -bottomPositions[0].z;
-				var zScaleMid = 1 / -middlePositions[0].z;
-				var zScaleBottom = 1 / -topPositions[0].z;
+			var zScaleTop:Float = 1 / -topPositions[0].z;
+			var zScaleMid:Float = 1 / -middlePositions[0].z;
+			var zScaleBottom:Float = 1 / -bottomPositions[0].z;
 
-				top = [
-					bottomPositions[0].x - holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX, bottomPositions[0].y,
-					bottomPositions[0].x + holdWidth * .5 * zScaleTop * bottomPositions[0].scaleX, bottomPositions[0].y
-				];
-				mid = [
-					middlePositions[0].x - holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y,
-					middlePositions[0].x + holdWidth * .5 * zScaleMid * middlePositions[0].scaleX, middlePositions[0].y
-				];
-				bottom = [
-					topPositions[0].x - holdWidth * .5 * zScaleBottom * topPositions[0].scaleX, topPositions[0].y,
-					topPositions[0].x + holdWidth * .5 * zScaleBottom * topPositions[0].scaleX, topPositions[0].y
-				];
-			}
+			var scaleToTop:Float = topPositions[0].scaleX * holdWidth * .5 * zScaleTop;
+			var scaleToMid:Float = middlePositions[0].scaleX * holdWidth * .5 * zScaleMid;
+			var scaleToBottom:Float = bottomPositions[0].scaleX * holdWidth * .5 * zScaleBottom;
+
+			var angleYTop:Float = FlxMath.fastCos(topPositions[0].angleY * (1 / 180 * Math.PI)) * scaleToTop;
+			var angleYMid:Float = FlxMath.fastCos(middlePositions[0].angleY * (1 / 180 * Math.PI)) * scaleToMid;
+			var angleYBottom:Float = FlxMath.fastCos(bottomPositions[0].angleY * (1 / 180 * Math.PI)) * scaleToBottom;
+
+			top = [
+				-angleYTop + topPositions[0].x, topPositions[0].y,
+				 angleYTop + topPositions[0].x, topPositions[0].y
+			];
+			mid = [
+				-angleYMid + middlePositions[0].x, middlePositions[0].y,
+				 angleYMid + middlePositions[0].x, middlePositions[0].y
+			];
+			bottom = [
+				-angleYBottom + bottomPositions[0].x, bottomPositions[0].y,
+				 angleYBottom + bottomPositions[0].x, bottomPositions[0].y
+			];
 		}
 
-		for (vector in [top, mid, bottom])
+		for (vector in (flipGraphic ? [bottom, mid, top] : [top, mid, bottom]))
 		{
 			for (i in vector)
 				verts.push(i);

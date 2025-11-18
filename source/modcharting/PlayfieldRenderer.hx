@@ -145,63 +145,63 @@ class PlayfieldRenderer extends FlxBasic
 	public function rescaleNotes(ratio:Float)
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.rescaleNotes(ratio);
 	}
 
 	public function clearNotesBefore(time:Float)
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.clearNotesBefore(time);
 	}
 
 	public function keyPress(key:Int)
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.keyPress(key);
 	}
 
 	public function keyRelease(key:Int)
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.keyRelease(key);
 	}
 
 	public function updateNotes(elapsed:Float)
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.updateNotes(elapsed);
 	}
 
 	public function prepareNotes()
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.prepareNotes();
 	}
 
 	public function skipIntro()
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.skipIntro();
 	}
 
 	public function killNotes()
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.killNotes();
 	}
 
 	public function spawnNotes()
 	{
 		if (noteFields == null || noteFields.length < 2) return;
-		for (i in 1...noteFields.length - 1)
+		for (i in 1...noteFields.length)
 			noteFields[i].strumLine.spawnNotes();
 	}
 

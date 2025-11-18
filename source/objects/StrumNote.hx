@@ -7,7 +7,7 @@ import shaders.RGBPalette;
 
 class StrumNote extends modcharting.NewModchartArrow
 {
-	public var arrowPath:SustainTrail = null;
+	public var arrowPath:modcharting.graphics.SustainTrail = null;
 	public var rgbShader:RGBShaderReference;
 	public var resetAnim:Float = 0;
 	public var noteData:Int = 0;
@@ -197,6 +197,13 @@ class StrumNote extends modcharting.NewModchartArrow
 			}
 		}
 		super.update(elapsed);
+	}
+
+	@:allow(flixel.FlxCamera)
+	override function draw():Void
+	{
+		arrowPath?.draw();
+		super.draw();
 	}
 
 	public function playAnim(anim:String, ?force:Bool = false)
