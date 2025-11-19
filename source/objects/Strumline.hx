@@ -220,6 +220,9 @@ class Strumline
 				oldNote = swagNote;
 			}
 		}
+
+		for (note in unspawnedNotes)
+			note.setCustomColor("quant", !ClientPrefs.get("quantization"));
 		this.unspawnNotes = unspawnedNotes.copy();
 		return this.loadedNotes = unspawnedNotes.copy();
 	}
@@ -382,6 +385,19 @@ class Strumline
 				invalidateNote(daNote);
 			}
 		});
+
+		if (ClientPrefs.data.quantization)
+		{
+			for (index => strum in strums)
+			{
+				if (strum == null || index < 4) continue;
+				if (strum.animation.curAnim.name == 'static')
+				{
+					strum.rgbShader.r = 0xFF808080;
+					strum.rgbShader.b = 0xFFFFFFFF;
+				}
+			}
+		}
 	}
 
 	public function noteMiss(direction:Int, note:Note = null) {

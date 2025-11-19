@@ -202,7 +202,7 @@ class StrumNote extends modcharting.NewModchartArrow
 	@:allow(flixel.FlxCamera)
 	override function draw():Void
 	{
-		if (notePositionData.arrowPathAlpha != 0)
+		if (notePositionData?.arrowPathAlpha != 0)
 			arrowPath?.draw();
 		super.draw();
 	}

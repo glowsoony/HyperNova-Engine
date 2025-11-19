@@ -438,7 +438,7 @@ class NewModchartArrow extends FlxSkewedSprite
 	@:access(flixel.FlxCamera)
 	override public function draw():Void
 	{
-		if (notePositionData.alpha <= 0) return;
+		if (notePositionData?.alpha <= 0) return;
 		if (destroying) return;
 		if (!projectionEnabled)
 		{
