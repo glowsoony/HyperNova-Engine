@@ -537,6 +537,12 @@ class Strumline
 			note.wasGoodHit = true;
 			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
 		}
+
+		if (ClientPrefs.data.quantization)
+		{
+			strums.members[note.noteData + (note.mustPress ? 4 : 0)].rgbShader.r = note.rgbShader.r;
+			strums.members[note.noteData + (note.mustPress ? 4 : 0)].rgbShader.b = note.rgbShader.b;
+		}
 		
 		//playSplash();
 		//playHold();
