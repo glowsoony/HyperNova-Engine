@@ -433,8 +433,6 @@ class NoteField extends FlxBasic
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
 
-		noteData.z += 0.00001;
-
 		var songSpeed = renderer.getCorrectScrollSpeed();
 		var lane = noteData.lane;
 
