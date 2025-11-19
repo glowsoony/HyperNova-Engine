@@ -428,8 +428,8 @@ class NoteField extends FlxBasic
 
 		var spiral = (noteData.spiralHold >= 0.5);
 
-		daNote.alpha = noteData.alpha;
-		daNote.mesh.alpha = daNote.alpha;
+		// daNote.alpha = noteData.alpha;
+		// daNote.mesh.alpha = daNote.multAlpha;
 		daNote.mesh.shader = daNote.rgbShader.parent.shader; // idfk if this works.
 		daNote.mesh.spiralHolds = spiral; // if noteData its 1 spiral holds mod should be enabled?
 
