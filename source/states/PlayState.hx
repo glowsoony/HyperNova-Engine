@@ -1007,7 +1007,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			if (notITGMod && SONG.notITG && !SONG.newModchartTool && playfieldRenderer != null)
-				playfieldRenderer.speed = songSpeed; // LMAO IT LOOKS SOO GOOFY AS FUCK
+				playfieldRenderer.speed = value; // LMAO IT LOOKS SOO GOOFY AS FUCK
 			var ratio:Float = value / songSpeed; // funny word huh
 			if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
 				playfieldRenderer.rescaleNotes(ratio);
@@ -1032,7 +1032,7 @@ class PlayState extends MusicBeatState
 			opponentVocals.pitch = value;
 			FlxG.sound.music.pitch = value;
 			if (notITGMod && SONG.notITG && !SONG.newModchartTool && playfieldRenderer != null)
-				playfieldRenderer.rate = playbackRate; // LMAO IT LOOKS SOO GOOFY AS FUCK
+				playfieldRenderer.rate = value; // LMAO IT LOOKS SOO GOOFY AS FUCK
 
 			var ratio:Float = playbackRate / value; // funny word huh
 			if (ratio != 1)
