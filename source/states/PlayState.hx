@@ -366,6 +366,7 @@ class PlayState extends MusicBeatState
 	// Modchart stuff
 	public var modchartRenderer:Manager;
 	#end
+	//var coolLerp:Float = 255; //the color to change to
 
 	var staticDeath:FlxSprite;
 	var offEffect:FlxSprite;
@@ -2795,6 +2796,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		// for (i in 0...4){
+		// 	opponentStrums.members[i].color = FlxColor.fromRGB(Std.int(coolLerp), Std.int(coolLerp), Std.int(coolLerp), 255);
+		// 	playerStrums.members[i].color = FlxColor.fromRGB(Std.int(coolLerp), Std.int(coolLerp), Std.int(coolLerp), 255);
+		// }
 	}
 
 	var addHealth:Bool = false;
@@ -4903,6 +4909,8 @@ class PlayState extends MusicBeatState
 			FlxG.camera.zoom += 0.015 * camZoomingMult;
 			camHUD.zoom += 0.03 * camZoomingMult;
 		}
+
+		//FlxTween.num(255, 102, (Conductor.stepCrochet / 1000) * 3.5, {ease: FlxEase.quadOut}, function(num) { coolLerp = num; });
 
 		if (generatedMusic)
 			notes.sort(FlxSort.byY, ClientPrefs.data.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);

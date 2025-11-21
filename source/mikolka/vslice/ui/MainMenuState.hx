@@ -8,6 +8,7 @@ import mikolka.compatibility.ModsHelper;
 import mikolka.compatibility.VsliceOptions;
 import mikolka.compatibility.ui.MainMenuHooks;
 import mikolka.vslice.freeplay.FreeplayState;
+import options.OptionsMenu;
 import mikolka.vslice.ui.title.TitleState;
 import options.OptionsState;
 import states.editors.MasterEditorMenu;
@@ -229,14 +230,15 @@ class MainMenuState extends MusicBeatState
 							case 'credits':
 								MusicBeatState.switchState(new CreditsState());
 							case 'options':
-								MusicBeatState.switchState(new OptionsState());
-								#if !LEGACY_PSYCH OptionsState.onPlayState = false; #end
-								if (PlayState.SONG != null)
-								{
-									PlayState.SONG.arrowSkin = null;
-									PlayState.SONG.splashSkin = null;
-									#if !LEGACY_PSYCH PlayState.stageUI = 'normal'; #end
-								}
+								openSubState(new OptionsMenu());
+								// MusicBeatState.switchState(new OptionsState());
+								// #if !LEGACY_PSYCH OptionsState.onPlayState = false; #end
+								// if (PlayState.SONG != null)
+								// {
+								// 	PlayState.SONG.arrowSkin = null;
+								// 	PlayState.SONG.splashSkin = null;
+								// 	#if !LEGACY_PSYCH PlayState.stageUI = 'normal'; #end
+								// }
 						}
 					});
 
