@@ -15,11 +15,16 @@ class StrumNote extends modcharting.NewModchartArrow
 	public var downScroll:Bool = false;
 	public var sustainReduce:Bool = true;
 
+	public var splash:Dynamic = null;
+	public var holdSplash:Dynamic = null;
+
 	private var player:Int;
 
 	public var notITGStrums:Bool = false;
 
 	public var texture(default, set):String = null;
+
+	public var released:Bool = false;
 
 	private function set_texture(value:String):String
 	{
@@ -105,6 +110,14 @@ class StrumNote extends modcharting.NewModchartArrow
 			texture = skin;
 
 		scrollFactor.set();
+
+		animation.finishCallback = function(arg){
+			if (arg != "static" && released){
+				playAnim('static');
+				released = false;
+			}
+		};
+
 		playAnim('static');
 	}
 
@@ -187,15 +200,15 @@ class StrumNote extends modcharting.NewModchartArrow
 
 	override function update(elapsed:Float)
 	{
-		if (resetAnim > 0)
-		{
-			resetAnim -= elapsed;
-			if (resetAnim <= 0)
-			{
-				playAnim('static');
-				resetAnim = 0;
-			}
-		}
+		// if (resetAnim > 0)
+		// {
+		// 	resetAnim -= elapsed;
+		// 	if (resetAnim <= 0)
+		// 	{
+		// 		playAnim('static');
+		// 		resetAnim = 0;
+		// 	}
+		// }
 		super.update(elapsed);
 	}
 

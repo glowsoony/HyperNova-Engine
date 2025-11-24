@@ -242,8 +242,6 @@ class NoteField extends FlxBasic
 			// add offsets to data with modifiers
 			renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
 
-			noteData.z += 0.00001;
-
 			note.notePositionData = noteData;
 
 			// add position data to list
@@ -260,8 +258,6 @@ class NoteField extends FlxBasic
 				});
 				renderer.modifierTable.applySplashMods(noteData, splash.noteData, /*curPos,*/ pfIndex);
 
-				noteData.z += 0.00001;
-
 				splash.notePositionData = noteData;
 				
 				// add position data to list
@@ -276,8 +272,6 @@ class NoteField extends FlxBasic
 					alpha: ClientPrefs.data.holdSplashAlpha, isHoldSplash: true
 				});
 				renderer.modifierTable.applyHoldSplashMods(noteData, holdSplash.strumNote.noteData, /*curPos,*/ pfIndex);
-
-				noteData.z += 0.00001;
 
 				holdSplash.notePositionData = noteData;
 
@@ -535,7 +529,7 @@ class NoteField extends FlxBasic
 
 		daNote.newMesh.strumTime = daNote.strumTime;
 
-		noteData.z += 0.00001;
+		//noteData.z += 0.00001;
 
 		daNote.newMesh.updateClipping_mods(noteData);
 
@@ -583,11 +577,14 @@ class NoteField extends FlxBasic
 		// strumNote.arrowPath.draw();
 	}
 
-	private function drawSplash(noteData:NotePositionData) 
+	private function drawSplash(noteData:NotePositionData)
 	{
 		if (noteData.alpha <= 0 || splashesGroup == null)
 			return;
 		var changeX:Bool = noteData.z != 0;
+
+		var strumNote = strumGroup.members[noteData.lane]; //?
+
 		var daSplash = splashesGroup.members[noteData.index];
 
 		// if (daNote == null)
@@ -595,24 +592,26 @@ class NoteField extends FlxBasic
 		// 	daNote.setupMesh();
 		// }
 
-		var thisNotePos;
-		if (changeX)
-			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x
-				+ (daSplash.width / 2), noteData.y
-				+ (daSplash.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180),
-				-(daSplash.width / 2),
-				-(daSplash.height / 2));
-		else
-			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+		// var thisNotePos;
+		// if (changeX)
+		// 	thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daSplash.width / 2), noteData.y + (daSplash.height / 2),
+		// 		noteData.z * 0.001),
+		// 		ModchartUtil.defaultFOV * (Math.PI / 180),
+		// 		-(daSplash.width / 2),
+		// 		-(daSplash.height / 2));
+		// else
+		// 	thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
 
-		noteData.x = thisNotePos.x;
-		noteData.y = thisNotePos.y;
-		if (changeX)
-		{
-			noteData.scaleX *= (1 / -thisNotePos.z);
-			noteData.scaleY *= (1 / -thisNotePos.z);
-		}
+		// noteData.x = thisNotePos.x;
+		// noteData.y = thisNotePos.y;
+
+		noteData.x = strumNote.x - NoteMovement.arrowSize * 0.95;
+		noteData.y = strumNote.y - NoteMovement.arrowSize;
+		// if (changeX)
+		// {
+		// 	noteData.scaleX *= (1 / -thisNotePos.z);
+		// 	noteData.scaleY *= (1 / -thisNotePos.z);
+		// }
 
 		// var getNextNote = getNotePoss(noteData, 1);
 
@@ -629,6 +628,9 @@ class NoteField extends FlxBasic
 		if (noteData.alpha <= 0 || holdSplashesGroup == null)
 			return;
 		var changeX:Bool = noteData.z != 0;
+
+		var strumNote = strumGroup.members[noteData.lane];
+
 		var daSplash = holdSplashesGroup.members[noteData.index];
 
 		// if (daNote == null)
@@ -636,24 +638,25 @@ class NoteField extends FlxBasic
 		// 	daNote.setupMesh();
 		// }
 
-		var thisNotePos;
-		if (changeX)
-			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x
-				+ (daSplash.width / 2), noteData.y
-				+ (daSplash.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180),
-				-(daSplash.width / 2),
-				-(daSplash.height / 2));
-		else
-			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+		// var thisNotePos;
+		// if (changeX)
+		// 	thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daSplash.width / 2), noteData.y + (daSplash.height / 2),
+		// 		noteData.z * 0.001),
+		// 		ModchartUtil.defaultFOV * (Math.PI / 180),
+		// 		-(daSplash.width / 2),
+		// 		-(daSplash.height / 2));
+		// else
+		// 	thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
 
-		noteData.x = thisNotePos.x;
-		noteData.y = thisNotePos.y;
-		if (changeX)
-		{
-			noteData.scaleX *= (1 / -thisNotePos.z);
-			noteData.scaleY *= (1 / -thisNotePos.z);
-		}
+		// noteData.x = thisNotePos.x;
+		// noteData.y = thisNotePos.y;
+		noteData.x = strumNote.x;
+		noteData.y = strumNote.y;
+		// if (changeX)
+		// {
+		// 	noteData.scaleX *= (1 / -thisNotePos.z);
+		// 	noteData.scaleY *= (1 / -thisNotePos.z);
+		// }
 
 		// var getNextNote = getNotePoss(noteData, 1);
 

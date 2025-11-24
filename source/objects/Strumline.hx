@@ -194,7 +194,7 @@ class Strumline
 							{
 								oldNote.scale.y *= Note.SUSTAIN_SIZE / oldNote.frameHeight;
 								oldNote.scale.y /= renderer.rate;
-								oldNote.resizeByRatio(curStepCrochet / Conductor.stepCrochet);
+								oldNote.resizeByRatio(curStepCrochet / ModchartUtil.getFakeCrochet() / 4);
 							}
 
 							if (ClientPrefs.data.downScroll)
@@ -203,7 +203,7 @@ class Strumline
 						else if (oldNote.isSustainNote)
 						{
 							oldNote.scale.y /= renderer.rate;
-							oldNote.resizeByRatio(curStepCrochet / Conductor.stepCrochet);
+							oldNote.resizeByRatio(curStepCrochet / ModchartUtil.getFakeCrochet() / 4);
 						}
 
 						if (sustainNote.mustPress)
@@ -346,6 +346,7 @@ class Strumline
 		final spr:StrumNote = strums.members[key + 4];
 		if (spr == null || strumsBlocked[key] || spr.animation.curAnim.name == 'confirm') return;
 		spr.playAnim('pressed');
+		spr.released = false;
 		spr.resetAnim = 0;
 	}
 
@@ -354,6 +355,7 @@ class Strumline
 		final spr:StrumNote = strums.members[key + 4];
 		if (spr == null) return;
 		spr.playAnim('static');
+		spr.released = true;
 		spr.resetAnim = 0;
 	}
 
@@ -494,6 +496,9 @@ class Strumline
 					noteHit(n, true);
 			}
 		}
+		for (i => press in hold) {
+			strums.members[i+4].released = press;
+		}
 	}
 
 	public function spawnNotes() {
@@ -540,11 +545,11 @@ class Strumline
 		if (!player)
 		{
 			note.hitByOpponent = true;
-			strumPlayAnim(note.noteData, Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
+			strumPlayAnim(note.noteData, ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
 		}
 		else {
 			note.wasGoodHit = true;
-			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
+			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
 			if (!note.isSustainNote)
 				playSplash(strum, note);
 		}
@@ -595,7 +600,7 @@ class Strumline
 		final spr:StrumNote = strums.members[id];
 		if (spr == null) return;
 		spr.playAnim('confirm', true);
-		if (time != -1)
-			spr.resetAnim = time;
+		// if (time != -1)
+		// 	spr.resetAnim = time;
 	}
 }

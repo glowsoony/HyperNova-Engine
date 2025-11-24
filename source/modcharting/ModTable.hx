@@ -148,7 +148,7 @@ class ModTable
 		{
 			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
-				mod.getSplashPath(noteData, lane, /*curPos,*/ pf);
+				mod.getStrumPath(noteData, lane, /*curPos,*/ pf);
 		}
 	}
 
@@ -158,7 +158,7 @@ class ModTable
 		{
 			var modList:Vector<Modifier> = table[pf][lane];
 			for (mod in modList)
-				mod.getHoldSplashPath(noteData, lane, /*curPos,*/ pf);
+				mod.getStrumPath(noteData, lane, /*curPos,*/ pf);
 		}
 	}
 

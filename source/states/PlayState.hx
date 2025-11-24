@@ -3974,6 +3974,7 @@ class PlayState extends MusicBeatState
 		if (strumsBlocked[key] != true && spr != null && spr.animation.curAnim.name != 'confirm')
 		{
 			spr.playAnim('pressed');
+			spr.released = false;
 			spr.resetAnim = 0;
 		}
 		callOnScripts('onKeyPress', [key]);
@@ -4013,6 +4014,7 @@ class PlayState extends MusicBeatState
 		if (spr != null)
 		{
 			spr.playAnim('static');
+			spr.released = true;
 			spr.resetAnim = 0;
 		}
 		callOnScripts('onKeyRelease', [key]);
@@ -4103,6 +4105,10 @@ class PlayState extends MusicBeatState
 			else
 				checkForAchievement(['oversinging']);
 			#end
+		}
+
+		for (i => hold in holdArray) {
+			playerStrums.members[i].released = hold;
 		}
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
