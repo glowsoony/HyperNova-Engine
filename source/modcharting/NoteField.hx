@@ -8,7 +8,9 @@ import flixel.util.FlxTimer.FlxTimerManager;
 import modcharting.Modifier;
 import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
+import objects.NoteSplash;
 import objects.StrumNote;
+import objects.SustainSplash;
 import modcharting.graphics.SustainTrail;
 import objects.Strumline;
 import openfl.geom.Vector3D;
@@ -27,11 +29,13 @@ class NoteField extends FlxBasic
 	{
 		strumLine.strums.cameras = cameras;
 		strumLine.notes.cameras = cameras;
+		strumLine.splashes.cameras = cameras;
+		strumLine.holdSplashes.cameras = cameras;
 		return super.set_cameras(cameras);
 	}
 
 	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
-		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null)
+		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null, ?splashes:FlxTypedGroup<NoteSplash> = null, ?holdSplashes:FlxTypedGroup<SustainSplash> = null)
 	{
 		this.renderer = renderer;
 		this.pfIndex = pfIndex;
@@ -42,6 +46,8 @@ class NoteField extends FlxBasic
 			strumLine.strums = strumNotes;
 			strumLine.notes = notes;
 			strumLine.unspawnNotes = unspawnNotes;
+			strumLine.splashes = splashes;
+			strumLine.holdSplashes = holdSplashes;
 		}
 		else
 		{
@@ -52,114 +58,63 @@ class NoteField extends FlxBasic
 
 	private var debuggingMode:Bool = false; // to make tracing errors easier instead of a vague "null object reference"
 
-	private function addDataToStrum(strumData:NotePositionData, strum:StrumNote)
+	private function addDataToObject(objectData:NotePositionData, object:NewModchartArrow)
 	{
 		// not really needed since we draw the shit manually now
-		strum.x = strumData.x;
-		strum.y = strumData.y;
-		strum.z = strumData.z;
-		strum.angle = strumData.angle;
-		// strum.angleZ = strumData.angleZ;
-		strum.angleY = strumData.angleY;
-		strum.angleX = strumData.angleX;
-		strum.alpha = strumData.alpha;
-		strum.scale.x = strumData.scaleX;
-		strum.scale.y = strumData.scaleY;
-		strum.skew.x = strumData.skewX;
-		strum.skew.y = strumData.skewY;
+		object.x = objectData.x;
+		object.y = objectData.y;
+		object.z = objectData.z;
+		object.angle = objectData.angle;
+		// object.angleZ = objectData.angleZ;
+		object.angleY = objectData.angleY;
+		object.angleX = objectData.angleX;
+		object.alpha = objectData.alpha;
+		object.scale.x = objectData.scaleX;
+		object.scale.y = objectData.scaleY;
+		object.skew.x = objectData.skewX;
+		object.skew.y = objectData.skewY;
 
-		strum.rgbShader.stealthGlow = strumData.stealthGlow;
-		strum.rgbShader.stealthGlowRed = strumData.glowRed;
-		strum.rgbShader.stealthGlowGreen = strumData.glowGreen;
-		strum.rgbShader.stealthGlowBlue = strumData.glowBlue;
+		if (object is Note)
+		{
+			final note:Note = cast object;
+			note.rgbShader.stealthGlow = objectData.stealthGlow;
+			note.rgbShader.stealthGlowRed = objectData.glowRed;
+			note.rgbShader.stealthGlowGreen = objectData.glowGreen;
+			note.rgbShader.stealthGlowBlue = objectData.glowBlue;
+		}
+		else if (object is StrumNote) 
+		{
+			final strum:StrumNote = cast object;
+			strum.rgbShader.stealthGlow = objectData.stealthGlow;
+			strum.rgbShader.stealthGlowRed = objectData.glowRed;
+			strum.rgbShader.stealthGlowGreen = objectData.glowGreen;
+			strum.rgbShader.stealthGlowBlue = objectData.glowBlue;
+		}
 	}
 
-	private function getDataForStrum(i:Int)
+	private function createBasicData(objectData:NotePositionData.ObjectData)
 	{
-		var strumX = NoteMovement.defaultStrumX[i];
-		var strumY = NoteMovement.defaultStrumY[i];
-		var strumZ = 0;
-		var strumScaleX = NoteMovement.defaultScale[i];
-		var strumScaleY = NoteMovement.defaultScale[i];
-		var strumSkewX = NoteMovement.defaultSkewX[i];
-		var strumSkewY = NoteMovement.defaultSkewY[i];
-		if (ModchartUtil.getIsPixelStage(renderer.instance))
-		{
-			// work on pixel stages
-			strumScaleX = 1 * PlayState.daPixelZoom;
-			strumScaleY = 1 * PlayState.daPixelZoom;
-		}
-		final strumData:NotePositionData = NotePositionData.get();
-		strumData.setupStrum(strumX, strumY, strumZ, i, strumScaleX, strumScaleY, strumSkewX, strumSkewY, pfIndex);
-		renderer.modifierTable.applyStrumMods(strumData, i, pfIndex);
-		return strumData;
-	}
-
-	private function addDataToNote(noteData:NotePositionData, daNote:Note)
-	{
-		daNote.x = noteData.x;
-		daNote.y = noteData.y;
-		daNote.z = noteData.z;
-		daNote.angle = noteData.angle;
-		// daNote.angleZ = noteData.angleZ;
-		daNote.angleY = noteData.angleY;
-		daNote.angleX = noteData.angleX;
-		daNote.alpha = noteData.alpha;
-		daNote.scale.x = noteData.scaleX;
-		daNote.scale.y = noteData.scaleY;
-		daNote.skew.x = noteData.skewX;
-		daNote.skew.y = noteData.skewY;
-
-		daNote.rgbShader.stealthGlow = noteData.stealthGlow;
-		daNote.rgbShader.stealthGlowRed = noteData.glowRed;
-		daNote.rgbShader.stealthGlowGreen = noteData.glowGreen;
-		daNote.rgbShader.stealthGlowBlue = noteData.glowBlue;
-	}
-
-	private function createDataFromNote(noteIndex:Int, curPos:Float, noteDist:Float, incomingAngle:Array<Float>)
-	{
-		var noteX = strumLine.notes.members[noteIndex].x;
-		var noteY = strumLine.notes.members[noteIndex].y;
-		var noteZ = strumLine.notes.members[noteIndex].z;
-		var lane = getLane(noteIndex);
-		var noteScaleX = NoteMovement.defaultScale[lane];
-		var noteScaleY = NoteMovement.defaultScale[lane];
-		var noteSkewX = strumLine.notes.members[noteIndex].skew.x;
-		var noteSkewY = strumLine.notes.members[noteIndex].skew.y;
-
-		var noteAlpha:Float = 1;
-
-		// if (!notesGroup[field][noteIndex].specialHurt)
-		#if PSYCH
-		if (!strumLine.notes.members[noteIndex].specialHurt)
-		{
-			noteAlpha = strumLine.notes.members[noteIndex].multAlpha;
-			if (strumLine.notes.members[noteIndex].hurtNote)
-				noteAlpha = 0.55;
-			if (strumLine.notes.members[noteIndex].mimicNote)
-				noteAlpha = ClientPrefs.data.mimicNoteAlpha;
-		}
-		else
-		{
-			noteAlpha = 0;
-		}
-		#else
-		if (strumLine.notes.members[noteIndex].isSustainNote)
-			noteAlpha = 0.6;
-		else
-			noteAlpha = 1;
-		#end
-
-		if (ModchartUtil.getIsPixelStage(renderer.instance))
-		{
-			// work on pixel stages
-			noteScaleX = 1 * PlayState.daPixelZoom;
-			noteScaleY = 1 * PlayState.daPixelZoom;
-		}
-
 		final noteData:NotePositionData = NotePositionData.get();
-		noteData.setupNote(noteX, noteY, noteZ, lane, noteScaleX, noteScaleY, noteSkewX, noteSkewY, pfIndex, noteAlpha, curPos, noteDist, incomingAngle[0],
-			incomingAngle[1], strumLine.notes.members[noteIndex].strumTime, noteIndex, strumLine.notes.members[noteIndex].isSustainNote, strumLine.notes.members[noteIndex].rendererIndex);
+		noteData.setup({
+			x: objectData?.x ?? 0, y: objectData?.y, z: objectData?.z, lane: objectData?.lane ?? 0, scaleX: objectData?.scaleX ?? 1, scaleY: objectData?.scaleY ?? 1, 
+			skewX: objectData?.skewX ?? 1, skewY: objectData?.skewY ?? 1, 
+			playfieldIndex: objectData?.playfieldIndex ?? pfIndex, alpha: objectData?.alpha ?? 1, index: objectData?.index ?? 1,
+			curPos: objectData?.curPos ?? 0, noteDist: objectData?.noteDist ?? 0, 
+			incomingAngleX: objectData?.incomingAngleX ?? 0, incomingAngleY: objectData?.incomingAngleY ?? 0, 
+			strumTime: objectData?.strumTime ?? 0, noteIndex: objectData?.noteIndex ?? -1,
+			isSus: objectData?.isSus ?? false, isStrum: objectData?.isStrum ?? false, 
+			isHoldSplash: objectData?.isHoldSplash ?? false, isSplash: objectData?.isSplash ?? false,
+			stealthGlow: objectData?.stealthGlow ?? 0, glowRed: objectData?.glowRed ?? 1, glowGreen: objectData?.glowGreen ?? 1, glowBlue: objectData?.glowBlue ?? 1,
+			sustainWidth: objectData?.sustainWidth ?? 1, sustainGrain: objectData?.sustainGrain ?? 0,
+			arrowPathAlpha: objectData?.arrowPathAlpha ?? 0, arrowPathLength: objectData?.arrowPathLength ?? 14,
+			arrowPathBackwardsLength: objectData?.arrowPathBackwardsLength ?? 2, arrowPathWidth: objectData?.arrowPathWidth ?? 1,
+			pathGrain: objectData?.pathGrain ?? 0, spiralHold: objectData?.spiralHold ?? 0, spiralPath: objectData?.spiralPath ?? 0,
+			orient: objectData?.orient ?? 0, angleX: objectData?.angleX ?? 0, angleY: objectData?.angleY ?? 0, angleZ: objectData?.angleZ ?? 0,
+			skewX_offset: objectData?.skewX_offset ?? 0.5, skewY_offset: objectData?.skewY_offset ?? 0.5, skewZ_offset: objectData?.skewZ_offset ?? 0.5,
+			fovOffsetX: objectData?.fovOffsetX ?? 0, fovOffsetY: objectData?.fovOffsetY ?? 0,
+			pivotOffsetX: objectData?.pivotOffsetX ?? 0, pivotOffsetY: objectData?.pivotOffsetY ?? 0, pivotOffsetZ: objectData?.pivotOffsetZ ?? 0,
+			cullMode: objectData?.cullMode ?? "none"
+		});
 		return noteData;
 	}
 
@@ -175,10 +130,8 @@ class NoteField extends FlxBasic
 		if (strumLine.notes.members[noteIndex].isSustainNote)
 		{
 			// moved those inside holdsMath cuz they are only needed for sustains ig?
-			var lane = getLane(noteIndex);
-
-			var noteDist = getNoteDist();
-			noteDist = renderer.modifierTable.applyNoteDistMods(noteDist, lane, pfIndex);
+			var lane:Int = getLane(noteIndex);
+			var noteDist:Float = renderer.modifierTable.applyNoteDistMods(getNoteDist(), lane, pfIndex);
 
 			strumTimeOffset += Std.int(Conductor.stepCrochet / renderer.getCorrectScrollSpeed());
 
@@ -193,16 +146,7 @@ class NoteField extends FlxBasic
 					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
 				}
 			}
-			else
-			{
-				if (noteDist > 0)
-				{
-					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition); // down
-					strumTimeOffset -= Std.int(Conductor.stepCrochet); // down
-				}
-				else
-					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
-			}
+			else strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition) - (noteDist > 0 ? Std.int(Conductor.stepCrochet) : 0); // down
 			// FINALLY OMG I HATE THIS FUCKING MATH LMAO
 		}
 
@@ -211,18 +155,11 @@ class NoteField extends FlxBasic
 	}
 
 	private function getLane(noteIndex:Int)
-	{
 		return (strumLine.notes.members[noteIndex].mustPress ? strumLine.notes.members[noteIndex].noteData + NoteMovement.keyCount : strumLine.notes.members[noteIndex].noteData);
-	}
 
 	// lol XD
 	public function getNoteDist()
-	{
-		var noteDist = -0.55;
-		if (ModchartUtil.getDownscroll(renderer.instance))
-			noteDist *= -1;
-		return noteDist;
-	}
+		return -0.55 * (ModchartUtil.getDownscroll(renderer.instance) ? -1 : 1);
 
 	// Todo: Find how to create arrow paths using strum notes and notes using this function to make both work (I.E Create NoteDataPositions for ArrowPath)
 	private function getNotePositions()
@@ -231,40 +168,26 @@ class NoteField extends FlxBasic
 		// trace(strumLine.strums == null, strumLine.notes == null);
 		for (i => strum in strumLine.strums.members)
 		{
-			// trace('ola');
-			// trace(strum, i);
-			final data:NotePositionData = getDataForStrum(i);
+			final data:NotePositionData = createBasicData({
+				x: NoteMovement.defaultStrumPos[i][0], y: NoteMovement.defaultStrumPos[i][1], z: 0, lane: i, index: i,
+				scaleX: NoteMovement.defaultScale[i][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+				scaleY: NoteMovement.defaultScale[i][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+				skewX: NoteMovement.defaultSkew[i][0], skewY: NoteMovement.defaultSkew[i][1],
+				isStrum: true
+			});
+			renderer.modifierTable.applyStrumMods(data, i, pfIndex);
 			notePositions.push(data);
 			strum.notePositionData = data;
-			// trace('post');
-			// trace(getDataForStrum(i));
 		}
 		for (i => note in strumLine.notes.members)
 		{
-			var songSpeed = renderer.getCorrectScrollSpeed();
+			final lane:Int = getLane(i);
+			final sustainTimeThingy:Float = 0;
 
-			var lane = getLane(i);
-			var sustainTimeThingy:Float = 0;
+			final noteDist:Float = renderer.modifierTable.applyNoteDistMods(getNoteDist(), lane, pfIndex);
+			var curPos:Float = renderer.modifierTable.applyCurPosMods(lane, getNoteCurPos(i, sustainTimeThingy), pfIndex);
 
-			var noteDist = getNoteDist();
-			var curPos = getNoteCurPos(i, sustainTimeThingy);
-
-			noteDist = renderer.modifierTable.applyNoteDistMods(noteDist, lane, pfIndex);
-
-			// this code was to make sustains end match their ACTUAL size on spritesheed, but as it tells you, it doesn't work (yet) lmao
-
-			// just causes too many issues lol, might fix it at some point
-			// if (notes.members[i].animation.curAnim.name.endsWith('end') && ClientPrefs.data.downScroll) //checking rn LMAO
-			// {
-			//     if (noteDist > 0)
-			//         sustainTimeThingy = (ModchartUtil.getFakeCrochet()/4)/2; //fix stretched sustain ends (downscroll)
-			//     //else
-			//         //sustainTimeThingy = (-NoteMovement.getFakeCrochet()/4)/songSpeed;
-			// }
-
-			curPos = renderer.modifierTable.applyCurPosMods(lane, curPos, pfIndex);
-
-			if ((strumLine.notes.members[i].wasGoodHit || (strumLine.notes.members[i].prevNote.wasGoodHit)) && curPos >= 0 && strumLine.notes.members[i].isSustainNote)
+			if ((note.wasGoodHit || note.prevNote.wasGoodHit) && curPos >= 0 && note.isSustainNote)
 				curPos = 0; // sustain clip
 
 			var incomingAngle:Array<Float> = renderer.modifierTable.applyIncomingAngleMods(lane, curPos, pfIndex);
@@ -272,10 +195,21 @@ class NoteField extends FlxBasic
 				incomingAngle[0] += 180; // make it match for both scrolls
 
 			// get the general note path
-			NoteMovement.setNotePath(strumLine.notes.members[i], lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
+			NoteMovement.setNotePath(note, lane, renderer.getCorrectScrollSpeed(), curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 
 			// save the position data
-			var noteData = createDataFromNote(i, curPos, noteDist, incomingAngle);
+			final noteData:NotePositionData = createBasicData({
+				x:  note.x, y: note.y, z: note.z, lane: lane, index: i,
+				scaleX: NoteMovement.defaultScale[lane][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+				scaleY: NoteMovement.defaultScale[lane][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+				skewX: note.skew.x, skewY: note.skew.y,
+				alpha: note.specialHurt ? 0 : note.mimicNote ? ClientPrefs.data.mimicNoteAlpha : note.hurtNote ? 0.55 : note.multAlpha,
+				curPos: curPos, 
+				noteDist: noteDist, 
+				isSus: note.isSustainNote,
+				incomingAngleX: incomingAngle[0],
+				incomingAngleY: incomingAngle[1]
+			});
 
 			// add offsets to data with modifiers
 			renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
@@ -286,6 +220,40 @@ class NoteField extends FlxBasic
 
 			// add position data to list
 			notePositions.push(noteData);
+		}
+		if (strumLine.splashes != null) 
+		{
+			for (i => splash in strumLine.splashes.members) 
+			{
+				if (splash == null) continue;
+				final noteData:NotePositionData = createBasicData({
+					x: splash.x, y: splash.y, z: splash.z, index: i, lane: splash.noteData, alpha: 0.6, isSplash: true
+				});
+				renderer.modifierTable.applySplashMods(noteData, splash.noteData, /*curPos,*/ pfIndex);
+
+				noteData.z += 0.00001;
+
+				splash.notePositionData = noteData;
+				
+				// add position data to list
+				notePositions.push(noteData);
+			}
+		}
+		if (strumLine.holdSplashes != null) {
+			for (i => holdSplash in strumLine.holdSplashes.members) {
+				if (holdSplash == null || holdSplash.strumNote == null) continue;
+				final noteData:NotePositionData = createBasicData({
+					x: holdSplash.x, y: holdSplash.y, z: holdSplash.z, index: i, lane: holdSplash.strumNote.noteData, 
+					alpha: ClientPrefs.data.holdSplashAlpha, isHoldSplash: true
+				});
+				renderer.modifierTable.applyHoldSplashMods(noteData, holdSplash.strumNote.noteData, /*curPos,*/ pfIndex);
+
+				noteData.z += 0.00001;
+
+				holdSplash.notePositionData = noteData;
+
+				notePositions.push(noteData);
+			}
 		}
 
 		// sort by z before drawing
@@ -346,7 +314,7 @@ class NoteField extends FlxBasic
 
 		noteData.z -= 0.00001; //???
 
-		addDataToStrum(noteData, strumNote); // set position and stuff before drawing
+		addDataToObject(noteData, strumNote); // set position and stuff before drawing
 
 		strumNote.cameras = this.cameras;
 
@@ -400,7 +368,7 @@ class NoteField extends FlxBasic
 		if (noteData.orient != 0)
 			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
-		addDataToNote(noteData, daNote);
+		addDataToObject(noteData, daNote);
 
 		daNote.cameras = this.cameras;
 
@@ -418,7 +386,7 @@ class NoteField extends FlxBasic
 	}
 
 	private function drawSustainNote(noteData:NotePositionData)
-	{
+{
 		if (noteData.alpha <= 0)
 			return;
 
@@ -549,7 +517,8 @@ class NoteField extends FlxBasic
 	}
 
 	private function drawArrowPathNew(noteData:NotePositionData)
-	{ // this one is unused since i have no clue what to do.
+	{ 
+		// this one is unused since i have no clue what to do.
 		if (noteData.arrowPathAlpha <= 0)
 			return;
 
@@ -585,10 +554,94 @@ class NoteField extends FlxBasic
 		// strumNote.arrowPath.draw();
 	}
 
+	private function drawSplash(noteData:NotePositionData) 
+	{
+		if (noteData.alpha <= 0 || strumLine.splashes == null)
+			return;
+		var changeX:Bool = noteData.z != 0;
+		var daSplash = strumLine.splashes.members[noteData.index];
+
+		// if (daNote == null)
+		// {
+		// 	daNote.setupMesh();
+		// }
+
+		var thisNotePos;
+		if (changeX)
+			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x
+				+ (daSplash.width / 2), noteData.y
+				+ (daSplash.height / 2), noteData.z * 0.001),
+				ModchartUtil.defaultFOV * (Math.PI / 180),
+				-(daSplash.width / 2),
+				-(daSplash.height / 2));
+		else
+			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+
+		noteData.x = thisNotePos.x;
+		noteData.y = thisNotePos.y;
+		if (changeX)
+		{
+			noteData.scaleX *= (1 / -thisNotePos.z);
+			noteData.scaleY *= (1 / -thisNotePos.z);
+		}
+
+		// var getNextNote = getNotePoss(noteData, 1);
+
+		// if (noteData.orient != 0)
+		// 	noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
+
+		addDataToObject(noteData, daSplash);
+
+		daSplash.cameras = this.cameras;
+	}
+
+	private function drawHoldSplash(noteData:NotePositionData) 
+	{
+		if (noteData.alpha <= 0 || strumLine.holdSplashes == null)
+			return;
+		var changeX:Bool = noteData.z != 0;
+		var daSplash = strumLine.holdSplashes.members[noteData.index];
+
+		// if (daNote == null)
+		// {
+		// 	daNote.setupMesh();
+		// }
+
+		var thisNotePos;
+		if (changeX)
+			thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x
+				+ (daSplash.width / 2), noteData.y
+				+ (daSplash.height / 2), noteData.z * 0.001),
+				ModchartUtil.defaultFOV * (Math.PI / 180),
+				-(daSplash.width / 2),
+				-(daSplash.height / 2));
+		else
+			thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
+
+		noteData.x = thisNotePos.x;
+		noteData.y = thisNotePos.y;
+		if (changeX)
+		{
+			noteData.scaleX *= (1 / -thisNotePos.z);
+			noteData.scaleY *= (1 / -thisNotePos.z);
+		}
+
+		// var getNextNote = getNotePoss(noteData, 1);
+
+		// if (noteData.orient != 0)
+		// 	noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
+
+		addDataToObject(noteData, daSplash);
+
+		daSplash.cameras = this.cameras;
+	}
+
 	private function forEach(positions:Array<NotePositionData>, callback:NotePositionData->Void)
 	{
-		for (noteData in positions)
+		for (noteData in positions) {
+			if (noteData == null) continue;
 			callback(noteData);
+		}
 	}
 
 	private function drawStuff(positions:Array<NotePositionData>)
@@ -596,11 +649,11 @@ class NoteField extends FlxBasic
 		forEach(positions, data -> if (data.isStrum) drawArrowPathNew(data)); // make sure we draw the path for each before we even draw each?
 		forEach(positions, data -> if (data.isStrum) drawStrum(data)); // draw notes after strums
 		forEach(positions, data -> {
-			if (data.isStrum) return;
+			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
 			if (strumLine.notes.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
 		});
 		forEach(positions, data -> {
-			if (data.isStrum) return;
+			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
 			if (!strumLine.notes.members[data.index].isSustainNote)
 			{
 				if (usingSusTrail)
@@ -609,6 +662,8 @@ class NoteField extends FlxBasic
 				drawNote(data);
 			}
 		});
+		forEach(positions, data -> if (data.isSplash) drawSplash(data));
+		forEach(positions, data -> if (data.isHoldSplash) drawHoldSplash(data));
 	}
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData
@@ -618,9 +673,7 @@ class NoteField extends FlxBasic
 		var lane:Int = noteData.lane;
 
 		var noteDist:Float = getNoteDist();
-		var curPos:Float = getNoteCurPos(noteData.index, timeOffset);
-
-		curPos = renderer.modifierTable.applyCurPosMods(lane, curPos, pfIndex);
+		var curPos:Float = renderer.modifierTable.applyCurPosMods(lane, getNoteCurPos(noteData.index, timeOffset), pfIndex);
 
 		if ((daNote.wasGoodHit || (daNote.prevNote.wasGoodHit)) && curPos >= 0)
 			curPos = 0; // so sustain does a "fake" clip
@@ -632,7 +685,17 @@ class NoteField extends FlxBasic
 		// get the general note path for the next note
 		NoteMovement.setNotePath(daNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 		// save the position data
-		var noteData = createDataFromNote(noteData.index, curPos, noteDist, incomingAngle);
+		final noteData:NotePositionData = createBasicData({
+			x: daNote.x, y: daNote.y, z: daNote.z, lane: lane, index: noteData.index,
+			scaleX: daNote.scale.x, 
+			scaleY: daNote.scale.y, 
+			skewX: daNote.skew.x, skewY: daNote.skew.y,
+			alpha: daNote.specialHurt ? 0 : daNote.mimicNote ? ClientPrefs.data.mimicNoteAlpha : daNote.hurtNote ? 0.55 : daNote.multAlpha,
+			curPos: curPos, 
+			noteDist: noteDist, 
+			incomingAngleX: incomingAngle[0],
+			incomingAngleY: incomingAngle[1]
+		});
 		// add offsets to data with modifiers
 		renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
 		var yOffsetThingy = (NoteMovement.arrowSizes[lane] / 2);
@@ -652,45 +715,41 @@ class NoteField extends FlxBasic
 
 	function getNotePoss(noteData:NotePositionData, timeOffset:Float):NotePositionData
 	{
-		var daNote:Note = strumLine.notes.members[noteData.index];
-		var songSpeed:Float = renderer.getCorrectScrollSpeed();
-		var lane:Int = noteData.lane;
+		final daNote:Note = strumLine.notes.members[noteData.index];
+		final songSpeed:Float = renderer.getCorrectScrollSpeed();
+		final lane:Int = noteData.lane;
 
-		var noteDist:Float = getNoteDist();
-		var curPos:Float = getNoteCurPos(noteData.index, timeOffset);
+		final curPos:Float = renderer.modifierTable.applyCurPosMods(lane, getNoteCurPos(noteData.index, timeOffset), pfIndex);
+		final noteDist:Float = renderer.modifierTable.applyNoteDistMods(getNoteDist(), lane, pfIndex);
 
-		curPos = renderer.modifierTable.applyCurPosMods(lane, curPos, pfIndex);
-
-		noteDist = renderer.modifierTable.applyNoteDistMods(noteDist, lane, pfIndex);
 		var incomingAngle:Array<Float> = renderer.modifierTable.applyIncomingAngleMods(lane, curPos, pfIndex);
 		if (noteDist < 0)
 			incomingAngle[0] += 180; // make it match for both scrolls
 		// get the general note path for the next note
 		NoteMovement.setNotePath(daNote, lane, songSpeed, curPos, noteDist, incomingAngle[0], incomingAngle[1]);
 		// save the position data
-		var noteData = createDataFromNote(noteData.index, curPos, noteDist, incomingAngle);
+		final noteData:NotePositionData = createBasicData({
+			x: daNote.x, y: daNote.y, z: daNote.z, lane: lane, index: noteData.index,
+			scaleX: daNote.scale.x, 
+			scaleY: daNote.scale.y, 
+			skewX: daNote.skew.x, skewY: daNote.skew.y,
+			alpha: daNote.specialHurt ? 0 : daNote.mimicNote ? ClientPrefs.data.mimicNoteAlpha : daNote.hurtNote ? 0.55 : daNote.multAlpha,
+			curPos: curPos, 
+			noteDist: noteDist, 
+			incomingAngleX: incomingAngle[0],
+			incomingAngleY: incomingAngle[1]
+		});
+
 		// add offsets to data with modifiers
 		renderer.modifierTable.applyNoteMods(noteData, lane, curPos, pfIndex);
 
 		var changeX:Bool = noteData.z != 0;
 
-		var finalNotePos;
-		if (changeX)
-		{
-			finalNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x
+		final vec:Vector3D = new Vector3D(noteData.x
 				+ (daNote.width / 2)
 				+ ModchartUtil.getNoteOffsetX(daNote, renderer.instance), noteData.y
-				+ (daNote.height / 2), noteData.z * 0.001),
-				ModchartUtil.defaultFOV * (Math.PI / 180));
-		}
-		else
-		{
-			finalNotePos = new Vector3D(noteData.x
-				+ (daNote.width / 2)
-				+ ModchartUtil.getNoteOffsetX(daNote, renderer.instance),
-				noteData.y
-				+ (daNote.height / 2), 0);
-		}
+				+ (daNote.height / 2), changeX ? noteData.z * 0.001 : 0);
+		final finalNotePos:Vector3D = !changeX ? vec : ModchartUtil.calculatePerspective(vec, ModchartUtil.defaultFOV * (Math.PI / 180));
 
 		noteData.x = finalNotePos.x;
 		noteData.y = finalNotePos.y;

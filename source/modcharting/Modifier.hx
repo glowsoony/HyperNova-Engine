@@ -76,6 +76,18 @@ class Modifier
 		setupSubValues();
 	}
 
+	public function getHoldSplashPath(noteData:NotePositionData, lane:Int, /*curPos:Float,*/ pf:Int)
+	{
+		if (currentValue != baseValue)
+			holdSplashMath(noteData, lane, /*curPos,*/ pf);
+	}
+
+	public function getSplashPath(noteData:NotePositionData, lane:Int, /*curPos:Float,*/ pf:Int)
+	{
+		if (currentValue != baseValue)
+			splashMath(noteData, lane, /*curPos,*/ pf);
+	}
+
 	public function getNotePath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
 		if (currentValue != baseValue)
@@ -121,6 +133,10 @@ class Modifier
 	public dynamic function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 	}
+
+	public dynamic function splashMath(noteData:NotePositionData, lane:Int, pf:Int) {}
+
+	public dynamic function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) {}
 
 	public dynamic function incomingAngleMath(lane:Int, curPos:Float, pf:Int):Array<Float>
 	{

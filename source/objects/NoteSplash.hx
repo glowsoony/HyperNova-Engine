@@ -30,7 +30,7 @@ typedef NoteSplashConfig =
 	rgb:Array<Null<RGB>>
 }
 
-class NoteSplash extends FlxSprite
+class NoteSplash extends NewModchartArrow
 {
 	public var rgbShader:PixelSplashShaderRef;
 	public var texture:String;

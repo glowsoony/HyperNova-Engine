@@ -142,6 +142,26 @@ class ModTable
 		}
 	}
 
+    public function applySplashMods(noteData:NotePositionData, lane:Int, /*curPos:Float,*/ pf:Int):Void
+	{
+		if (table[pf] != null && table[pf][lane] != null)
+		{
+			var modList:Vector<Modifier> = table[pf][lane];
+			for (mod in modList)
+				mod.getSplashPath(noteData, lane, /*curPos,*/ pf);
+		}
+	}
+
+    public function applyHoldSplashMods(noteData:NotePositionData, lane:Int, /*curPos:Float,*/ pf:Int):Void
+	{
+		if (table[pf] != null && table[pf][lane] != null)
+		{
+			var modList:Vector<Modifier> = table[pf][lane];
+			for (mod in modList)
+				mod.getHoldSplashPath(noteData, lane, /*curPos,*/ pf);
+		}
+	}
+
 	public function applyNoteDistMods(noteDist:Float, lane:Int, pf:Int):Float
 	{
 		if (table[pf] != null && table[pf][lane] != null)

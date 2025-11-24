@@ -11,6 +11,7 @@ import modcharting.Modifier;
 import modcharting.Proxiefield.Proxie as Proxy;
 import objects.Note;
 import objects.StrumNote;
+import objects.NoteSplash;
 import objects.SustainTrail;
 import openfl.geom.Vector3D;
 import states.PlayState;
@@ -89,11 +90,13 @@ class PlayfieldRenderer extends FlxBasic
 		return super.set_cameras(cameras);
 	}
 
-	public function new(strums:FlxTypedGroup<StrumNote>, notes:FlxTypedGroup<Note>, unspawnNotes:Array<Note>, instance:ModchartMusicBeatState)
+	public function new(strums:FlxTypedGroup<StrumNote>, notes:FlxTypedGroup<Note>, unspawnNotes:Array<Note>, ?splashes:FlxTypedGroup<NoteSplash>, ?holdSplashes:FlxTypedGroup<objects.SustainSplash>, ?instance:ModchartMusicBeatState)
 	{
 		super();
 
 		strums.visible = notes.visible = false;
+		if (splashes != null) splashes.visible = false;
+		if (holdSplashes != null) holdSplashes.visible = false;
 		this.instance = instance;
 		if (Std.isOfType(instance, PlayState))
 			playStateInstance = cast instance; // so it just casts once
@@ -115,7 +118,7 @@ class PlayfieldRenderer extends FlxBasic
 		onAddPlayfield = function(?index:Int) {
 			try
 			{
-				final field:NoteField = new NoteField(this, index, strums, notes, unspawnNotes);
+				final field:NoteField = new NoteField(this, index, strums, notes, unspawnNotes, splashes, holdSplashes);
 				field.pfIndex = index;
 				noteFields.push(field);
 				field.cameras = cameras;

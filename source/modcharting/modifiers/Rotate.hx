@@ -75,12 +75,12 @@ class Rotate extends Modifier
 				var r:Float = 0;
 					
 				//1 should return oponent's midPoint, while 2 should return player's
-				var downStrumPosition:Float = NoteMovement.defaultStrumX[
+				var downStrumPosition:Float = NoteMovement.defaultStrumPos[
 					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2)) - 1
-				];
-				var upStrumPosition:Float = NoteMovement.defaultStrumX[
+				][0];
+				var upStrumPosition:Float = NoteMovement.defaultStrumPos[
 					(lane < NoteMovement.keyCount ? (Std.int(NoteMovement.totalKeyCount/2)) : (NoteMovement.totalKeyCount)) - Std.int((NoteMovement.keyCount/2))
-				];
+				][0];
 
 				var midPosition = (upStrumPosition - downStrumPosition) / 2;
 				r += downStrumPosition + midPosition;
@@ -263,8 +263,8 @@ class RotateFieldsModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var xPos = NoteMovement.defaultStrumX[lane];
-		var yPos = NoteMovement.defaultStrumY[lane];
+		var xPos = NoteMovement.defaultStrumPos[lane][0];
+		var yPos = NoteMovement.defaultStrumPos[lane][1];
 		var rotX = ModchartUtil.getCartesianCoords3D(getSubMod("x"), 90, xPos - getSubMod("rotatePointX"));
 		noteData.x += rotX.x + getSubMod("rotatePointX") - xPos;
 		var rotY = ModchartUtil.getCartesianCoords3D(90, getSubMod("y"), yPos - getSubMod("rotatePointY"));
@@ -353,16 +353,16 @@ class RotateFields3DModifier extends Modifier
 
 	override function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		var xPos = NoteMovement.defaultStrumX[lane];
-		var yPos = NoteMovement.defaultStrumY[lane];
+		var xPos = NoteMovement.defaultStrumPos[lane][0];
+		var yPos = NoteMovement.defaultStrumPos[lane][1];
 		var rotX = ModchartUtil.getCartesianCoords3D(getSubMod("x"), 90, xPos - getSubMod("rotatePointX"));
 		noteData.x += rotX.x + getSubMod("rotatePointX") - xPos;
 		var rotY = ModchartUtil.getCartesianCoords3D(90, getSubMod("y"), yPos - getSubMod("rotatePointY"));
 		noteData.y += rotY.y + getSubMod("rotatePointY") - yPos;
 		noteData.z += rotX.z + rotY.z;
 
-		noteData.angleY += -getSubMod("x");
-		noteData.angleX += -getSubMod("y");
+		noteData.angleY -= getSubMod("x");
+		noteData.angleX -= getSubMod("y");
 	}
 
 	override function incomingAngleMath(lane:Int, curPos:Float, pf:Int)

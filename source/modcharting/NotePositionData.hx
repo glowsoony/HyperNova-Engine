@@ -5,6 +5,149 @@ import flixel.util.FlxPool;
 
 using StringTools;
 
+@:structInit 
+@:publicFields
+class ObjectData {
+	@:optional
+	var setX:Float = 0;
+	@:optional
+	var setY:Float = 0;
+	@:optional
+	var setZ:Float = 0;
+
+	@:optional
+	var x:Float = 0;
+	@:optional
+	var y:Float = 0;
+	@:optional
+	var z:Float = 0;
+	@:optional
+	var angle:Float = 0;
+	@:optional
+	var alpha:Float = 1;
+	@:optional
+	var scaleX:Float = 1;
+	@:optional
+	var scaleY:Float = 1;
+	// ??? this is a 2d texture, doesnt have depth so doesnt need scale z
+	// var scaleZ:Float;
+	@:optional
+	var skewX:Float = 0;
+	@:optional
+	var skewY:Float = 0;
+
+	// SKEW Z DOENST EXISTS !!!!!!!!!!!!!
+	@:optional
+	var skewZ:Float = 0;
+
+	@:optional
+	var curPos:Float = 0;
+	@:optional
+	var noteDist:Float = 0;
+	@:optional
+	var offset:Float = 0;
+	@:optional
+	var lane:Int = 0;
+	@:optional
+	var index:Int = 0;
+	@:optional
+	var playfieldIndex:Int = 0;
+	@:optional
+	var isHoldSplash:Bool = false;
+	@:optional
+	var isStrum:Bool = false;
+	@:optional
+	var isSplash:Bool = false;
+	@:optional
+	var isSus:Bool = false;
+	@:optional
+	var incomingAngleX:Float = 0.0;
+	@:optional
+	var incomingAngleY:Float = 0.0;
+	@:optional
+	var strumTime:Float = 0.0;
+	@:optional
+	var noteIndex:Int = 0;
+
+	@:optional
+	var stealthGlow:Float = 0;
+	@:optional
+	var glowRed:Float = 1;
+	@:optional
+	var glowGreen:Float = 1;
+	@:optional
+	var glowBlue:Float = 1;
+
+	@:optional
+	var sustainWidth:Float = 1;
+	@:optional
+	var sustainGrain:Float = 0;
+
+	@:optional
+	var arrowPathAlpha:Float = 0;
+	@:optional
+	var arrowPathLength:Float = 14;
+	@:optional
+	var arrowPathBackwardsLength:Float = 2;
+	@:optional
+	var arrowPathWidth:Float = 1;
+	@:optional
+	var pathGrain:Float = 0;
+
+	@:optional
+	var spiralHold:Float = 0;
+	@:optional
+	var spiralPath:Float = 0;
+
+	@:optional
+	var orient:Float = 0;
+
+	@:optional
+	var angleX:Float = 0;
+	@:optional
+	var angleY:Float = 0;
+	@:optional
+	var angleZ:Float = 0;
+
+	@:optional
+	var skewX_offset:Float = 0.5;
+	@:optional
+	var skewY_offset:Float = 0.5;
+	@:optional
+	var skewZ_offset:Float = 0.5;
+
+	@:optional
+	var fovOffsetX:Float = 0;
+	@:optional
+	var fovOffsetY:Float = 0;
+
+	@:optional
+	var pivotOffsetX:Float = 0;
+	@:optional
+	var pivotOffsetY:Float = 0;
+	@:optional
+	var pivotOffsetZ:Float = 0;
+
+	@:optional
+	var cullMode:String = "none";
+
+	public function reset()
+	{
+		setX = setY = setZ = x = y = z = angle = skewX = skewY = skewZ = stealthGlow = 0;
+		alpha = scaleX = scaleY = glowRed = glowGreen = glowBlue =  1;
+		strumTime = incomingAngleX = incomingAngleY = curPos = noteDist = offset = playfieldIndex = lane = index = noteIndex = 0;
+		isHoldSplash = isStrum = isSus = isSplash = false;
+		sustainWidth = arrowPathWidth = 1;
+		sustainGrain = arrowPathAlpha = pathGrain = spiralHold = spiralPath = orient = angleX = angleY = angleZ = 0;
+		arrowPathLength = 14;
+		arrowPathBackwardsLength = 2;
+		skewX_offset = skewY_offset = skewZ_offset = 0.5;
+		fovOffsetX = fovOffsetY = 0;
+		pivotOffsetX = pivotOffsetY = pivotOffsetZ = 0;
+		cullMode = "none";
+	}
+} 
+
 class NotePositionData implements IFlxDestroyable
 {
 	static var pool:FlxPool<NotePositionData> = new FlxPool(NotePositionData);
@@ -35,7 +178,9 @@ class NotePositionData implements IFlxDestroyable
 	public var lane:Int;
 	public var index:Int;
 	public var playfieldIndex:Int;
+	public var isHoldSplash:Bool;
 	public var isStrum:Bool;
+	public var isSplash:Bool;
 	public var incomingAngleX:Float;
 	public var incomingAngleY:Float;
 	public var strumTime:Float;
@@ -86,134 +231,73 @@ class NotePositionData implements IFlxDestroyable
 
 	public function destroy()
 	{
+
 	}
 
 	public static function get():NotePositionData
-	{
 		return pool.get();
-	}
 
-	public function setupStrum(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int)
+	public function setup(objectData:ObjectData):NotePositionData
 	{
-		this.setX = x; // by default they will be same as the base
-		this.setY = y;
-		this.setZ = z;
+		this.setX = objectData.x; // by default they will be same as the base
+		this.setY = objectData.y;
+		this.setZ = objectData.z;
 
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.angle = 0;
-		this.alpha = 1;
-		this.scaleX = scaleX;
-		this.scaleY = scaleY;
-		this.skewX = skewX;
-		this.skewY = skewY;
-		this.skewZ = 0;
-		this.index = lane;
-		this.playfieldIndex = pf;
-		this.lane = lane;
-		this.curPos = 0;
-		this.noteDist = 0;
-		this.isStrum = true;
-		this.incomingAngleX = 0;
-		this.incomingAngleY = 0;
-		this.strumTime = 0;
+		this.x = objectData.x;
+		this.y = objectData.y;
+		this.z = objectData.z;
+		this.angle = objectData.angle;
+		this.alpha = objectData.alpha;
+		this.scaleX = objectData.scaleX;
+		this.scaleY = objectData.scaleY;
+		this.skewX = objectData.skewX;
+		this.skewY = objectData.skewY;
+		this.skewZ = objectData.skewZ;
+		this.index = objectData.index;
+		this.playfieldIndex = objectData.playfieldIndex;
+		this.lane = objectData.lane;
+		this.curPos = objectData.curPos;
+		this.noteDist = objectData.noteDist;
+		this.isStrum = objectData.isStrum;
+		this.isHoldSplash = objectData.isHoldSplash;
+		this.isSplash = objectData.isSplash;
+		this.isSus = objectData.isSus;
+		this.incomingAngleX = objectData.incomingAngleX;
+		this.incomingAngleY = objectData.incomingAngleY;
+		this.strumTime = objectData.strumTime;
 
-		this.stealthGlow = 0;
-		this.glowRed = 1;
-		this.glowGreen = 1;
-		this.glowBlue = 1;
+		this.stealthGlow = objectData.stealthGlow;
+		this.glowRed = objectData.glowRed;
+		this.glowGreen = objectData.glowGreen;
+		this.glowBlue = objectData.glowBlue;
 
-		this.arrowPathAlpha = 0;
-		this.arrowPathLength = 14;
-		this.arrowPathBackwardsLength = 2;
+		this.arrowPathAlpha = objectData.arrowPathAlpha;
+		this.arrowPathLength = objectData.arrowPathLength;
+		this.arrowPathBackwardsLength = objectData.arrowPathBackwardsLength;
 
-		this.pathGrain = 0;
+		this.pathGrain = objectData.pathGrain;
 
-		this.spiralHold = 0;
+		this.spiralHold = objectData.spiralHold;
 
-		this.angleX = 0;
-		this.angleY = 0;
-		this.angleZ = 0;
+		this.angleX = objectData.angleX;
+		this.angleY = objectData.angleY;
+		this.angleZ = objectData.angleZ;
 
-		this.skewX_offset = 0.5;
-		this.skewY_offset = 0.5;
-		this.skewZ_offset = 0.5;
+		this.skewX_offset = objectData.skewX_offset;
+		this.skewY_offset = objectData.skewY_offset;
+		this.skewZ_offset = objectData.skewZ_offset;
 
-		this.fovOffsetX = 0;
-		this.fovOffsetY = 0;
+		this.fovOffsetX = objectData.fovOffsetX;
+		this.fovOffsetY = objectData.fovOffsetY;
 
-		this.pivotOffsetX = 0;
-		this.pivotOffsetY = 0;
-		this.pivotOffsetZ = 0;
+		this.pivotOffsetX = objectData.pivotOffsetX;
+		this.pivotOffsetY = objectData.pivotOffsetY;
+		this.pivotOffsetZ = objectData.pivotOffsetZ;
 
-		this.cullMode = "none";
+		this.cullMode = objectData.cullMode;
 		// this.pathColor = "000000";
 
 		// this.straightHold = 0; //why tf does a strum need a damn "straightHold" value XD?
-	}
-
-	public function setupNote(x:Float, y:Float, z:Float, lane:Int, scaleX:Float, scaleY:Float, skewX:Float, skewY:Float, pf:Int, alpha:Float, curPos:Float,
-			noteDist:Float, iaX:Float, iaY:Float, strumTime:Float, index:Int, isSus:Bool, noteIndex:Int)
-	{
-		this.setX = x; // by default they will be same as the base
-		this.setY = y;
-		this.setZ = z;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.angle = 0;
-		this.alpha = alpha;
-		this.scaleX = scaleX;
-		this.scaleY = scaleY;
-		this.skewX = skewX;
-		this.skewY = skewY;
-		this.skewZ = 0;
-		this.index = index;
-		this.playfieldIndex = pf;
-		this.lane = lane;
-		this.curPos = curPos;
-		this.noteDist = noteDist;
-		this.isStrum = false;
-		this.incomingAngleX = iaX;
-		this.incomingAngleY = iaY;
-		this.strumTime = strumTime;
-		this.isSus = isSus;
-		this.noteIndex = noteIndex;
-
-		this.stealthGlow = 0;
-		this.glowRed = 1;
-		this.glowGreen = 1;
-		this.glowBlue = 1;
-
-		this.arrowPathAlpha = 0;
-		this.arrowPathLength = 14;
-		this.arrowPathBackwardsLength = 2;
-
-		this.pathGrain = 0;
-
-		this.spiralHold = 0;
-
-		this.orient = 0;
-
-		this.angleX = 0;
-		this.angleY = 0;
-		this.angleZ = 0;
-
-		this.skewX_offset = 0.5;
-		this.skewY_offset = 0.5;
-		this.skewZ_offset = 0.5;
-
-		this.fovOffsetX = 0;
-		this.fovOffsetY = 0;
-
-		this.pivotOffsetX = 0;
-		this.pivotOffsetY = 0;
-		this.pivotOffsetZ = 0;
-
-		this.cullMode = "none";
-		// this.pathColor = "000000";
-
-		// this.straightHold = 0; //different to up this doesn't break shit LOL
+		return this;
 	}
 }

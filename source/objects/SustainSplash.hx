@@ -1,6 +1,6 @@
 package objects;
 
-class SustainSplash extends FlxSprite
+class SustainSplash extends NewModchartArrow
 {
 	public static var startCrochet:Float;
 	public static var frameRate:Int;

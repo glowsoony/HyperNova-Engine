@@ -22,28 +22,22 @@ class NoteMovement
 	public static var totalKeyCount = 8;
 	public static var arrowScale:Float = 0.7;
 	public static var arrowSize:Float = 112;
-	public static var defaultStrumX:Array<Float> = [];
-	public static var defaultStrumY:Array<Float> = [];
-	public static var defaultSkewX:Array<Float> = [];
-	public static var defaultSkewY:Array<Float> = [];
-	public static var defaultScale:Array<Float> = [];
+	public static var defaultStrumPos:Array<Array<Float>> = [];
+	public static var defaultSkew:Array<Array<Float>> = [];
+	public static var defaultScale:Array<Array<Float>> = [];
 	public static var arrowSizes:Array<Float> = [];
-	public static var defaultWidth:Array<Float> = [];
-	public static var defaultHeight:Array<Float> = [];
+	public static var defaultW_H:Array<Array<Float>> = [];
 	#if LEATHER
 	public static var leatherEngineOffsetStuff:Map<String, Float> = [];
 	#end
 
 	public static function getDefaultStrumPos(game:PlayState)
 	{
-		defaultStrumX = []; // reset
-		defaultStrumY = [];
-		defaultSkewX = [];
-		defaultSkewY = [];
+		defaultStrumPos = []; // reset
+		defaultSkew = [];
 		defaultScale = [];
 		arrowSizes = [];
-		defaultWidth = [];
-		defaultHeight = [];
+		defaultW_H = [];
 		keyCount = #if (LEATHER || KADE) PlayState.strumLineNotes.length
 			- PlayState.playerStrums.length #else game.strumLineNotes.length
 			- game.playerStrums.length #end; // base game doesnt have opponent strums as group
@@ -56,20 +50,19 @@ class NoteMovement
 			#else
 			var strum = game.strumLineNotes.members[i];
 			#end
-			defaultSkewX.push(strum.skew.x);
-			defaultSkewY.push(strum.skew.y);
-			defaultStrumX.push(strum.x);
-			defaultStrumY.push(strum.y);
-			defaultWidth.push(strum.width);
-			defaultHeight.push(strum.height);
+
+			defaultSkew.push([strum.skew.x, strum.skew.y]);
+			defaultStrumPos.push([strum.x, strum.y]);
+			defaultW_H.push([strum.width, strum.height]);
+
 			#if LEATHER
 			var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
 			var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount - 1])));
+			defaultScale.push([s, s]);
 			#else
 			var s = 0.7;
+			defaultScale.push([strum.scale.x, strum.scale.y]);
 			#end
-
-			defaultScale.push(s);
 			arrowSizes.push(160 * s);
 		}
 		#if LEATHER
@@ -81,34 +74,28 @@ class NoteMovement
 	public static function getDefaultStrumPosEditor(game:ModchartEditorState)
 	{
 		#if ((PSYCH || LEATHER) && !DISABLE_MODCHART_EDITOR)
-		defaultStrumX = []; // reset
-		defaultStrumY = [];
-		defaultSkewX = [];
-		defaultSkewY = [];
+		defaultStrumPos = []; // reset
+		defaultSkew = [];
 		defaultScale = [];
 		arrowSizes = [];
-		defaultWidth = [];
-		defaultHeight = [];
+		defaultW_H = [];
 		keyCount = game.strumLineNotes.length - game.playerStrums.length; // base game doesnt have opponent strums as group
 		playerKeyCount = game.playerStrums.length;
 
-		for (i in 0...game.strumLineNotes.members.length)
+		for (i => strum in game.strumLineNotes.members)
 		{
-			var strum = game.strumLineNotes.members[i];
-			defaultSkewX.push(strum.skew.x);
-			defaultSkewY.push(strum.skew.y);
-			defaultStrumX.push(strum.x);
-			defaultStrumY.push(strum.y);
-			defaultWidth.push(strum.width);
-			defaultHeight.push(strum.height);
+			defaultSkew.push([strum.skew.x, strum.skew.y]);
+			defaultStrumPos.push([strum.x, strum.y]);
+			defaultW_H.push([strum.width, strum.height]);
+
 			#if LEATHER
 			var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
 			var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount - 1])));
+			defaultScale.push([s, s]);
 			#else
 			var s = 0.7;
+			defaultScale.push([strum.scale.x, strum.scale.y]);
 			#end
-
-			defaultScale.push(s);
 			arrowSizes.push(160 * s);
 		}
 		#end
@@ -119,8 +106,8 @@ class NoteMovement
 
 	public static function setNotePath(daNote:Note, lane:Int, scrollSpeed:Float, curPos:Float, noteDist:Float, incomingAngleX:Float, incomingAngleY:Float)
 	{
-		daNote.x = defaultStrumX[lane];
-		daNote.y = defaultStrumY[lane];
+		daNote.x = defaultStrumPos[lane][0];
+		daNote.y = defaultStrumPos[lane][1];
 		daNote.z = 0;
 
 		var pos = ModchartUtil.getCartesianCoords3D(incomingAngleX, incomingAngleY, curPos * noteDist);
@@ -128,16 +115,16 @@ class NoteMovement
 		daNote.x += pos.x;
 		daNote.z += pos.z;
 
-		daNote.skew.x = defaultSkewX[lane];
-		daNote.skew.y = defaultSkewY[lane];
+		daNote.skew.x = defaultSkew[lane][0];
+		daNote.skew.y = defaultSkew[lane][1];
 	}
 
 	// for arrowpath or getting notePath stuff without needing a Note
 	public static function setNotePath_positionData(daNote:NotePositionData, lane:Int, scrollSpeed:Float, curPos:Float, noteDist:Float, incomingAngleX:Float,
 			incomingAngleY:Float)
 	{
-		daNote.x = defaultStrumX[lane];
-		daNote.y = defaultStrumY[lane];
+		daNote.x = defaultStrumPos[lane][0];
+		daNote.y = defaultStrumPos[lane][1];
 		daNote.z = 0;
 
 		var pos = ModchartUtil.getCartesianCoords3D(incomingAngleX, incomingAngleY, curPos * noteDist);
@@ -145,8 +132,8 @@ class NoteMovement
 		daNote.x += pos.x;
 		daNote.z += pos.z;
 
-		daNote.skewX = defaultSkewX[lane];
-		daNote.skewY = defaultSkewY[lane];
+		daNote.skewX = defaultSkew[lane][0];
+		daNote.skewY = defaultSkew[lane][1];
 	}
 
 	public static function getLaneDiffFromCenter(lane:Int)

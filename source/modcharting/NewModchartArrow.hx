@@ -198,6 +198,7 @@ class NewModchartArrow extends FlxSkewedSprite
 
 	public function setUp():Void
 	{
+		if (frames == null || graphic == null) return;
 		var nextRow:Int = (subdivisions + 1 + 1);
 		updateColorTransform();
 		var noteIndices:Array<Int> = [];
@@ -241,7 +242,7 @@ class NewModchartArrow extends FlxSkewedSprite
    */
 	public function updateTris():Void
 	{
-		if (destroying) return;
+		if (destroying || frames == null || graphic == null) return;
 		
     	// TODO: Improve how this gets applied!
 		var wasAlreadyFlipped_X:Bool = flipX;
@@ -414,18 +415,18 @@ class NewModchartArrow extends FlxSkewedSprite
 		}
 	}
 
-	override public function loadGraphic(graphic:FlxGraphicAsset, animated = false, frameWidth = 0, frameHeight = 0, unique = false, ?key:String):FlxSprite
+	override public function loadGraphic(graphic:FlxGraphicAsset, animated = false, frameWidth = 0, frameHeight = 0, unique = false, ?key:String):NewModchartArrow
 	{
 		super.loadGraphic(graphic, animated, frameWidth, frameHeight, unique, key);
-		setUp();
+		if (graphic != null) setUp();
 		return this;
 	}
 
 	override function set_frames(Frames:FlxFramesCollection):FlxFramesCollection
 	{
-		super.set_frames(Frames);
-		setUp();
-		return Frames;
+		final result = super.set_frames(Frames);
+		if (frames != null) setUp();
+		return result;
 	}
 	
 	/**
@@ -438,7 +439,7 @@ class NewModchartArrow extends FlxSkewedSprite
 	@:access(flixel.FlxCamera)
 	override public function draw():Void
 	{
-		if (notePositionData?.alpha <= 0) return;
+		if (notePositionData?.alpha <= 0 || frames == null || graphic == null) return;
 		if (destroying) return;
 		if (!projectionEnabled)
 		{

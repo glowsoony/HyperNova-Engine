@@ -121,7 +121,7 @@ class ModchartUtil
 		{
 			var tempShit:Float = 0.0;
 
-			var targetX = NoteMovement.defaultStrumX[lane];
+			var targetX = NoteMovement.defaultStrum[lane][0];
 			var xPos = targetX;
 			while (Std.int(xPos + (daNote.width / 2)) != Std.int(targetX + (strum.width / 2)))
 			{

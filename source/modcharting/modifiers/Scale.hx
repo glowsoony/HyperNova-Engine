@@ -57,8 +57,8 @@ class MiniModifier extends Modifier
 		// noteData.x += (NoteMovement.arrowSizes[lane]*currentValue*NoteMovement.keyCount*0.5);
 		noteData.scaleX *= currentValue;
 		noteData.scaleY *= currentValue;
-		noteData.x -= ((NoteMovement.arrowSizes[lane] / 2) * (noteData.scaleX - NoteMovement.defaultScale[lane]));
-		noteData.y += daswitch * ((NoteMovement.arrowSizes[lane] / 2) * (noteData.scaleY - NoteMovement.defaultScale[lane]));
+		noteData.x -= ((NoteMovement.arrowSizes[lane] / 2) * (noteData.scaleX - NoteMovement.defaultScale[lane][0]));
+		noteData.y += daswitch * ((NoteMovement.arrowSizes[lane] / 2) * (noteData.scaleY - NoteMovement.defaultScale[lane][1]));
 	}
 
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)

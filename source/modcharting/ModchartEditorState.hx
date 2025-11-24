@@ -412,7 +412,7 @@ class ModchartEditorState extends MusicBeatState
 		strumLineNotes.visible = false;
 		notes.visible = false;
 
-		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
+		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, null, this);
 		playfieldRenderer.cameras = playfieldRenderer.allObjects.cameras = [camHUD];
 		playfieldRenderer.inEditor = true;
 		// playfieldRenderer.aftCapture = new HazardAFT_Capture.HazardAFT_CaptureMultiCam([camHUD]);

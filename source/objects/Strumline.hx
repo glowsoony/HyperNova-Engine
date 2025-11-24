@@ -6,6 +6,8 @@ class Strumline
 {
     public var strums:FlxTypedGroup<objects.StrumNote>;
 	public var notes:FlxTypedGroup<objects.Note>;
+	public var splashes:FlxTypedGroup<objects.NoteSplash>;
+	public var holdSplashes:FlxTypedGroup<objects.SustainSplash>;
     public var unspawnNotes:Array<Note>;
 	public var loadedNotes:Array<Note>;
 	public var cpuControlled:Bool = false;
@@ -22,8 +24,14 @@ class Strumline
 		this.field = field;
 		strums = new FlxTypedGroup<objects.StrumNote>();
 		notes = new FlxTypedGroup<objects.Note>();
+		splashes = new FlxTypedGroup<objects.NoteSplash>();
+		holdSplashes = new FlxTypedGroup<objects.SustainSplash>();
 		unspawnNotes = [];
 		loadedNotes = [];
+
+		final splash:NoteSplash = new NoteSplash();
+		splashes.add(splash);
+		splash.alpha = 0.000001; // cant make it invisible or it won't allow precaching
 	}
 
 	public function clearNotesBefore(time:Float, ?completeClear:Bool = false)
@@ -528,6 +536,7 @@ class Strumline
 
 	public function noteHit(note:Note, player:Bool = false) {
 		if (player && note.wasGoodHit) return;
+		final strum:StrumNote = strums.members[note.noteData + (note.mustPress ? 4 : 0)];
 		if (!player)
 		{
 			note.hitByOpponent = true;
@@ -536,18 +545,49 @@ class Strumline
 		else {
 			note.wasGoodHit = true;
 			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : Conductor.stepCrochet * 1.25 / 1000 / renderer.rate);
+			if (!note.isSustainNote)
+				playSplash(strum, note);
 		}
 
 		if (ClientPrefs.data.quantization)
 		{
-			strums.members[note.noteData + (note.mustPress ? 4 : 0)].rgbShader.r = note.rgbShader.r;
-			strums.members[note.noteData + (note.mustPress ? 4 : 0)].rgbShader.b = note.rgbShader.b;
+			strum.rgbShader.r = note.rgbShader.r;
+			strum.rgbShader.b = note.rgbShader.b;
 		}
 		
-		//playSplash();
-		//playHold();
+		playHold(note);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
+	}
+
+	public function playHold(note:Note)
+	{
+		if (ClientPrefs.data.holdSplashAlpha <= 0)
+			return;
+
+		if (note == null) return;
+		final strum:StrumNote = strums.members[note.noteData + (note.mustPress ? 4 : 0)];
+		if (strum != null && note.tail.length > 1)
+			playHoldSplash(strum, note);
+	}
+
+	public function playHoldSplash(strum:StrumNote, note:Note)
+	{
+		final end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
+		final splash:SustainSplash = holdSplashes.recycle(SustainSplash);
+		splash.setupSusSplash(strum, note, renderer.rate);
+		splash.field = field;
+		holdSplashes.add(end.noteHoldSplash = splash);
+		renderer.allObjects.add(end.noteHoldSplash);
+	}
+
+	public function playSplash(strum:StrumNote, note:Note) {
+		final splash:NoteSplash = new NoteSplash();
+		splash.babyArrow = strum;
+		splash.spawnSplashNote(note);
+		splash.field = field;
+		splashes.add(splash);
+		renderer.allObjects.add(splash);
 	}
 
 	public function strumPlayAnim(id:Int, time:Float = -1)

@@ -780,11 +780,15 @@ class PlayState extends MusicBeatState
 			// if(ClientPrefs.data.middleScroll) opponentStrums.members[i].visible = false;
 		}
 
+		final splash:NoteSplash = new NoteSplash();
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.000001; // cant make it invisible or it won't allow precaching
+
 		if (notITGMod)
 		{
 			if (SONG.notITG && !SONG.newModchartTool)
 			{
-				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
+				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, grpNoteSplashes, grpHoldSplashes, this);
 				playfieldRenderer.cameras = [camHUD];
 				add(playfieldRenderer);
 
@@ -801,21 +805,11 @@ class PlayState extends MusicBeatState
 			{
 				modchartRenderer = new Manager();
 				add(modchartRenderer);
-				add(grpNoteSplashes);
-				add(grpHoldSplashes);
 			}
 			#end
-		else
-		{ // if notITG mod is used but none of this contidions are true it will just ignore the code and add the splashes for vanilla!
-			add(grpNoteSplashes);
-			add(grpHoldSplashes);
 		}
-		}
-		else
-		{
-			add(grpNoteSplashes);
-			add(grpHoldSplashes);
-		}
+		add(grpNoteSplashes);
+		add(grpHoldSplashes);
 
 		camFollow = new FlxObject();
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -941,10 +935,6 @@ class PlayState extends MusicBeatState
 
 		callOnScripts('onCreatePost');
 		callOnScripts('onModchart');
-
-		var splash:NoteSplash = new NoteSplash();
-		grpNoteSplashes.add(splash);
-		splash.alpha = 0.000001; // cant make it invisible or it won't allow precaching
 
 		SustainSplash.startCrochet = Conductor.stepCrochet;
 		SustainSplash.frameRate = Math.floor(24 / 100 * SONG.bpm);
@@ -3876,7 +3866,7 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
-		if (daRating.noteSplash && !note.noteSplashData.disabled && !PlayState.SONG.notITG)
+		if (daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
 		if (!practiceMode && !cpuControlled)
@@ -4647,7 +4637,7 @@ class PlayState extends MusicBeatState
 			}
 
 			noteMiss(note);
-			if (!note.noteSplashData.disabled && !note.isSustainNote && !PlayState.SONG.notITG)
+			if (!note.noteSplashData.disabled && !note.isSustainNote)
 				spawnNoteSplashOnNote(note);
 		}
 
@@ -4736,8 +4726,6 @@ class PlayState extends MusicBeatState
 	{
 		if (ClientPrefs.data.holdSplashAlpha <= 0)
 			return;
-		if (PlayState.SONG.notITG)
-			return;
 
 		if (note != null)
 		{
@@ -4753,12 +4741,15 @@ class PlayState extends MusicBeatState
 		var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
 		splash.setupSusSplash((note.mustPress ? playerStrums : opponentStrums).members[note.noteData], note, playbackRate);
 		grpHoldSplashes.add(end.noteHoldSplash = splash);
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+		{
+			splash.field = playfieldRenderer?.noteFields[0];
+			playfieldRenderer?.allObjects?.add(splash);
+		}
 	}
 
 	public function spawnNoteSplashOnNote(note:Note)
 	{
-		if (PlayState.SONG.notITG)
-			return;
 		if (note != null)
 		{
 			var strum:StrumNote = playerStrums.members[note.noteData];
@@ -4773,6 +4764,11 @@ class PlayState extends MusicBeatState
 		splash.babyArrow = strum;
 		splash.spawnSplashNote(note);
 		grpNoteSplashes.add(splash);
+		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+		{
+			splash.field = playfieldRenderer?.noteFields[0];
+			playfieldRenderer?.allObjects?.add(splash);
+		}
 	}
 
 	override function destroy()

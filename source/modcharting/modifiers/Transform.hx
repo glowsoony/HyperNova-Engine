@@ -99,6 +99,16 @@ class TransformModifier extends Modifier
 		noteMath(noteData, lane, 0, pf);
 	}
 
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
 	override function reset()
 	{
 		super.reset();
@@ -242,6 +252,16 @@ class MoveXModifier extends Modifier
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class MoveYModifier extends Modifier
@@ -254,6 +274,16 @@ class MoveYModifier extends Modifier
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
+	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -272,6 +302,16 @@ class MoveYDModifier extends Modifier // similar to Y but this one changes on de
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class MoveZModifier extends Modifier
@@ -284,6 +324,16 @@ class MoveZModifier extends Modifier
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
+	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -301,6 +351,16 @@ class XModifier extends Modifier
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class YModifier extends Modifier
@@ -313,6 +373,11 @@ class YModifier extends Modifier
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
+	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
 	}
 }
 
@@ -331,6 +396,16 @@ class YDModifier extends Modifier // similar to Y but this one changes on defaul
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
 	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
 }
 
 class ZModifier extends Modifier
@@ -343,6 +418,16 @@ class ZModifier extends Modifier
 	override function strumMath(noteData:NotePositionData, lane:Int, pf:Int)
 	{
 		noteMath(noteData, lane, 0, pf); // just reuse same thing
+	}
+
+	override function splashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
+	}
+
+	override function holdSplashMath(noteData:NotePositionData, lane:Int, pf:Int) 
+	{
+		noteMath(noteData, lane, 0, pf);
 	}
 }
 
