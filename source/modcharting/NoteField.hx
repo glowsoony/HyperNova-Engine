@@ -27,29 +27,56 @@ class NoteField extends FlxBasic
 
 	override public function set_cameras(cameras:Array<FlxCamera>):Array<FlxCamera>
 	{
-		strumLine.strums.cameras = cameras;
-		strumLine.notes.cameras = cameras;
-		strumLine.splashes.cameras = cameras;
-		strumLine.holdSplashes.cameras = cameras;
+		strumGroup.cameras = cameras;
+		noteGroup.cameras = cameras;
+		splashesGroup.cameras = cameras;
+		holdSplashesGroup.cameras = cameras;
 		return super.set_cameras(cameras);
 	}
+
+	public var strumLineNotes:FlxTypedGroup<StrumNote>;
+
+	private var strumGroup(get, never):FlxTypedGroup<StrumNote>;
+
+	private function get_strumGroup():FlxTypedGroup<StrumNote>
+		return strumLineNotes ?? strumLine.strums;
+
+	public var notes:FlxTypedGroup<Note>;
+
+	private var noteGroup(get, never):FlxTypedGroup<Note>;
+
+	private function get_noteGroup():FlxTypedGroup<Note>
+		return notes ?? strumLine.notes;
+
+	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+
+	private var splashesGroup(get, never):FlxTypedGroup<NoteSplash>;
+
+	private function get_splashesGroup():FlxTypedGroup<NoteSplash>
+		return grpNoteSplashes ?? strumLine.splashes;
+
+	public var grpHoldSplashes:FlxTypedGroup<SustainSplash>;
+
+	private var holdSplashesGroup(get, never):FlxTypedGroup<SustainSplash>;
+
+	private function get_holdSplashesGroup():FlxTypedGroup<SustainSplash>
+		return grpHoldSplashes ?? strumLine.holdSplashes;
 
 	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
 		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null, ?splashes:FlxTypedGroup<NoteSplash> = null, ?holdSplashes:FlxTypedGroup<SustainSplash> = null)
 	{
 		this.renderer = renderer;
 		this.pfIndex = pfIndex;
-		strumLine = new Strumline(this);
+		this.strumLine = new Strumline(this);
 		super();
 		if (pfIndex == 0)
 		{
-			strumLine.strums = strumNotes;
-			strumLine.notes = notes;
-			strumLine.unspawnNotes = unspawnNotes;
-			strumLine.splashes = splashes;
-			strumLine.holdSplashes = holdSplashes;
+			this.strumLineNotes = strumNotes;
+			this.notes = notes;
+			this.grpNoteSplashes = splashes;
+			this.grpHoldSplashes = holdSplashes;
 		}
-		else
+		else 
 		{
 			strumLine.loadUnspawnNotes();
 			strumLine.loadStrums();
@@ -121,13 +148,13 @@ class NoteField extends FlxBasic
 	private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0)
 	{
 		#if PSYCH
-		if (strumLine.notes.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(renderer.instance))
+		if (noteGroup.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(renderer.instance))
 			strumTimeOffset -= Std.int(Conductor.stepCrochet / renderer.getCorrectScrollSpeed()); // psych does this to fix its sustains but that breaks the visuals so basically reverse it back to normal
 		#else
-		if (strumLine.notes.members[noteIndex].isSustainNote && !ModchartUtil.getDownscroll(renderer.instance))
+		if (noteGroup.members[noteIndex].isSustainNote && !ModchartUtil.getDownscroll(renderer.instance))
 			strumTimeOffset += Conductor.stepCrochet; // fix upscroll lol
 		#end
-		if (strumLine.notes.members[noteIndex].isSustainNote)
+		if (noteGroup.members[noteIndex].isSustainNote)
 		{
 			// moved those inside holdsMath cuz they are only needed for sustains ig?
 			var lane:Int = getLane(noteIndex);
@@ -146,16 +173,17 @@ class NoteField extends FlxBasic
 					strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition);
 				}
 			}
-			else strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition) - (noteDist > 0 ? Std.int(Conductor.stepCrochet) : 0); // down
+			else
+				strumTimeOffset -= Std.int(Conductor.stepCrochet * scrollDivition) + (noteDist > 0 ? Std.int(Conductor.stepCrochet) : 0); // down
 			// FINALLY OMG I HATE THIS FUCKING MATH LMAO
 		}
 
-		var distance = (Conductor.songPosition - strumLine.notes.members[noteIndex].strumTime) + strumTimeOffset;
+		var distance = (Conductor.songPosition - noteGroup.members[noteIndex].strumTime) + strumTimeOffset;
 		return distance * renderer.getCorrectScrollSpeed();
 	}
 
 	private function getLane(noteIndex:Int)
-		return (strumLine.notes.members[noteIndex].mustPress ? strumLine.notes.members[noteIndex].noteData + NoteMovement.keyCount : strumLine.notes.members[noteIndex].noteData);
+		return (noteGroup.members[noteIndex].mustPress ? noteGroup.members[noteIndex].noteData + NoteMovement.keyCount : noteGroup.members[noteIndex].noteData);
 
 	// lol XD
 	public function getNoteDist()
@@ -165,8 +193,8 @@ class NoteField extends FlxBasic
 	private function getNotePositions()
 	{
 		var notePositions:Array<NotePositionData> = [];
-		// trace(strumLine.strums == null, strumLine.notes == null);
-		for (i => strum in strumLine.strums.members)
+		// trace(strumGroup == null, noteGroup == null);
+		for (i => strum in strumGroup.members)
 		{
 			final data:NotePositionData = createBasicData({
 				x: NoteMovement.defaultStrumPos[i][0], y: NoteMovement.defaultStrumPos[i][1], z: 0, lane: i, index: i,
@@ -179,7 +207,7 @@ class NoteField extends FlxBasic
 			notePositions.push(data);
 			strum.notePositionData = data;
 		}
-		for (i => note in strumLine.notes.members)
+		for (i => note in noteGroup.members)
 		{
 			final lane:Int = getLane(i);
 			final sustainTimeThingy:Float = 0;
@@ -221,13 +249,14 @@ class NoteField extends FlxBasic
 			// add position data to list
 			notePositions.push(noteData);
 		}
-		if (strumLine.splashes != null) 
+		if (splashesGroup != null) 
 		{
-			for (i => splash in strumLine.splashes.members) 
+			for (i => splash in splashesGroup.members) 
 			{
 				if (splash == null) continue;
 				final noteData:NotePositionData = createBasicData({
-					x: splash.x, y: splash.y, z: splash.z, index: i, lane: splash.noteData, alpha: 0.6, isSplash: true
+					x: splash.x, y: splash.y, z: splash.z, index: i, lane: splash.noteData, alpha: 0.6, isSplash: true,
+					scaleX: splash.scale.x, scaleY: splash.scale.y 
 				});
 				renderer.modifierTable.applySplashMods(noteData, splash.noteData, /*curPos,*/ pfIndex);
 
@@ -239,8 +268,8 @@ class NoteField extends FlxBasic
 				notePositions.push(noteData);
 			}
 		}
-		if (strumLine.holdSplashes != null) {
-			for (i => holdSplash in strumLine.holdSplashes.members) {
+		if (holdSplashesGroup != null) {
+			for (i => holdSplash in holdSplashesGroup.members) {
 				if (holdSplash == null || holdSplash.strumNote == null) continue;
 				final noteData:NotePositionData = createBasicData({
 					x: holdSplash.x, y: holdSplash.y, z: holdSplash.z, index: i, lane: holdSplash.strumNote.noteData, 
@@ -276,7 +305,7 @@ class NoteField extends FlxBasic
 
 		 */
 		// var strumNote = targetGroup[0][noteData.index];
-		var strumNote = strumLine.strums.members[noteData.index];
+		var strumNote = strumGroup.members[noteData.index];
 
 		// if (strumNote == null)
 		// {
@@ -334,7 +363,7 @@ class NoteField extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 		var changeX:Bool = noteData.z != 0;
-		var daNote = strumLine.notes.members[noteData.index];
+		var daNote = noteGroup.members[noteData.index];
 
 		// if (daNote == null)
 		// {
@@ -386,11 +415,11 @@ class NoteField extends FlxBasic
 	}
 
 	private function drawSustainNote(noteData:NotePositionData)
-{
+	{
 		if (noteData.alpha <= 0)
 			return;
 
-		var daNote = strumLine.notes.members[noteData.index];
+		var daNote = noteGroup.members[noteData.index];
 		if (daNote.mesh == null)
 			daNote.mesh = new SustainStrip(daNote);
 
@@ -489,7 +518,7 @@ class NoteField extends FlxBasic
 		if (noteData.alpha <= 0)
 			return;
 
-		var daNote:Note = strumLine.notes.members[noteData.index];
+		var daNote:Note = noteGroup.members[noteData.index];
 		if (daNote.newMesh == null)
 			daNote.newMesh = new SustainTrail(noteData.lane, Math.ffloor(daNote.sustainLength), renderer, this);
 
@@ -530,7 +559,7 @@ class NoteField extends FlxBasic
 			- optimize the code to make it easier to understand
 		 */
 
-		var strumNote = strumLine.strums.members[noteData.index];
+		var strumNote = strumGroup.members[noteData.index];
 
 		var arrowPathLength:Float = noteData.arrowPathLength * 100;
 		var arrowPathBackLength:Float = noteData.arrowPathBackwardsLength * 100;
@@ -556,10 +585,10 @@ class NoteField extends FlxBasic
 
 	private function drawSplash(noteData:NotePositionData) 
 	{
-		if (noteData.alpha <= 0 || strumLine.splashes == null)
+		if (noteData.alpha <= 0 || splashesGroup == null)
 			return;
 		var changeX:Bool = noteData.z != 0;
-		var daSplash = strumLine.splashes.members[noteData.index];
+		var daSplash = splashesGroup.members[noteData.index];
 
 		// if (daNote == null)
 		// {
@@ -597,10 +626,10 @@ class NoteField extends FlxBasic
 
 	private function drawHoldSplash(noteData:NotePositionData) 
 	{
-		if (noteData.alpha <= 0 || strumLine.holdSplashes == null)
+		if (noteData.alpha <= 0 || holdSplashesGroup == null)
 			return;
 		var changeX:Bool = noteData.z != 0;
-		var daSplash = strumLine.holdSplashes.members[noteData.index];
+		var daSplash = holdSplashesGroup.members[noteData.index];
 
 		// if (daNote == null)
 		// {
@@ -650,14 +679,14 @@ class NoteField extends FlxBasic
 		forEach(positions, data -> if (data.isStrum) drawStrum(data)); // draw notes after strums
 		forEach(positions, data -> {
 			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
-			if (strumLine.notes.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
+			if (noteGroup.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
 		});
 		forEach(positions, data -> {
 			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
-			if (!strumLine.notes.members[data.index].isSustainNote)
+			if (!noteGroup.members[data.index].isSustainNote)
 			{
 				if (usingSusTrail)
-					if (strumLine.notes.members[data.index].sustainLength > 0)
+					if (noteGroup.members[data.index].sustainLength > 0)
 						drawNewSustainNote(data);
 				drawNote(data);
 			}
@@ -668,7 +697,7 @@ class NoteField extends FlxBasic
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData
 	{
-		var daNote:Note = strumLine.notes.members[noteData.index];
+		var daNote:Note = noteGroup.members[noteData.index];
 		var songSpeed:Float = renderer.getCorrectScrollSpeed();
 		var lane:Int = noteData.lane;
 
@@ -687,8 +716,8 @@ class NoteField extends FlxBasic
 		// save the position data
 		final noteData:NotePositionData = createBasicData({
 			x: daNote.x, y: daNote.y, z: daNote.z, lane: lane, index: noteData.index,
-			scaleX: daNote.scale.x, 
-			scaleY: daNote.scale.y, 
+			scaleX: NoteMovement.defaultScale[lane][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+			scaleY: NoteMovement.defaultScale[lane][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 			skewX: daNote.skew.x, skewY: daNote.skew.y,
 			alpha: daNote.specialHurt ? 0 : daNote.mimicNote ? ClientPrefs.data.mimicNoteAlpha : daNote.hurtNote ? 0.55 : daNote.multAlpha,
 			curPos: curPos, 
@@ -715,7 +744,7 @@ class NoteField extends FlxBasic
 
 	function getNotePoss(noteData:NotePositionData, timeOffset:Float):NotePositionData
 	{
-		final daNote:Note = strumLine.notes.members[noteData.index];
+		final daNote:Note = noteGroup.members[noteData.index];
 		final songSpeed:Float = renderer.getCorrectScrollSpeed();
 		final lane:Int = noteData.lane;
 
@@ -730,8 +759,8 @@ class NoteField extends FlxBasic
 		// save the position data
 		final noteData:NotePositionData = createBasicData({
 			x: daNote.x, y: daNote.y, z: daNote.z, lane: lane, index: noteData.index,
-			scaleX: daNote.scale.x, 
-			scaleY: daNote.scale.y, 
+			scaleX: NoteMovement.defaultScale[lane][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
+			scaleY: NoteMovement.defaultScale[lane][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 			skewX: daNote.skew.x, skewY: daNote.skew.y,
 			alpha: daNote.specialHurt ? 0 : daNote.mimicNote ? ClientPrefs.data.mimicNoteAlpha : daNote.hurtNote ? 0.55 : daNote.multAlpha,
 			curPos: curPos, 

@@ -788,6 +788,7 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notITG && !SONG.newModchartTool)
 			{
+				strumLineNotes.visible = notes.visible = grpNoteSplashes.visible = grpHoldSplashes.visible = false;
 				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, grpNoteSplashes, grpHoldSplashes, this);
 				playfieldRenderer.cameras = [camHUD];
 				add(playfieldRenderer);
