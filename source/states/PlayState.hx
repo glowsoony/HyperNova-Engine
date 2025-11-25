@@ -785,6 +785,7 @@ class PlayState extends MusicBeatState
 				strumLineNotes.visible = notes.visible = false;
 				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
 				playfieldRenderer.cameras = [camHUD];
+				playfieldRenderer.rate = playbackRate;
 				add(playfieldRenderer);
 
 				strumLineNotes.forEachAlive(strum -> {

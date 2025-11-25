@@ -20,6 +20,8 @@ class SustainSplash extends NewModchartArrow
 		animation.addByPrefix('hold', 'holdCover0', 24, true);
 		animation.addByPrefix('end', 'holdCoverEnd0', 24, false);
 		if(!animation.getNameList().contains("hold")) trace("Hold splash is missing 'hold' anim!");
+
+		startingScale.set(scale.x, scale.y);
 	}
 
 	override function update(elapsed)

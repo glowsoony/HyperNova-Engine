@@ -37,6 +37,8 @@ class NewModchartArrow extends FlxSkewedSprite
 
 	public var z:Float = 0.0;
 
+	public var startingScale:FlxPoint = FlxPoint.get(1, 1);
+
 	public var z2:Float = 0.0;
 	public var y2:Float = 0.0;
 	public var x2:Float = 0.0;

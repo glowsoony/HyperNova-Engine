@@ -138,7 +138,6 @@ class StrumNote extends modcharting.NewModchartArrow
 		splash.cameras = this.cameras;
 		if (splash.babyArrow == null)
 			splash.babyArrow = this;
-		applyGeneralData(splash, splash.notePositionData);
 		splash.spawnSplashNote(this.x, this.y, noteData, note);
 	}
 
@@ -151,7 +150,6 @@ class StrumNote extends modcharting.NewModchartArrow
 			holdSplash.revive();
 		if (holdSplash.strumNote == null)
 			holdSplash.strumNote = this;
-		applyGeneralData(holdSplash, holdSplash.notePositionData);
 		holdSplash.cameras = this.cameras;
 		holdSplash.setupSusSplash(note, playbackRate);
 		end.noteHoldSplash = holdSplash;
@@ -236,6 +234,7 @@ class StrumNote extends modcharting.NewModchartArrow
 		{
 			playAnim(lastAnim, true);
 		}
+		startingScale.set(scale.x, scale.y);
 	}
 
 	public function playerPosition()

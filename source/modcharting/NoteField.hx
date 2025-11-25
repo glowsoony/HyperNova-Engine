@@ -296,10 +296,26 @@ class NoteField extends FlxBasic
 		addDataToObject(noteData, strumNote); // set position and stuff before drawing
 
 		strumNote.cameras = this.cameras;
-		if (strumNote.splash != null) 
+		if (strumNote.splash != null) {
+			var data:NotePositionData = noteData.copy();
+			final diffX:Float = Math.abs(strumNote.startingScale.x - strumNote.splash.startingScale.x);
+			final diffY:Float = Math.abs(strumNote.startingScale.y - strumNote.splash.startingScale.y);
+			data.scaleX = noteData.scaleX + diffX;
+			data.scaleY = noteData.scaleY + diffY;
+			strumNote.applyGeneralData(strumNote.splash, data);
+			strumNote.splash.notePositionData = data; 
 			strumNote.splash.cameras = this.cameras;
-		if (strumNote.holdSplash != null)
+		}
+		if (strumNote.holdSplash != null) {
+			var data:NotePositionData = noteData.copy();
+			final diffX:Float = Math.abs(strumNote.startingScale.x - strumNote.holdSplash.startingScale.x);
+			final diffY:Float = Math.abs(strumNote.startingScale.y - strumNote.holdSplash.startingScale.y);
+			data.scaleX = noteData.scaleX + diffX;
+			data.scaleY = noteData.scaleY + diffY;
+			strumNote.applyGeneralData(strumNote.holdSplash, data);
+			strumNote.holdSplash.notePositionData = data;
 			strumNote.holdSplash.cameras = this.cameras;
+		}
 
 		// Same as strums case
 		// if (strumNote != null)

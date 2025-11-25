@@ -194,6 +194,11 @@ class NoteSplash extends NewModchartArrow
 			}
 		}
 
+		if (config?.scale != null)
+			startingScale.set(config.scale, config.scale);
+		else
+			startingScale.set(1, 1);
+
 		this.config = tempConfig;
 		configs.set(path, this.config);
 	}

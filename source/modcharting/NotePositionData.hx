@@ -300,4 +300,67 @@ class NotePositionData implements IFlxDestroyable
 		// this.straightHold = 0; //why tf does a strum need a damn "straightHold" value XD?
 		return this;
 	}
+
+	public function copy():NotePositionData
+	{
+		var data:NotePositionData = new NotePositionData();
+		data.setX = setX; // by default they will be same as the base
+		data.setY = setY;
+		data.setZ = setZ;
+
+		data.x = x;
+		data.y = y;
+		data.z = z;
+		data.angle = angle;
+		data.alpha = alpha;
+		data.scaleX = scaleX;
+		data.scaleY = scaleY;
+		data.skewX = skewX;
+		data.skewY = skewY;
+		data.skewZ = skewZ;
+		data.index = index;
+		data.playfieldIndex = playfieldIndex;
+		data.lane = lane;
+		data.curPos = curPos;
+		data.noteDist = noteDist;
+		data.isStrum = isStrum;
+		data.isHoldSplash = isHoldSplash;
+		data.isSplash = isSplash;
+		data.isSus = isSus;
+		data.incomingAngleX = incomingAngleX;
+		data.incomingAngleY = incomingAngleY;
+		data.strumTime = strumTime;
+
+		data.stealthGlow = stealthGlow;
+		data.glowRed = glowRed;
+		data.glowGreen = glowGreen;
+		data.glowBlue = glowBlue;
+
+		data.arrowPathAlpha = arrowPathAlpha;
+		data.arrowPathLength = arrowPathLength;
+		data.arrowPathBackwardsLength = arrowPathBackwardsLength;
+
+		data.pathGrain = pathGrain;
+
+		data.spiralHold = spiralHold;
+
+		data.angleX = angleX;
+		data.angleY = angleY;
+		data.angleZ = angleZ;
+
+		data.skewX_offset = skewX_offset;
+		data.skewY_offset = skewY_offset;
+		data.skewZ_offset = skewZ_offset;
+
+		data.fovOffsetX = fovOffsetX;
+		data.fovOffsetY = fovOffsetY;
+
+		data.pivotOffsetX = pivotOffsetX;
+		data.pivotOffsetY = pivotOffsetY;
+		data.pivotOffsetZ = pivotOffsetZ;
+
+		data.cullMode = cullMode;
+
+		return data;
+	}
 }
