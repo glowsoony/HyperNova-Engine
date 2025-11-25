@@ -29,8 +29,6 @@ class NoteField extends FlxBasic
 	{
 		strumGroup.cameras = cameras;
 		noteGroup.cameras = cameras;
-		splashesGroup.cameras = cameras;
-		holdSplashesGroup.cameras = cameras;
 		return super.set_cameras(cameras);
 	}
 
