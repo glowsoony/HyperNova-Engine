@@ -80,11 +80,13 @@ class PlayfieldRenderer extends FlxBasic
 	public var noteFields:Array<NoteField> = [];
 	public var onAddPlayfield:?Int->Void;
 	public var allObjects:FlxTypedGroup<NewModchartArrow>;
+	public var splashObjects:FlxTypedGroup<NewModchartArrow>;
 	public var killOffset:Float = 350;
 
 	override public function set_cameras(cameras:Array<flixel.FlxCamera>):Array<flixel.FlxCamera>
 	{
 		allObjects.cameras = cameras;
+		splashObjects.cameras = cameras;
 		for (field in noteFields)
 			field.cameras = cameras;
 		return super.set_cameras(cameras);
@@ -114,6 +116,7 @@ class PlayfieldRenderer extends FlxBasic
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
 		allObjects = new FlxTypedGroup<NewModchartArrow>();
+		splashObjects = new FlxTypedGroup<NewModchartArrow>();
 		noteFields = [];
 		onAddPlayfield = function(?index:Int) {
 			try
@@ -236,8 +239,10 @@ class PlayfieldRenderer extends FlxBasic
 	public function compareZ(order:Int, a:NewModchartArrow, b:NewModchartArrow):Int
 		return flixel.util.FlxSort.byValues(order, a.z, b.z);
 
-	public function resortZ()
+	public function resortZ() {
 		allObjects.sort(compareZ, flixel.util.FlxSort.ASCENDING);
+		splashObjects.sort(compareZ, flixel.util.FlxSort.ASCENDING);
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -245,6 +250,7 @@ class PlayfieldRenderer extends FlxBasic
 		tweenManager.update(elapsed); // should be automatically paused when you pause in game
 		timerManager.update(elapsed);
 		allObjects.update(elapsed);
+		splashObjects.update(elapsed);
 	}
 
 	override function draw()
@@ -253,6 +259,7 @@ class PlayfieldRenderer extends FlxBasic
 		for (field in noteFields)
 			field.draw();
 		allObjects.draw();
+		splashObjects.draw();
 	}
 
 	public function getCorrectScrollSpeed()

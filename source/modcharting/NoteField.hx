@@ -48,22 +48,9 @@ class NoteField extends FlxBasic
 	private function get_noteGroup():FlxTypedGroup<Note>
 		return notes ?? strumLine.notes;
 
-	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-
-	private var splashesGroup(get, never):FlxTypedGroup<NoteSplash>;
-
-	private function get_splashesGroup():FlxTypedGroup<NoteSplash>
-		return grpNoteSplashes ?? strumLine.splashes;
-
-	public var grpHoldSplashes:FlxTypedGroup<SustainSplash>;
-
-	private var holdSplashesGroup(get, never):FlxTypedGroup<SustainSplash>;
-
-	private function get_holdSplashesGroup():FlxTypedGroup<SustainSplash>
-		return grpHoldSplashes ?? strumLine.holdSplashes;
 
 	public function new(renderer:PlayfieldRenderer, ?pfIndex:Int = 0, ?strumNotes:FlxTypedGroup<StrumNote> = null,
-		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null, ?splashes:FlxTypedGroup<NoteSplash> = null, ?holdSplashes:FlxTypedGroup<SustainSplash> = null)
+		?notes:FlxTypedGroup<Note> = null, ?unspawnNotes:Array<Note> = null)
 	{
 		this.renderer = renderer;
 		this.pfIndex = pfIndex;
@@ -73,8 +60,6 @@ class NoteField extends FlxBasic
 		{
 			this.strumLineNotes = strumNotes;
 			this.notes = notes;
-			this.grpNoteSplashes = splashes;
-			this.grpHoldSplashes = holdSplashes;
 		}
 		else 
 		{
@@ -206,6 +191,10 @@ class NoteField extends FlxBasic
 			renderer.modifierTable.applyStrumMods(data, i, pfIndex);
 			notePositions.push(data);
 			strum.notePositionData = data;
+			if (strum.splash != null)
+				strum.splash.notePositionData = data;
+			if (strum.holdSplash != null)
+				strum.holdSplash.notePositionData = data;
 		}
 		for (i => note in noteGroup.members)
 		{
@@ -246,37 +235,6 @@ class NoteField extends FlxBasic
 
 			// add position data to list
 			notePositions.push(noteData);
-		}
-		if (splashesGroup != null) 
-		{
-			for (i => splash in splashesGroup.members) 
-			{
-				if (splash == null) continue;
-				final noteData:NotePositionData = createBasicData({
-					x: splash.x, y: splash.y, z: splash.z, index: i, lane: splash.noteData, alpha: 0.6, isSplash: true,
-					scaleX: splash.scale.x, scaleY: splash.scale.y 
-				});
-				renderer.modifierTable.applySplashMods(noteData, splash.noteData, /*curPos,*/ pfIndex);
-
-				splash.notePositionData = noteData;
-				
-				// add position data to list
-				notePositions.push(noteData);
-			}
-		}
-		if (holdSplashesGroup != null) {
-			for (i => holdSplash in holdSplashesGroup.members) {
-				if (holdSplash == null || holdSplash.strumNote == null) continue;
-				final noteData:NotePositionData = createBasicData({
-					x: holdSplash.x, y: holdSplash.y, z: holdSplash.z, index: i, lane: holdSplash.strumNote.noteData, 
-					alpha: ClientPrefs.data.holdSplashAlpha, isHoldSplash: true
-				});
-				renderer.modifierTable.applyHoldSplashMods(noteData, holdSplash.strumNote.noteData, /*curPos,*/ pfIndex);
-
-				holdSplash.notePositionData = noteData;
-
-				notePositions.push(noteData);
-			}
 		}
 
 		// sort by z before drawing
@@ -340,6 +298,10 @@ class NoteField extends FlxBasic
 		addDataToObject(noteData, strumNote); // set position and stuff before drawing
 
 		strumNote.cameras = this.cameras;
+		if (strumNote.splash != null) 
+			strumNote.splash.cameras = this.cameras;
+		if (strumNote.holdSplash != null)
+			strumNote.holdSplash.cameras = this.cameras;
 
 		// Same as strums case
 		// if (strumNote != null)
@@ -577,97 +539,6 @@ class NoteField extends FlxBasic
 		// strumNote.arrowPath.draw();
 	}
 
-	private function drawSplash(noteData:NotePositionData)
-	{
-		if (noteData.alpha <= 0 || splashesGroup == null)
-			return;
-		var changeX:Bool = noteData.z != 0;
-
-		var strumNote = strumGroup.members[noteData.lane]; //?
-
-		var daSplash = splashesGroup.members[noteData.index];
-
-		// if (daNote == null)
-		// {
-		// 	daNote.setupMesh();
-		// }
-
-		// var thisNotePos;
-		// if (changeX)
-		// 	thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daSplash.width / 2), noteData.y + (daSplash.height / 2),
-		// 		noteData.z * 0.001),
-		// 		ModchartUtil.defaultFOV * (Math.PI / 180),
-		// 		-(daSplash.width / 2),
-		// 		-(daSplash.height / 2));
-		// else
-		// 	thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
-
-		// noteData.x = thisNotePos.x;
-		// noteData.y = thisNotePos.y;
-
-		noteData.x = strumNote.x - NoteMovement.arrowSize * 0.95;
-		noteData.y = strumNote.y - NoteMovement.arrowSize;
-		// if (changeX)
-		// {
-		// 	noteData.scaleX *= (1 / -thisNotePos.z);
-		// 	noteData.scaleY *= (1 / -thisNotePos.z);
-		// }
-
-		// var getNextNote = getNotePoss(noteData, 1);
-
-		// if (noteData.orient != 0)
-		// 	noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
-
-		addDataToObject(noteData, daSplash);
-
-		daSplash.cameras = this.cameras;
-	}
-
-	private function drawHoldSplash(noteData:NotePositionData) 
-	{
-		if (noteData.alpha <= 0 || holdSplashesGroup == null)
-			return;
-		var changeX:Bool = noteData.z != 0;
-
-		var strumNote = strumGroup.members[noteData.lane];
-
-		var daSplash = holdSplashesGroup.members[noteData.index];
-
-		// if (daNote == null)
-		// {
-		// 	daNote.setupMesh();
-		// }
-
-		// var thisNotePos;
-		// if (changeX)
-		// 	thisNotePos = ModchartUtil.calculatePerspective(new Vector3D(noteData.x + (daSplash.width / 2), noteData.y + (daSplash.height / 2),
-		// 		noteData.z * 0.001),
-		// 		ModchartUtil.defaultFOV * (Math.PI / 180),
-		// 		-(daSplash.width / 2),
-		// 		-(daSplash.height / 2));
-		// else
-		// 	thisNotePos = new Vector3D(noteData.x, noteData.y, 0);
-
-		// noteData.x = thisNotePos.x;
-		// noteData.y = thisNotePos.y;
-		noteData.x = strumNote.x;
-		noteData.y = strumNote.y;
-		// if (changeX)
-		// {
-		// 	noteData.scaleX *= (1 / -thisNotePos.z);
-		// 	noteData.scaleY *= (1 / -thisNotePos.z);
-		// }
-
-		// var getNextNote = getNotePoss(noteData, 1);
-
-		// if (noteData.orient != 0)
-		// 	noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
-
-		addDataToObject(noteData, daSplash);
-
-		daSplash.cameras = this.cameras;
-	}
-
 	private function forEach(positions:Array<NotePositionData>, callback:NotePositionData->Void)
 	{
 		for (noteData in positions) {
@@ -694,8 +565,6 @@ class NoteField extends FlxBasic
 				drawNote(data);
 			}
 		});
-		forEach(positions, data -> if (data.isSplash) drawSplash(data));
-		forEach(positions, data -> if (data.isHoldSplash) drawHoldSplash(data));
 	}
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData

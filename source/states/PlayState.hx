@@ -219,8 +219,6 @@ class PlayState extends MusicBeatState
 	public var strumLineNotes:FlxTypedGroup<StrumNote> = new FlxTypedGroup<StrumNote>();
 	public var opponentStrums:FlxTypedGroup<StrumNote> = new FlxTypedGroup<StrumNote>();
 	public var playerStrums:FlxTypedGroup<StrumNote> = new FlxTypedGroup<StrumNote>();
-	public var grpNoteSplashes:FlxTypedGroup<NoteSplash> = new FlxTypedGroup<NoteSplash>();
-	public var grpHoldSplashes:FlxTypedGroup<SustainSplash> = new FlxTypedGroup<SustainSplash>();
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
@@ -780,16 +778,12 @@ class PlayState extends MusicBeatState
 			// if(ClientPrefs.data.middleScroll) opponentStrums.members[i].visible = false;
 		}
 
-		final splash:NoteSplash = new NoteSplash();
-		grpNoteSplashes.add(splash);
-		splash.alpha = 0.000001; // cant make it invisible or it won't allow precaching
-
 		if (notITGMod)
 		{
 			if (SONG.notITG && !SONG.newModchartTool)
 			{
-				strumLineNotes.visible = notes.visible = grpNoteSplashes.visible = grpHoldSplashes.visible = false;
-				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, grpNoteSplashes, grpHoldSplashes, this);
+				strumLineNotes.visible = notes.visible = false;
+				playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, unspawnNotes, this);
 				playfieldRenderer.cameras = [camHUD];
 				add(playfieldRenderer);
 
@@ -809,8 +803,6 @@ class PlayState extends MusicBeatState
 			}
 			#end
 		}
-		add(grpNoteSplashes);
-		add(grpHoldSplashes);
 
 		camFollow = new FlxObject();
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -838,7 +830,7 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 		camZooming = true;
 
-		strumLineNotes.cameras = notes.cameras = grpNoteSplashes.cameras = grpHoldSplashes.cameras = [camHUD];
+		strumLineNotes.cameras = notes.cameras = [camHUD];
 
 		hitmansHud.healthBar.cameras = [camInterfaz];
 		hitmansHud.healthBarBG.cameras = [camInterfaz];
@@ -3868,7 +3860,7 @@ class PlayState extends MusicBeatState
 		score = daRating.score;
 
 		if (daRating.noteSplash && !note.noteSplashData.disabled)
-			spawnNoteSplashOnNote(note);
+			spawnNoteSplash(note, playerStrums.members[note.noteData]);
 
 		if (!practiceMode && !cpuControlled)
 		{
@@ -4441,7 +4433,7 @@ class PlayState extends MusicBeatState
 		if (result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll)
 			callOnHScript('opponentNoteHit', [note]);
 
-		spawnHoldSplashOnNote(note);
+		spawnHoldSplash(note, opponentStrums.members[note.noteData]);
 
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
@@ -4646,7 +4638,7 @@ class PlayState extends MusicBeatState
 
 			noteMiss(note);
 			if (!note.noteSplashData.disabled && !note.isSustainNote)
-				spawnNoteSplashOnNote(note);
+				spawnNoteSplash(note, playerStrums.members[note.noteData]);
 		}
 
 		if (ClientPrefs.data.quantization)
@@ -4658,7 +4650,7 @@ class PlayState extends MusicBeatState
 		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 		if (result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll)
 			callOnHScript('goodNoteHit', [note]);
-		spawnHoldSplashOnNote(note);
+		spawnHoldSplash(note, playerStrums.members[note.noteData]);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 	}
@@ -4730,53 +4722,35 @@ class PlayState extends MusicBeatState
 		note.destroy();
 	}
 
-	public function spawnHoldSplashOnNote(note:Note)
+	public function spawnHoldSplash(note:Note, strum:StrumNote)
 	{
-		if (ClientPrefs.data.holdSplashAlpha <= 0)
-			return;
-
-		if (note != null)
-		{
-			var strum:StrumNote = (note.mustPress ? playerStrums : opponentStrums).members[note.noteData];
-			if (strum != null && note.tail.length > 1)
-				spawnHoldSplash(note);
-		}
-	}
-
-	public function spawnHoldSplash(note:Note)
-	{
-		var end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
-		var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
-		splash.setupSusSplash((note.mustPress ? playerStrums : opponentStrums).members[note.noteData], note, playbackRate);
-		grpHoldSplashes.add(end.noteHoldSplash = splash);
+		if (ClientPrefs.data.holdSplashAlpha <= 0 || note.tail.length <= 1) return;
+		strum.playHoldSplash(note, playbackRate);
+		strum.holdSplash.cameras = [camHUD];
 		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
 		{
-			splash.field = playfieldRenderer?.noteFields[0];
-			playfieldRenderer?.allObjects?.add(splash);
+			if (!playfieldRenderer?.splashObjects?.members?.contains(strum.holdSplash)) {
+				strum.holdSplash.field = playfieldRenderer?.noteFields[0];
+				playfieldRenderer?.splashObjects?.add(strum.holdSplash);
+			}
 		}
-	}
-
-	public function spawnNoteSplashOnNote(note:Note)
-	{
-		if (note != null)
-		{
-			var strum:StrumNote = playerStrums.members[note.noteData];
-			if (strum != null)
-				spawnNoteSplash(note, strum);
-		}
+		else if (!members.contains(strum.holdSplash))
+			add(strum.holdSplash);
 	}
 
 	public function spawnNoteSplash(note:Note, strum:StrumNote)
 	{
-		var splash:NoteSplash = new NoteSplash();
-		splash.babyArrow = strum;
-		splash.spawnSplashNote(note);
-		grpNoteSplashes.add(splash);
+		strum.playSplash(note);
+		strum.splash.cameras = [camHUD];
 		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
 		{
-			splash.field = playfieldRenderer?.noteFields[0];
-			playfieldRenderer?.allObjects?.add(splash);
+			if (!playfieldRenderer?.splashObjects?.members?.contains(strum.splash)) {
+				strum.splash.field = playfieldRenderer?.noteFields[0];
+				playfieldRenderer?.splashObjects?.add(strum.splash);
+			}
 		}
+		else if (!members.contains(strum.splash))
+			add(strum.splash);
 	}
 
 	override function destroy()

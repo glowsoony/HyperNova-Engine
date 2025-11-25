@@ -40,7 +40,7 @@ class SustainSplash extends NewModchartArrow
 		}
 	}
 
-	public function setupSusSplash(strum:StrumNote, daNote:Note, ?playbackRate:Float = 1):Void
+	public function setupSusSplash(daNote:Note, ?playbackRate:Float = 1):Void
 	{
 		final lengthToGet:Int = !daNote.isSustainNote ? daNote.tail.length : daNote.parent.tail.length;
 		final timeToGet:Float = !daNote.isSustainNote ? daNote.strumTime : daNote.parent.strumTime;
@@ -65,9 +65,11 @@ class SustainSplash extends NewModchartArrow
 			shader.data.mult.value = daNote.shader.data.mult.value;
 		}
 
-		strumNote = strum;
+		if (strumNote != null)
+			setPosition(strumNote.x, strumNote.y);
+
 		alpha = ClientPrefs.data.holdSplashAlpha - (1 - strumNote.alpha);
-		offset.set(PlayState.isPixelStage ? 112.5 : 106.25, 100);
+		offset.set(PlayState.isPixelStage ? 48 : 24, 10);
 
 		if (timer != null)
 			timer.cancel();
@@ -79,6 +81,7 @@ class SustainSplash extends NewModchartArrow
 				{
 					alpha = ClientPrefs.data.holdSplashAlpha - (1 - strumNote.alpha);
 					animation.play('end', true, false, 0);
+					offset.set(PlayState.isPixelStage ? 140 : 70, 55);
 					if (animation.curAnim != null)
 					{
 						animation.curAnim.looped = false;

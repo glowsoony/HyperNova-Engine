@@ -15,8 +15,8 @@ class StrumNote extends modcharting.NewModchartArrow
 	public var downScroll:Bool = false;
 	public var sustainReduce:Bool = true;
 
-	public var splash:Dynamic = null;
-	public var holdSplash:Dynamic = null;
+	public var splash:NoteSplash = null;
+	public var holdSplash:SustainSplash = null;
 
 	private var player:Int;
 
@@ -119,6 +119,53 @@ class StrumNote extends modcharting.NewModchartArrow
 		};
 
 		playAnim('static');
+	}
+
+	override public function set_cameras(v:Array<FlxCamera>):Array<FlxCamera>
+	{
+		if (splash != null)
+			splash.cameras = v;
+		if (holdSplash != null)
+			holdSplash.cameras = v;
+		return super.set_cameras(v);
+	}
+
+	public function playSplash(note:Note) {
+		if (splash == null)
+			splash = new NoteSplash(x, y);
+		if (!splash.alive)
+			splash.revive();
+		splash.cameras = this.cameras;
+		if (splash.babyArrow == null)
+			splash.babyArrow = this;
+		applyGeneralData(splash, splash.notePositionData);
+		splash.spawnSplashNote(this.x, this.y, noteData, note);
+	}
+
+	public function playHoldSplash(note:Note, playbackRate:Float) {
+		if (ClientPrefs.data.holdSplashAlpha <= 0 || note.tail.length <= 1) return;
+		final end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
+		if (holdSplash == null)
+			holdSplash = new SustainSplash();
+		if (!holdSplash.alive)
+			holdSplash.revive();
+		if (holdSplash.strumNote == null)
+			holdSplash.strumNote = this;
+		applyGeneralData(holdSplash, holdSplash.notePositionData);
+		holdSplash.cameras = this.cameras;
+		holdSplash.setupSusSplash(note, playbackRate);
+		end.noteHoldSplash = holdSplash;
+	}
+
+	public function applyGeneralData(sprite:NewModchartArrow, data:modcharting.NotePositionData) {
+		if (sprite == null || data == null) return;
+		sprite.z = data.z;
+		sprite.skew.set(data.skewX, data.skewY);
+		sprite.angleY = data.angleY;
+		sprite.angleX = data.angleX;
+		sprite.scale.set(data.scaleX, data.scaleY);
+		sprite.alpha = data.alpha;
+		sprite.angle = sprite.angle;
 	}
 
 	// override function updateColorTransform():Void

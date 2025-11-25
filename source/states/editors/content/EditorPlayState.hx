@@ -35,8 +35,6 @@ class EditorPlayState extends MusicBeatSubstate
 	var strumLineNotes:FlxTypedGroup<StrumNote>;
 	var opponentStrums:FlxTypedGroup<StrumNote>;
 	var playerStrums:FlxTypedGroup<StrumNote>;
-	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-	var grpHoldSplashes:FlxTypedGroup<SustainSplash>;
 	
 	var combo:Int = 0;
 	var lastRating:FlxSprite;
@@ -108,14 +106,6 @@ class EditorPlayState extends MusicBeatSubstate
 		add(comboGroup);
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
-		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
-		add(grpNoteSplashes);
-		grpHoldSplashes = new FlxTypedGroup<SustainSplash>();
-		add(grpHoldSplashes);
-		
-		var splash:NoteSplash = new NoteSplash();
-		grpNoteSplashes.add(splash);
-		splash.alpha = 0.000001; //cant make it invisible or it won't allow precaching
 
 		SustainSplash.startCrochet = Conductor.stepCrochet;
 		SustainSplash.frameRate = Math.floor(24 / 100 * PlayState.SONG.bpm);
@@ -577,7 +567,7 @@ class EditorPlayState extends MusicBeatSubstate
 		score = daRating.score;
 
 		if(daRating.noteSplash && !note.noteSplashData.disabled)
-			spawnNoteSplashOnNote(note);
+			spawnNoteSplash(note, playerStrums.members[note.noteData]);
 
 		if(!note.ratingDisabled)
 			songHits++;
@@ -843,7 +833,7 @@ class EditorPlayState extends MusicBeatSubstate
 		}
 		note.hitByOpponent = true;
 
-		spawnHoldSplashOnNote(note);
+		spawnHoldSplash(note, strum);
 
 		if (!note.isSustainNote)
 			invalidateNote(note);
@@ -857,10 +847,11 @@ class EditorPlayState extends MusicBeatSubstate
 		if (note.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			FlxG.sound.play(Paths.sound(note.hitsound), note.hitsoundVolume);
 
+		var spr:StrumNote = playerStrums.members[note.noteData];
 		if(note.hitCausesMiss) {
 			noteMiss(note);
 			if(!note.noteSplashData.disabled && !note.isSustainNote)
-				spawnNoteSplashOnNote(note);
+				spawnNoteSplash(note, spr);
 
 			if (!note.isSustainNote)
 				invalidateNote(note);
@@ -874,11 +865,10 @@ class EditorPlayState extends MusicBeatSubstate
 			popUpScore(note);
 		}
 
-		var spr:StrumNote = playerStrums.members[note.noteData];
 		if(spr != null) spr.playAnim('confirm', true);
 		vocals.volume = 1;
 
-		spawnHoldSplashOnNote(note);
+		spawnHoldSplash(note, spr);
 
 		if (!note.isSustainNote)
 			invalidateNote(note);
@@ -937,38 +927,19 @@ class EditorPlayState extends MusicBeatSubstate
 		note.destroy();
 	}
 
-	public function spawnHoldSplashOnNote(note:Note) {
-		if (ClientPrefs.data.holdSplashAlpha <= 0)
-			return;
-
-		if (note != null) {
-			var strum:StrumNote = (note.mustPress ? playerStrums : opponentStrums).members[note.noteData];
-
-			if(strum != null && note.tail.length != 0)
-				spawnHoldSplash(note);
-		}
+	public function spawnHoldSplash(note:Note, strum:StrumNote)
+	{
+		if (ClientPrefs.data.holdSplashAlpha <= 0 || note.tail.length <= 1) return;
+		strum.playHoldSplash(note, playbackRate);
+		if (!members.contains(strum.holdSplash))
+			add(strum.holdSplash);
 	}
 
-	public function spawnHoldSplash(note:Note) {
-		var end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
-		var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
-		splash.setupSusSplash((note.mustPress ? playerStrums : opponentStrums).members[note.noteData], note, playbackRate);
-		grpHoldSplashes.add(end.noteHoldSplash = splash);
-	}
-
-	function spawnNoteSplashOnNote(note:Note) {
-		if(note != null) {
-			var strum:StrumNote = playerStrums.members[note.noteData];
-			if(strum != null)
-				spawnNoteSplash(strum.x, strum.y, note.noteData, note, strum);
-		}
-	}
-
-	function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null, strum:StrumNote) {
-		var splash:NoteSplash = new NoteSplash();
-		splash.babyArrow = strum;
-		splash.spawnSplashNote(note);
-		grpNoteSplashes.add(splash);
+	public function spawnNoteSplash(note:Note, strum:StrumNote)
+	{
+		strum.playSplash(note);
+		if (!members.contains(strum.splash))
+			add(strum.splash);
 	}
 
 	function updateScore()

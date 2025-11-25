@@ -551,7 +551,7 @@ class Strumline
 			note.wasGoodHit = true;
 			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
 			if (!note.isSustainNote)
-				playSplash(strum, note);
+				playSplash(note, strum);
 		}
 
 		if (ClientPrefs.data.quantization)
@@ -560,39 +560,27 @@ class Strumline
 			strum.rgbShader.b = note.rgbShader.b;
 		}
 		
-		playHold(note);
+		playHold(note, strum);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 	}
 
-	public function playHold(note:Note)
+	public function playHold(note:Note, strum:StrumNote)
 	{
-		if (ClientPrefs.data.holdSplashAlpha <= 0)
-			return;
-
-		if (note == null) return;
-		final strum:StrumNote = strums.members[note.noteData + (note.mustPress ? 4 : 0)];
-		if (strum != null && note.tail.length > 1)
-			playHoldSplash(strum, note);
+		if (ClientPrefs.data.holdSplashAlpha <= 0 || note.tail.length <= 1) return;
+		strum.playHoldSplash(note, renderer.rate);
+		if (!renderer?.splashObjects?.members?.contains(strum.holdSplash)) {
+			strum.holdSplash.field = field;
+			renderer.splashObjects.add(strum.holdSplash);
+		}
 	}
 
-	public function playHoldSplash(strum:StrumNote, note:Note)
-	{
-		final end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
-		final splash:SustainSplash = holdSplashes.recycle(SustainSplash);
-		splash.setupSusSplash(strum, note, renderer.rate);
-		splash.field = field;
-		holdSplashes.add(end.noteHoldSplash = splash);
-		renderer.allObjects.add(end.noteHoldSplash);
-	}
-
-	public function playSplash(strum:StrumNote, note:Note) {
-		final splash:NoteSplash = new NoteSplash();
-		splash.babyArrow = strum;
-		splash.spawnSplashNote(note);
-		splash.field = field;
-		splashes.add(splash);
-		renderer.allObjects.add(splash);
+	public function playSplash(note:Note, strum:StrumNote) {
+		strum.playSplash(note);
+		if (!renderer?.splashObjects?.members?.contains(strum.splash)) {
+			strum.splash.field = field;
+			renderer.splashObjects.add(strum.splash);
+		}
 	}
 
 	public function strumPlayAnim(id:Int, time:Float = -1)
