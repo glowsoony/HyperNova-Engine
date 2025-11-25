@@ -497,7 +497,7 @@ class Strumline
 			}
 		}
 		for (i => press in hold) {
-			strums.members[i+4].released = press;
+			strums.members[i+4].released = !press;
 		}
 	}
 

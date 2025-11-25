@@ -4108,7 +4108,7 @@ class PlayState extends MusicBeatState
 		}
 
 		for (i => hold in holdArray) {
-			playerStrums.members[i].released = hold;
+			playerStrums.members[i].released = !hold;
 		}
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
@@ -4422,6 +4422,7 @@ class PlayState extends MusicBeatState
 		if (opponentVocals.length <= 0)
 			vocals.volume = 1;
 		strumPlayAnim(true, Std.int(Math.abs(note.noteData)), Conductor.stepCrochet * 1.25 / 1000 / playbackRate);
+		opponentStrums.members[note.noteData].released = true;
 		note.hitByOpponent = true;
 
 		stagesFunc(function(stage:BaseStage) stage.opponentNoteHit(note));

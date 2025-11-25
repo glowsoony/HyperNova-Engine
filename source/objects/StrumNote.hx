@@ -51,6 +51,7 @@ class StrumNote extends modcharting.NewModchartArrow
 
 	public var myLibrary:String = "shared";
 	public var loadShader:Bool = true;
+	public var time:Float = 0;
 
 	public function new(x:Float, y:Float, leData:Int, player:Int, ?daTexture:String, ?library:String = 'shared', ?quantizedNotes:Bool = false,
 			?loadShader:Bool = true)
@@ -86,6 +87,7 @@ class StrumNote extends modcharting.NewModchartArrow
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
+		this.released = player <= 0;
 		this.ID = noteData;
 		this.loadShader = loadShader;
 		super(x, y);
@@ -111,11 +113,9 @@ class StrumNote extends modcharting.NewModchartArrow
 
 		scrollFactor.set();
 
-		animation.finishCallback = function(arg){
-			if (arg != "static" && released){
+		animation.finishCallback = function(name:String){
+			if (name != "confirm" && released)
 				playAnim('static');
-				released = false;
-			}
 		};
 
 		playAnim('static');
@@ -209,14 +209,19 @@ class StrumNote extends modcharting.NewModchartArrow
 		// 		resetAnim = 0;
 		// 	}
 		// }
+
+		if (player <= 0 && animation.curAnim != null && animation.curAnim.name != "static" && animation.curAnim.finished && released) {
+			playAnim('static');
+			released = false;
+		}
 		super.update(elapsed);
 	}
 
 	@:allow(flixel.FlxCamera)
 	override function draw():Void
 	{
-		if (notePositionData?.arrowPathAlpha != 0)
-			arrowPath?.draw();
+		// if (notePositionData?.arrowPathAlpha != 0)
+		// 	arrowPath?.draw();
 		super.draw();
 	}
 
