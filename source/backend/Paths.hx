@@ -281,7 +281,7 @@ class Paths
 
 			if (bitmap == null)
 			{
-				trace('Bitmap not found: $file | key: $key');
+				//trace('Bitmap not found: $file | key: $key');
 				return null;
 			}
 		}

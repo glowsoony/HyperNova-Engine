@@ -291,7 +291,7 @@ class NoteField extends FlxBasic
 		if (noteData.stealthGlow != 0)
 			strumNote.rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
 
-		noteData.z -= 0.00001; //???
+		noteData.z -= 0.001; //???
 
 		addDataToObject(noteData, strumNote); // set position and stuff before drawing
 
@@ -366,6 +366,8 @@ class NoteField extends FlxBasic
 
 		if (noteData.orient != 0)
 			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
+
+		noteData.z += 0.001; //???
 
 		addDataToObject(noteData, daNote);
 

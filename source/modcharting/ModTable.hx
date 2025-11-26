@@ -205,57 +205,35 @@ class ModTable
         var modifiers:Map<String, Modifier> = renderer.modifierTable.modifiers;
         if (modifiers.exists(modifier))
         {
-            //ease func = the ease itself
-            //finishPoint = the final value of the modifier based on the values it had before once the tween ends
-            //finalValue = the final value of the variable "val" (as modifier value) once the tween ends
             var easefunc = ModchartUtil.getFlxEaseByString(ease);
 
-            var startPoint:Float = modifiers.get(modifier).currentValue; //get starter value (unscaled)
-            var startValue:Float = startPoint + ((val - startPoint) * easefunc(0.0)); //get starter value
-            var finishPoint:Float = startPoint + ((val - startPoint) * easefunc(1.0)); //get final value
+            final startPoint:Float = modifiers.get(modifier).currentValue; //get starter value (unscaled)
+            final finishPoint:Float = startPoint + ((val - startPoint) * easefunc(1.0)); //get final value
 
             if (Conductor.songPosition >= ModchartUtil.getTimeFromBeat(beat) + (time * 1000)) // cancel if should have ended
             {
-                //old
-                //modifiers.get(modifier).currentValue = val;
                 modifiers.get(modifier).currentValue = finishPoint;
                 return;
             }
             time /= renderer.rate;
-            var tween = renderer.createTween(modifiers.get(modifier), {currentValue: val}, time, { //average 0-1 tween LMAO
+            var tween = renderer.createTweenNum(startPoint, val, time, { //average 0-1 tween LMAO
                 ease: easefunc,
                 onComplete: function(twn:FlxTween)
                 {
-                    //modifiers.get(modifier).currentValue = finishPoint; //make sure it's ALSO set when completed?
+                    if (modifiers.get(modifier).currentValue != finishPoint)
+                        modifiers.get(modifier).currentValue = finishPoint; //make sure it's ALSO set when completed?
+                    //trace("Completed Tween For Mod: " + modifier + " Value: " + modifiers.get(modifier).currentValue);
                     #if PSYCH
                     if (PlayState.instance == FlxG.state)
                         PlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
                     // else if (EditorPlayState.instance == FlxG.state)
                     //     EditorPlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
                     #end
-                },
-                onUpdate: function(twn:FlxTween){
-                    //modifiers.get(modifier).currentValue = FlxMath.lerp(startValue, finishPoint, easefunc(twn.percent)); //cutely sets the value based on tween progress
-                    //modifiers.get(modifier).currentValue = FlxMath.remapToRange(startPoint + ((val - startPoint) * easefunc(twn.percent)), startPoint, val, startValue, finishPoint); //cutely sets the value based on tween progress
                 }
+            }, function(v)
+            {
+                modifiers.get(modifier).currentValue = v;
             });
-            // var tween = renderer.createTweenNum(startPoint, val, time, { //average 0-1 tween LMAO
-            //     ease: easefunc,
-            //     onComplete: function(twn:FlxTween)
-            //     {
-            //         //modifiers.get(modifier).currentValue = finishPoint; //make sure it's ALSO set when completed?
-            //         #if PSYCH
-            //         if (PlayState.instance == FlxG.state)
-            //             PlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
-            //         // else if (EditorPlayState.instance == FlxG.state)
-            //         //     EditorPlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
-            //         #end
-            //     },
-            //     onUpdate: function(twn:FlxTween)
-            //     {
-            //         modifiers.get(modifier).currentValue = FlxMath.lerp(startPoint, finishPoint, easefunc(twn.percent)); //cutely sets the value based on tween progress
-            //     }
-            // });
             if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
             {
                 @:privateAccess
@@ -279,7 +257,6 @@ class ModTable
                 var tag = modifier + ' ' + subValue;
 
                 var startPoint:Float = modifiers.get(modifier).subValues.get(subValue).value; //get starter value
-                var changablePoint:Float = val - modifiers.get(modifier).subValues.get(subValue).value;
                 var finishPoint:Float = startPoint + ((val - startPoint) * easefunc(1.0)); //get final value
 
                 if (Conductor.songPosition >= ModchartUtil.getTimeFromBeat(beat) + (time * 1000)) // cancel if should have ended
@@ -292,8 +269,8 @@ class ModTable
                     ease: easefunc,
                     onComplete: function(twn:FlxTween)
                     {
-                        if (modifiers.exists(modifier))
-                            modifiers.get(modifier).subValues.get(subValue).value = finishPoint;
+                        //trace("Completed Tween For subMod: " + modifier + ":" + subValue + " Value: " + modifiers.get(modifier).subValues.get(subValue).value);
+                        modifiers.get(modifier).subValues.get(subValue).value = finishPoint;
 
                         #if PSYCH
                         if (PlayState.instance == FlxG.state)
@@ -301,13 +278,9 @@ class ModTable
                         // else if (EditorPlayState.instance == FlxG.state)
                         //     EditorPlayState.instance.callOnScripts("onModifierComplete", [modifier, subValue]);
                         #end
-                    },
-                    onUpdate: function(twn:FlxTween)
-                    {
-                        // need to update like this because its inside a map
-                        if (modifiers.exists(modifier))
-                            modifiers.get(modifier).subValues.get(subValue).value = FlxMath.lerp(startPoint, finishPoint, easefunc(twn.percent)); //cutely sets the value based on tween progress;
                     }
+                }, function (v){
+                    modifiers.get(modifier).subValues.get(subValue).value = v;
                 });
                 if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
                 {
@@ -328,18 +301,31 @@ class ModTable
         if (modifiers.exists(modifier))
         {
             var easefunc = ModchartUtil.getFlxEaseByString(ease);
-            var finishPoint:Float = modifiers.get(modifier).currentValue + ((val - modifiers.get(modifier).currentValue) * easefunc(1.0));
+
+            var startValue = modifiers.get(modifier).currentValue;
+
+            var finishPoint:Float = startValue + ((val - startValue) * easefunc(1.0));
+
+            var lastReportChange:Float = 0;
+
             if (Conductor.songPosition >= ModchartUtil.getTimeFromBeat(beat) + (time * 1000)) // cancel if should have ended
             {
+                final v:Float = val * easefunc(1.0);
                 modifiers.get(modifier).currentValue += val;
                 return;
             }
             time /= renderer.rate;
-            var tween = renderer.createTween(modifiers.get(modifier), {currentValue: modifiers.get(modifier).currentValue + val}, time, {
-                ease: easefunc,
+            var tween = renderer.createTweenNum(0, 1, time, { //average 0-1 tween LMAO
+                ease: FlxEase.linear,
                 onComplete: function(twn:FlxTween)
                 {
-                    //modifiers.get(modifier).currentValue += finishPoint; //make sure it's ALSO set when completed?
+                    final v:Float = val * easefunc(1.0);
+                    if (modifiers.get(modifier).currentValue != (v - lastReportChange)){
+                        modifiers.get(modifier).currentValue = modifiers.get(modifier).currentValue + (v - lastReportChange); //make sure it's ALSO set when completed?
+                        lastReportChange = v;
+                    }
+
+                    //trace("Completed Tween For Mod: " + modifier + " Value: " + modifiers.get(modifier).currentValue);
                     #if PSYCH
                     if (PlayState.instance == FlxG.state)
                         PlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
@@ -347,6 +333,10 @@ class ModTable
                     //     EditorPlayState.instance.callOnScripts("onModifierComplete", [modifier, []]);
                     #end
                 }
+            }, function(t){
+                final v:Float = val * easefunc(t);
+                modifiers.get(modifier).currentValue = modifiers.get(modifier).currentValue + (v - lastReportChange); //make sure it's ALSO set when completed?
+                lastReportChange = v;
             });
             if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
             {
@@ -370,33 +360,34 @@ class ModTable
                 var easefunc = ModchartUtil.getFlxEaseByString(ease);
                 var tag = modifier + ' ' + subValue;
 
-                var startValue = modifiers.get(modifier).subValues.get(subValue).value;
-
-                var finishPoint:Float = startValue + ((val - startValue) * easefunc(1.0));
+                var lastReportChange:Float = 0;
 
                 if (Conductor.songPosition >= ModchartUtil.getTimeFromBeat(beat) + (time * 1000)) // cancel if should have ended
                 {
-                    modifiers.get(modifier).subValues.get(subValue).value += val;
+                    final v:Float = val * easefunc(1.0);
+                    modifiers.get(modifier).subValues.get(subValue).value += v;
                     return;
                 }
                 time /= renderer.rate;
-                var tween = renderer.createTweenNum(startValue, val, time, {
-                    ease: easefunc,
+                var tween = renderer.createTweenNum(0, 1, time, {
+                    ease: FlxEase.linear,
                     onComplete: function(twn:FlxTween)
                     {
-                        //modifiers.get(modifier).subValues.get(subValue).value += finishPoint;
-
+                        final v:Float = val * easefunc(1.0);
+                        modifiers.get(modifier).subValues.get(subValue).value += (v - lastReportChange);
+                        lastReportChange = v;
+                        //trace("Completed Tween For subMod: " + modifier + ":" + subValue + " Value: " + modifiers.get(modifier).subValues.get(subValue).value);
                         #if PSYCH
                         if (PlayState.instance == FlxG.state)
                             PlayState.instance.callOnScripts("onModifierComplete", [modifier, subValue]);
                         // else if (EditorPlayState.instance == FlxG.state)
                         //     EditorPlayState.instance.callOnScripts("onModifierComplete", [modifier, subValue]);
                         #end
-                    },
-                    onUpdate: function(twn:FlxTween)
-                    {
-                        modifiers.get(modifier).subValues.get(subValue).value += FlxMath.lerp(startValue, val, easefunc(twn.percent));
                     }
+                }, function (t){
+                    final v:Float = val * easefunc(t);
+                    modifiers.get(modifier).subValues.get(subValue).value += (v-lastReportChange);
+                    lastReportChange = v;
                 });
                 if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
                 {
