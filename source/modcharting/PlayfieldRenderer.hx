@@ -264,19 +264,33 @@ class PlayfieldRenderer extends FlxBasic
 	public function getCorrectScrollSpeed()
 		return ModchartUtil.getScrollSpeed(inEditor ? null : playStateInstance);
 
-	public function createTween(Object:Dynamic, Values:Dynamic, Duration:Float, ?Options:TweenOptions):FlxTween
-	{
-		final tween:FlxTween = tweenManager.tween(Object, Values, Duration, Options);
-		tween.manager = tweenManager;
-		return tween;
-	}
+	public var tweens:Map<String, FlxTween> = [];
 
-	public function createTweenNum(FromValue:Float, ToValue:Float, Duration:Float = 1, ?Options:TweenOptions, ?TweenFunction:Float->Void):FlxTween
-	{
-		final tween:FlxTween = tweenManager.num(FromValue, ToValue, Duration, Options, TweenFunction);
-		tween.manager = tweenManager;
-		return tween;
-	}
+    public function createTween(Object:Dynamic, Values:Dynamic, Duration:Float, ?Options:TweenOptions, ?tag:String):FlxTween
+    {
+        if (tweens.exists(tag))
+        {
+            tweens.get(tag).cancel();
+            tweens.remove(tag);
+        }
+        final tween:FlxTween = tweenManager.tween(Object, Values, Duration, Options);
+        tween.manager = tweenManager;
+        tweens.set(tag, tween);
+        return tween;
+    }
+
+    public function createTweenNum(FromValue:Float, ToValue:Float, Duration:Float = 1, ?Options:TweenOptions, ?TweenFunction:Float->Void, ?tag:String):FlxTween
+    {
+        if (tweens.exists(tag))
+        {
+            tweens.get(tag).cancel();
+            tweens.remove(tag);
+        }
+        final tween:FlxTween = tweenManager.num(FromValue, ToValue, Duration, Options, TweenFunction);
+        tween.manager = tweenManager;
+        tweens.set(tag, tween);
+        return tween;
+    }
 
 	override public function destroy()
 	{

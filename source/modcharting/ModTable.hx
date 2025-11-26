@@ -220,6 +220,7 @@ class ModTable
                 ease: easefunc,
                 onComplete: function(twn:FlxTween)
                 {
+                    renderer.tweens.remove(modifier);
                     if (modifiers.get(modifier).currentValue != finishPoint)
                         modifiers.get(modifier).currentValue = finishPoint; //make sure it's ALSO set when completed?
                     //trace("Completed Tween For Mod: " + modifier + " Value: " + modifiers.get(modifier).currentValue);
@@ -233,7 +234,8 @@ class ModTable
             }, function(v)
             {
                 modifiers.get(modifier).currentValue = v;
-            });
+            }, modifier);
+
             if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
             {
                 @:privateAccess
@@ -269,6 +271,7 @@ class ModTable
                     ease: easefunc,
                     onComplete: function(twn:FlxTween)
                     {
+                        renderer.tweens.remove(modifier+subValue);
                         //trace("Completed Tween For subMod: " + modifier + ":" + subValue + " Value: " + modifiers.get(modifier).subValues.get(subValue).value);
                         modifiers.get(modifier).subValues.get(subValue).value = finishPoint;
 
@@ -281,7 +284,8 @@ class ModTable
                     }
                 }, function (v){
                     modifiers.get(modifier).subValues.get(subValue).value = v;
-                });
+                }, modifier+subValue);
+
                 if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
                 {
                     @:privateAccess
@@ -319,6 +323,7 @@ class ModTable
                 ease: FlxEase.linear,
                 onComplete: function(twn:FlxTween)
                 {
+                    renderer.tweens.remove(modifier);
                     final v:Float = val * easefunc(1.0);
                     if (modifiers.get(modifier).currentValue != (v - lastReportChange)){
                         modifiers.get(modifier).currentValue = modifiers.get(modifier).currentValue + (v - lastReportChange); //make sure it's ALSO set when completed?
@@ -337,7 +342,8 @@ class ModTable
                 final v:Float = val * easefunc(t);
                 modifiers.get(modifier).currentValue = modifiers.get(modifier).currentValue + (v - lastReportChange); //make sure it's ALSO set when completed?
                 lastReportChange = v;
-            });
+            }, modifier);
+
             if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
             {
                 @:privateAccess
@@ -373,6 +379,7 @@ class ModTable
                     ease: FlxEase.linear,
                     onComplete: function(twn:FlxTween)
                     {
+                        renderer.tweens.remove(modifier+subValue);
                         final v:Float = val * easefunc(1.0);
                         modifiers.get(modifier).subValues.get(subValue).value += (v - lastReportChange);
                         lastReportChange = v;
@@ -388,7 +395,8 @@ class ModTable
                     final v:Float = val * easefunc(t);
                     modifiers.get(modifier).subValues.get(subValue).value += (v-lastReportChange);
                     lastReportChange = v;
-                });
+                }, modifier+subValue);
+
                 if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) // skip to where it should be i guess??
                 {
                     @:privateAccess
