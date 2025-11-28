@@ -576,6 +576,7 @@ class Strumline
 	}
 
 	public function playSplash(note:Note, strum:StrumNote) {
+		if (ClientPrefs.data.splashAlpha <= 0) return;
 		strum.playSplash(note);
 		if (!renderer?.splashObjects?.members?.contains(strum.splash)) {
 			strum.splash.field = field;

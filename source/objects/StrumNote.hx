@@ -131,6 +131,7 @@ class StrumNote extends modcharting.NewModchartArrow
 	}
 
 	public function playSplash(note:Note) {
+		if (ClientPrefs.data.splashAlpha <= 0) return;
 		if (splash == null)
 			splash = new NoteSplash(x, y);
 		if (!splash.alive)

@@ -302,6 +302,7 @@ class NoteField extends FlxBasic
 			final diffY:Float = Math.abs(strumNote.startingScale.y - strumNote.splash.startingScale.y);
 			data.scaleX = noteData.scaleX + diffX;
 			data.scaleY = noteData.scaleY + diffY;
+			data.alpha *= ClientPrefs.data.splashAlpha;
 			strumNote.applyGeneralData(strumNote.splash, data);
 			strumNote.splash.notePositionData = data; 
 			strumNote.splash.cameras = this.cameras;
@@ -312,6 +313,7 @@ class NoteField extends FlxBasic
 			final diffY:Float = Math.abs(strumNote.startingScale.y - strumNote.holdSplash.startingScale.y);
 			data.scaleX = noteData.scaleX + diffX;
 			data.scaleY = noteData.scaleY + diffY;
+			data.alpha *= ClientPrefs.data.holdSplashAlpha;
 			strumNote.applyGeneralData(strumNote.holdSplash, data);
 			strumNote.holdSplash.notePositionData = data;
 			strumNote.holdSplash.cameras = this.cameras;

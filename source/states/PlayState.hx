@@ -4741,6 +4741,7 @@ class PlayState extends MusicBeatState
 
 	public function spawnNoteSplash(note:Note, strum:StrumNote)
 	{
+		if (ClientPrefs.data.splashAlpha <= 0) return;
 		strum.playSplash(note);
 		strum.splash.cameras = [camHUD];
 		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
