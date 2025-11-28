@@ -239,8 +239,8 @@ class PlayfieldRenderer extends FlxBasic
 		return flixel.util.FlxSort.byValues(order, a.z, b.z);
 
 	public function resortZ() {
-		allObjects.sort(compareZ, flixel.util.FlxSort.ASCENDING);
-		splashObjects.sort(compareZ, flixel.util.FlxSort.ASCENDING);
+		allObjects.members.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
+		splashObjects.members.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
 	}
 
 	override function update(elapsed:Float)

@@ -2628,6 +2628,9 @@ class PlayState extends MusicBeatState
 				{
 					dunceNote.field = playfieldRenderer?.noteFields[0];
 					playfieldRenderer?.allObjects?.add(dunceNote);
+					if (dunceNote.isSustainNote) if (dunceNote.mesh == null) dunceNote.mesh = new SustainStrip(dunceNote);
+					if(!playfieldRenderer?.allObjects?.members?.contains(dunceNote.mesh))
+						playfieldRenderer?.allObjects?.add(dunceNote.mesh);
 				}
 				dunceNote.spawned = true;
 
@@ -4719,6 +4722,7 @@ class PlayState extends MusicBeatState
 	public function invalidateNote(note:Note):Void
 	{
 		// if(!ClientPrefs.data.lowQuality || !ClientPrefs.data.popUpRating || !cpuControlled) note.kill();
+		note?.mesh?.destroy();
 		notes.remove(note, true);
 		note.destroy();
 	}

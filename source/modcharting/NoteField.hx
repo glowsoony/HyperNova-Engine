@@ -180,7 +180,7 @@ class NoteField extends FlxBasic
 		for (i => strum in strumGroup.members)
 		{
 			final data:NotePositionData = createBasicData({
-				x: NoteMovement.defaultStrumPos[i][0], y: NoteMovement.defaultStrumPos[i][1], z: 0, lane: i, index: i,
+				x: NoteMovement.defaultStrumPos[i][0], y: NoteMovement.defaultStrumPos[i][1], z: -0.001, lane: i, index: i,
 				scaleX: NoteMovement.defaultScale[i][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 				scaleY: NoteMovement.defaultScale[i][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 				skewX: NoteMovement.defaultSkew[i][0], skewY: NoteMovement.defaultSkew[i][1],
@@ -204,10 +204,11 @@ class NoteField extends FlxBasic
 
 			if ((note.wasGoodHit || note.prevNote.wasGoodHit) && curPos >= 0 && note.isSustainNote) {
 				curPos = 0; // sustain clip
-				if (alreadyDrawn.contains(note?.mesh)) {
-					renderer.allObjects.remove(note?.mesh, true);
-					note?.mesh?.destroy();
-				}
+				// if (alreadyDrawn.contains(note?.mesh)) {
+				// 	note?.mesh?.kill();
+				// 	renderer.allObjects.remove(note?.mesh, true);
+				// 	note?.mesh?.destroy();
+				// }
 			}
 
 			var incomingAngle:Array<Float> = renderer.modifierTable.applyIncomingAngleMods(lane, curPos, pfIndex);
@@ -219,7 +220,7 @@ class NoteField extends FlxBasic
 
 			// save the position data
 			final noteData:NotePositionData = createBasicData({
-				x:  note.x, y: note.y, z: note.z, lane: lane, index: i,
+				x:  note.x, y: note.y, z: note.z + 0.001, lane: lane, index: i,
 				scaleX: NoteMovement.defaultScale[lane][0] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 				scaleY: NoteMovement.defaultScale[lane][1] * (ModchartUtil.getIsPixelStage(renderer.instance) ? PlayState.daPixelZoom : 1), 
 				skewX: note.skew.x, skewY: note.skew.y,
@@ -241,7 +242,7 @@ class NoteField extends FlxBasic
 		}
 
 		// sort by z before drawing
-		notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
+		// notePositions.sort(function(a, b) return ((a.z < b.z) ? -1 : ((a.z > b.z) ? 1 : 0)));
 		return notePositions;
 	}
 
@@ -295,8 +296,6 @@ class NoteField extends FlxBasic
 
 		if (noteData.stealthGlow != 0)
 			strumNote.rgbShader.enabled = true; // enable stealthGlow once it finds its not 0?
-
-		noteData.z -= 0.001; //???
 
 		addDataToObject(noteData, strumNote); // set position and stuff before drawing
 
@@ -374,8 +373,6 @@ class NoteField extends FlxBasic
 		if (noteData.orient != 0)
 			noteData.angle = ((Math.atan2(getNextNote.y - noteData.y, getNextNote.x - noteData.x) * FlxAngle.TO_DEG) - 90) * noteData.orient;
 
-		noteData.z += 0.001; //???
-
 		addDataToObject(noteData, daNote);
 
 		daNote.cameras = this.cameras;
@@ -401,8 +398,8 @@ class NoteField extends FlxBasic
 			return;
 
 		var daNote = noteGroup.members[noteData.index];
-		if (daNote.mesh == null)
-			daNote.mesh = new SustainStrip(daNote);
+		// if (daNote.mesh == null)
+		//  	daNote.mesh = new SustainStrip(daNote);
 
 		var spiral = (noteData.spiralHold >= 0.5);
 
@@ -491,10 +488,10 @@ class NoteField extends FlxBasic
 		daNote.mesh.constructVertices(noteData, top, mid, bot, flipGraphic, reverseClip);
 
 		daNote.mesh.cameras = this.cameras;
-		if (!renderer.allObjects.members.contains(daNote.mesh) && !alreadyDrawn.contains(daNote.mesh)) {
-			renderer.allObjects.add(daNote.mesh);
-			alreadyDrawn.push(daNote.mesh);
-		}
+		// if (!renderer.allObjects.members.contains(daNote.mesh) && !alreadyDrawn.contains(daNote.mesh)) {
+		// 	renderer.allObjects.add(daNote.mesh);
+		// 	alreadyDrawn.push(daNote.mesh);
+		// }
 		// daNote.mesh.draw();
 	}
 
@@ -578,22 +575,51 @@ class NoteField extends FlxBasic
 
 	private function drawStuff(positions:Array<NotePositionData>)
 	{
-		forEach(positions, data -> if (data.isStrum) drawArrowPathNew(data)); // make sure we draw the path for each before we even draw each?
-		forEach(positions, data -> if (data.isStrum) drawStrum(data)); // draw notes after strums
-		forEach(positions, data -> {
-			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
-			if (noteGroup.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
-		});
-		forEach(positions, data -> {
-			if (data.isStrum || data.isSplash || data.isHoldSplash) return;
-			if (!noteGroup.members[data.index].isSustainNote)
-			{
-				if (usingSusTrail)
-					if (noteGroup.members[data.index].sustainLength > 0)
-						drawNewSustainNote(data);
-				drawNote(data);
-			}
-		});
+		// forEach(positions, data -> if (data.isStrum) drawArrowPathNew(data)); // make sure we draw the path for each before we even draw each?
+		// forEach(positions, data -> if (data.isStrum) drawStrum(data)); // draw notes after strums
+		// forEach(positions, data -> {
+		// 	if (data.isStrum || data.isSplash || data.isHoldSplash) return;
+		// 	if (noteGroup.members[data.index].isSustainNote && !usingSusTrail) drawSustainNote(data);
+		// });
+		// forEach(positions, data -> {
+		// 	if (data.isStrum || data.isSplash || data.isHoldSplash) return;
+		// 	if (!noteGroup.members[data.index].isSustainNote)
+		// 	{
+		// 		if (usingSusTrail)
+		// 			if (noteGroup.members[data.index].sustainLength > 0)
+		// 				drawNewSustainNote(data);
+		// 		drawNote(data);
+		// 	}
+		// });
+
+		for (noteData in positions)
+		{
+			if (noteData.isStrum) // make sure we draw the path for each before we even draw each?
+				drawArrowPathNew(noteData);
+		}
+		for (noteData in positions)
+		{
+			if (noteData.isStrum) // draw strum
+				drawStrum(noteData);
+		}
+		for (noteData in positions)
+		{
+			if (!noteData.isStrum)
+				if (noteGroup.members[noteData.index].isSustainNote && !usingSusTrail)
+					drawSustainNote(noteData);
+		}
+		for (noteData in positions)
+		{
+			if (!noteData.isStrum)
+				if (!noteGroup.members[noteData.index].isSustainNote)
+				{
+					if (usingSusTrail)
+						if (noteGroup.members[noteData.index].sustainLength > 0)
+							drawNewSustainNote(noteData);
+
+					drawNote(noteData);
+				}
+		}
 	}
 
 	function getSustainPoint(noteData:NotePositionData, timeOffset:Float):NotePositionData

@@ -476,6 +476,7 @@ class Strumline
 	}
 
 	public function invalidateNote(daNote:Note) {
+		daNote?.mesh?.destroy();
 		notes.remove(daNote, true);
 		daNote.destroy();
 	}
