@@ -80,24 +80,6 @@ class SustainStrip extends NewModchartArrow
 		];
 	}
 
-	public function applyPerspective(noteData:NotePositionData, pos:Vector3D, rotatePivot:Vector2):Array<Float>
-	{
-		var vect3D:Vector3D = new Vector3D(pos.x, pos.y, pos.z);
-		var vect2:Vector2 = new Vector2(vect3D.x, vect3D.z);
-		var rotModPivot:Vector2 = new Vector2(rotatePivot.x, vect3D.z);
-
-		vect2 = ModchartUtil.rotateAround(rotModPivot, vect2, noteData.angleY);
-		vect3D.x = vect2.x;
-		vect3D.z = vect2.y;
-
-		var thisNotePos:Vector3D = ModchartUtil.calculatePerspective(vect3D, ModchartUtil.defaultFOV * (Math.PI / 180), 0, 0);
-
-		var returnFloat:Array<Float> = [];
-		returnFloat.push(thisNotePos.x);
-		returnFloat.push(thisNotePos.y);
-		return returnFloat;
-	}
-
 	public function constructVertices(noteData:NotePositionData, topPositions:Array<NotePositionData>, middlePositions:Array<NotePositionData>,
 			bottomPositions:Array<NotePositionData>, flipGraphic:Bool, reverseClip:Bool)
 	{
@@ -161,6 +143,8 @@ class SustainStrip extends NewModchartArrow
 
 		vertices = new DrawData(12, true, verts);
 	}
+
+	public var repeat:Bool = false;
 
 	@:allow(flixel.FlxCamera)
 	override function draw():Void {
