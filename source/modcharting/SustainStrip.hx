@@ -10,7 +10,7 @@ import openfl.geom.Vector3D;
 import game.Note;
 #end
 
-class SustainStrip extends FlxStrip
+class SustainStrip extends NewModchartArrow
 {
 	private static final noteUV:Array<Float> = [
 		0,     0, // top left
@@ -41,7 +41,7 @@ class SustainStrip extends FlxStrip
 	{
 		this.daNote = daNote;
 		daNote.alpha = 1;
-		super(0, 0);
+		super(true, 0, 0);
 		loadGraphic(daNote.updateFramePixels());
 		shader = daNote.shader;
 		for (uv in noteUV)
@@ -160,5 +160,24 @@ class SustainStrip extends FlxStrip
 		}
 
 		vertices = new DrawData(12, true, verts);
+	}
+
+	@:allow(flixel.FlxCamera)
+	override function draw():Void {
+		if (alpha == 0 || graphic == null || vertices == null)
+			return;
+
+		for (camera in cameras)
+		{
+			if (!camera.visible || !camera.exists)
+				continue;
+
+			getScreenPosition(_point, camera).subtractPoint(offset);
+			#if !flash
+			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, repeat, antialiasing, colorTransform, shader);
+			#else
+			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, repeat, antialiasing);
+			#end
+		}
 	}
 }

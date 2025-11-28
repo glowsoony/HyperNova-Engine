@@ -191,8 +191,11 @@ class NewModchartArrow extends FlxSkewedSprite
 	 */
 	public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-	public function new(?x:Float = 0, ?y:Float = 0, ?simpleGraphic:FlxGraphicAsset)
+	public var customSetup:Bool = false;
+
+	public function new(customSetup:Bool = false, ?x:Float = 0, ?y:Float = 0, ?simpleGraphic:FlxGraphicAsset)
 	{
+		this.customSetup = customSetup;
 		super(x, y, simpleGraphic);
 		if (simpleGraphic != null) setUp();
 		this.active = true;
@@ -200,6 +203,7 @@ class NewModchartArrow extends FlxSkewedSprite
 
 	public function setUp():Void
 	{
+		if (customSetup) return;
 		if (frames == null || graphic == null) return;
 		var nextRow:Int = (subdivisions + 1 + 1);
 		updateColorTransform();
@@ -244,7 +248,7 @@ class NewModchartArrow extends FlxSkewedSprite
    */
 	public function updateTris():Void
 	{
-		if (destroying || frames == null || graphic == null) return;
+		if (customSetup || destroying || frames == null || graphic == null) return;
 		
     	// TODO: Improve how this gets applied!
 		var wasAlreadyFlipped_X:Bool = flipX;

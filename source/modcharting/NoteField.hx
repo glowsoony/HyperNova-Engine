@@ -484,6 +484,8 @@ class NoteField extends FlxBasic
 		daNote.mesh.constructVertices(noteData, top, mid, bot, flipGraphic, reverseClip);
 
 		daNote.mesh.cameras = this.cameras;
+		if (!renderer.allObjects.members.contains(daNote.mesh))
+			renderer.allObjects.add(daNote.mesh);
 		// daNote.mesh.draw();
 	}
 

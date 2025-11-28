@@ -1079,8 +1079,6 @@ class Note extends modcharting.NewModchartArrow
 	{
 		if (mesh == null)
 			super.draw();
-		else if (notePositionData?.alpha != 0)
-			mesh.draw();
 	}
 
 	public override function kill():Void
