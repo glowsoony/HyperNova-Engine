@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import lime.math.Vector2;
 import objects.Note;
 import openfl.geom.Vector3D;
+import openfl.display.TriangleCulling;
 #if LEATHER
 import game.Note;
 #end
