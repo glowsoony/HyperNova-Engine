@@ -144,24 +144,36 @@ class SustainStrip extends NewModchartArrow
 		vertices = new DrawData(12, true, verts);
 	}
 
-	public var repeat:Bool = false;
-
 	@:allow(flixel.FlxCamera)
 	override function draw():Void {
-		if (alpha == 0 || graphic == null || vertices == null)
+		if (notePositionData?.alpha <= 0 || frames == null || graphic == null) return;
+		if (destroying) return;
+
+		var culling = TriangleCulling.NONE;
+		switch (cullMode)
+		{
+			case "positive" | "front":
+				culling = TriangleCulling.POSITIVE;
+			case "negative" | "back":
+				culling = TriangleCulling.NEGATIVE;
+			case "always":
+				culled = true;
+		}
+	
+
+		if (culled || alpha < 0 || vertices == null || indices == null || graphic == null || uvtData == null || _point == null || offset == null)
 			return;
 
+		var alphaMemory:Float = this.alpha;
 		for (camera in cameras)
 		{
-			if (!camera.visible || !camera.exists)
-				continue;
-
-			getScreenPosition(_point, camera).subtractPoint(offset);
-			#if !flash
-			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, repeat, antialiasing, colorTransform, shader);
-			#else
-			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, repeat, antialiasing);
-			#end
+			if (!camera.visible || !camera.exists) continue;
+			// if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
+			alpha = alphaMemory * camera.alpha; // Fix for drawTriangles not fading with camera
+			// getScreenPosition(_point, camera).subtractPoint(offset);
+			getScreenPosition(_point, camera);
+			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, textureRepeat, antialiasing, colorTransform, shader, culling);
 		}
+		this.alpha = alphaMemory;
 	}
 }

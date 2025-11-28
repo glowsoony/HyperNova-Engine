@@ -494,6 +494,7 @@ class NewModchartArrow extends FlxSkewedSprite
 		vertices = null;
 		indices = null;
 		uvtData = null;
+		colors = null;
 		super.destroy();
 	}
 
