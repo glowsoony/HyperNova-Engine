@@ -202,8 +202,13 @@ class NoteField extends FlxBasic
 			final noteDist:Float = renderer.modifierTable.applyNoteDistMods(getNoteDist(), lane, pfIndex);
 			var curPos:Float = renderer.modifierTable.applyCurPosMods(lane, getNoteCurPos(i, sustainTimeThingy), pfIndex);
 
-			if ((note.wasGoodHit || note.prevNote.wasGoodHit) && curPos >= 0 && note.isSustainNote)
+			if ((note.wasGoodHit || note.prevNote.wasGoodHit) && curPos >= 0 && note.isSustainNote) {
 				curPos = 0; // sustain clip
+				if (alreadyDrawn.contains(note?.mesh)) {
+					renderer.allObjects.remove(note?.mesh, true);
+					note?.mesh?.destroy();
+				}
+			}
 
 			var incomingAngle:Array<Float> = renderer.modifierTable.applyIncomingAngleMods(lane, curPos, pfIndex);
 			if (noteDist < 0)
@@ -388,6 +393,8 @@ class NoteField extends FlxBasic
 		// daNote.draw();
 	}
 
+	public var alreadyDrawn:Array<SustainStrip> = [];
+
 	private function drawSustainNote(noteData:NotePositionData)
 	{
 		if (noteData.alpha <= 0)
@@ -484,8 +491,10 @@ class NoteField extends FlxBasic
 		daNote.mesh.constructVertices(noteData, top, mid, bot, flipGraphic, reverseClip);
 
 		daNote.mesh.cameras = this.cameras;
-		if (!renderer.allObjects.members.contains(daNote.mesh))
+		if (!renderer.allObjects.members.contains(daNote.mesh) && !alreadyDrawn.contains(daNote.mesh)) {
 			renderer.allObjects.add(daNote.mesh);
+			alreadyDrawn.push(daNote.mesh);
+		}
 		// daNote.mesh.draw();
 	}
 

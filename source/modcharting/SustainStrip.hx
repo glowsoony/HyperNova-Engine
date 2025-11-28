@@ -11,7 +11,7 @@ import openfl.display.TriangleCulling;
 import game.Note;
 #end
 
-class SustainStrip extends NewModchartArrow
+class SustainStrip extends ZSprite
 {
 	private static final noteUV:Array<Float> = [
 		0,     0, // top left
@@ -38,11 +38,11 @@ class SustainStrip extends NewModchartArrow
 
 	private var daNote:Note;
 
-	override public function new(daNote:Note)
+	public function new(daNote:Note)
 	{
 		this.daNote = daNote;
 		daNote.alpha = 1;
-		super(true, 0, 0);
+		super(0, 0);
 		loadGraphic(daNote.updateFramePixels());
 		shader = daNote.shader;
 		for (uv in noteUV)
@@ -145,36 +145,23 @@ class SustainStrip extends NewModchartArrow
 		vertices = new DrawData(12, true, verts);
 	}
 
-	@:allow(flixel.FlxCamera)
-	override function draw():Void {
-		if (notePositionData?.alpha <= 0 || frames == null || graphic == null) return;
-		if (destroying) return;
-
-		var culling = TriangleCulling.NONE;
-		switch (cullMode)
-		{
-			case "positive" | "front":
-				culling = TriangleCulling.POSITIVE;
-			case "negative" | "back":
-				culling = TriangleCulling.NEGATIVE;
-			case "always":
-				culled = true;
-		}
-	
-
-		if (culled || alpha < 0 || vertices == null || indices == null || graphic == null || uvtData == null || _point == null || offset == null)
+	// TODO: check this for cases when zoom is less than initial zoom...
+	override public function draw():Void
+	{
+		if (alpha == 0 || frames == null || graphic.bitmap == null || graphic == null || vertices == null)
 			return;
 
-		var alphaMemory:Float = this.alpha;
 		for (camera in cameras)
 		{
-			if (!camera.visible || !camera.exists) continue;
-			// if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
-			alpha = alphaMemory * camera.alpha; // Fix for drawTriangles not fading with camera
-			// getScreenPosition(_point, camera).subtractPoint(offset);
-			getScreenPosition(_point, camera);
-			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, textureRepeat, antialiasing, colorTransform, shader, culling);
+			if (!camera.visible || !camera.exists)
+				continue;
+
+			getScreenPosition(_point, camera).subtractPoint(offset);
+			#if !flash
+			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, textureRepeat, antialiasing, colorTransform, shader);
+			#else
+			camera.drawTriangles(graphic, vertices, indices, uvtData, colors, _point, blend, textureRepeat, antialiasing);
+			#end
 		}
-		this.alpha = alphaMemory;
 	}
 }

@@ -79,8 +79,8 @@ class PlayfieldRenderer extends FlxBasic
 
 	public var noteFields:Array<NoteField> = [];
 	public var onAddPlayfield:?Int->Void;
-	public var allObjects:FlxTypedGroup<NewModchartArrow>;
-	public var splashObjects:FlxTypedGroup<NewModchartArrow>;
+	public var allObjects:FlxTypedGroup<ZSprite>;
+	public var splashObjects:FlxTypedGroup<ZSprite>;
 	public var killOffset:Float = 350;
 
 	override public function set_cameras(cameras:Array<flixel.FlxCamera>):Array<flixel.FlxCamera>
@@ -114,8 +114,8 @@ class PlayfieldRenderer extends FlxBasic
 		timerManager = new FlxTimerManager();
 		eventManager = new ModchartEventManager(this);
 		modifierTable = new ModTable(instance, this);
-		allObjects = new FlxTypedGroup<NewModchartArrow>();
-		splashObjects = new FlxTypedGroup<NewModchartArrow>();
+		allObjects = new FlxTypedGroup<ZSprite>();
+		splashObjects = new FlxTypedGroup<ZSprite>();
 		noteFields = [];
 		onAddPlayfield = function(?index:Int) {
 			try
@@ -235,7 +235,7 @@ class PlayfieldRenderer extends FlxBasic
 	public function addNewProxiefield(proxy:Proxy)
 		proxiefields.push(new Proxiefield(proxy));
 
-	public function compareZ(order:Int, a:NewModchartArrow, b:NewModchartArrow):Int
+	public function compareZ(order:Int, a:ZSprite, b:ZSprite):Int
 		return flixel.util.FlxSort.byValues(order, a.z, b.z);
 
 	public function resortZ() {
