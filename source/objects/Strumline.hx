@@ -511,6 +511,10 @@ class Strumline
 			notes.insert(0, daNote);
 			daNote.field = field;
 			renderer.allObjects.add(daNote);
+
+			if (daNote.isSustainNote) if (daNote.mesh == null) daNote.mesh = new SustainStrip(daNote);
+			if(!renderer.allObjects.members.contains(daNote.mesh)) renderer.allObjects.add(daNote.mesh);
+
 			daNote.spawned = true;
 
 			unspawnNotes.splice(unspawnNotes.indexOf(daNote), 1);
@@ -564,6 +568,11 @@ class Strumline
 		playHold(note, strum);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
+
+		if (note.isSustainNote){
+			strum.animation.curAnim.curFrame = 3; // Better visual :3
+			//strum.animation.pause();
+		}
 	}
 
 	public function playHold(note:Note, strum:StrumNote)

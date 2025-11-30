@@ -4441,6 +4441,11 @@ class PlayState extends MusicBeatState
 
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
+
+		if (note.isSustainNote || note.tail.length > 0){
+			opponentStrums.members[note.noteData].animation.curAnim.curFrame = 3; //huh
+			opponentStrums.members[note.noteData].animation.pause();
+		}
 	}
 
 	public function goodNoteHit(note:Note):Void
@@ -4657,6 +4662,11 @@ class PlayState extends MusicBeatState
 		spawnHoldSplash(note, playerStrums.members[note.noteData]);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
+
+		if (note.isSustainNote){
+			playerStrums.members[leData].animation.curAnim.curFrame = 3; //huh
+			playerStrums.members[leData].animation.pause();
+		}
 	}
 
 	public function setRatingImage(rat:Float)
