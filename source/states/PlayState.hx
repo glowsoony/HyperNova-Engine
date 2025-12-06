@@ -994,6 +994,9 @@ class PlayState extends MusicBeatState
 								if (unspawn.noteType != unspawnNote.noteType) continue;
 								unspawnNote.texture = unspawn.texture;
 								unspawnNote.rgbShader = unspawn.rgbShader;
+								unspawnNotes.mustPress = unspawn.mustPress;
+								unspawnNotes.ignoreNote = unspawn.ignoreNote;
+								unspawnNotes.offsetX = unspawn.offsetX;
 							}
 						}
 					}
