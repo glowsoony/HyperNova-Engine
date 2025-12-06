@@ -214,6 +214,12 @@ class PlayfieldRenderer extends FlxBasic
 			noteFields[i].strumLine.spawnNotes();
 	}
 
+	public function forEach(func:NoteField->Void) {
+		if (noteFields == null || noteFields.length < 2 || func == null) return;
+		for (i in 1...noteFields.length)
+			func(noteFields[i]);
+	}
+
 	public function addPlayfield(?index:Int)
 		onAddPlayfield(index);
 

@@ -984,6 +984,21 @@ class PlayState extends MusicBeatState
 		passedCheckPoint.size = 40;
 		passedCheckPoint.alpha = 0;
 		add(passedCheckPoint);
+		if (notITGMod && SONG.notITG && !SONG.newModchartTool) {
+			playfieldRenderer.forEach(field -> {
+				if (field != null) 
+				{
+					for (unspawnNote in field.strumLine.unspawnNotes) {
+						if (unspawnNote.noteType != "") {
+							for (unspawn in unspawnNotes) {
+								if (unspawn.noteType != unspawnNote.noteType) continue;
+								unspawnNote.texture = unspawnNote.texture;
+							}
+						}
+					}
+				}
+			});
+		}
 	}
 
 	function set_songSpeed(value:Float):Float

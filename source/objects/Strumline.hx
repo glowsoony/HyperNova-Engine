@@ -551,6 +551,7 @@ class Strumline
 		{
 			note.hitByOpponent = true;
 			strumPlayAnim(note.noteData, ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
+			strum.released = true;
 		}
 		else {
 			note.wasGoodHit = true;
