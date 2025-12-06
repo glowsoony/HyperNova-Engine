@@ -989,15 +989,12 @@ class PlayState extends MusicBeatState
 				if (field != null) 
 				{
 					for (unspawnNote in field.strumLine.unspawnNotes) {
-						if (unspawnNote.noteType != "") {
-							for (unspawn in unspawnNotes) {
-								if (unspawn.noteType != unspawnNote.noteType) continue;
-								unspawnNote.texture = unspawn.texture;
-								unspawnNote.rgbShader = unspawn.rgbShader;
-								unspawnNote.mustPress = unspawn.mustPress;
-								unspawnNote.ignoreNote = unspawn.ignoreNote;
-								unspawnNote.offsetX = unspawn.offsetX;
-							}
+						for (unspawn in unspawnNotes) {
+							unspawnNote.texture = unspawn.texture;
+							unspawnNote.rgbShader = unspawn.rgbShader;
+							unspawnNote.mustPress = unspawn.mustPress;
+							unspawnNote.ignoreNote = unspawn.ignoreNote;
+							unspawnNote.offsetX = unspawn.offsetX;
 						}
 					}
 				}
