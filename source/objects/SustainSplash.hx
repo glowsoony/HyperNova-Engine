@@ -53,7 +53,7 @@ class SustainSplash extends NewModchartArrow
 		animation.play('hold', true, false, 0);
 		if (animation.curAnim != null)
 		{
-			animation.curAnim.frameRate = frameRate;
+			animation.curAnim.frameRate = 24;
 			animation.curAnim.looped = true;
 		}
 		clipRect = new flixel.math.FlxRect(0, !PlayState.isPixelStage ? 0 : -210, frameWidth, frameHeight);
