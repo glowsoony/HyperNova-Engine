@@ -988,8 +988,9 @@ class PlayState extends MusicBeatState
 			playfieldRenderer.forEach(field -> {
 				if (field != null) 
 				{
-					for (unspawnNote in field.strumLine.unspawnNotes) {
-						for (unspawn in unspawnNotes) {
+					if (unspawnNotes.length == field.strumLine.unspawnNotes.length) {
+						for (i => unspawn in unspawnNotes) {
+							final unspawnNote:Note = field.strumLine.unspawnNotes[i];
 							unspawnNote.texture = unspawn.texture;
 							unspawnNote.rgbShader = unspawn.rgbShader;
 							unspawnNote.mustPress = unspawn.mustPress;
