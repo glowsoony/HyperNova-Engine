@@ -569,9 +569,11 @@ class Strumline
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 
-		if (note.isSustainNote){
-			strum.animation.curAnim.curFrame = 3; // Better visual :3
-			//strum.animation.pause();
+		@:privateAccess
+		final opponent:Bool = strum.player <= 0 && note.nextNote != null;
+		if ((opponent && (note.isSustainNote || note.tail.length > 0)) || !opponent && note.isSustainNote){
+			strum.animation.curAnim.curFrame = 3; //huh
+			strum.animation.pause();
 		}
 	}
 
