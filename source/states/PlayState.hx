@@ -991,7 +991,7 @@ class PlayState extends MusicBeatState
 					if (unspawnNotes.length == field.strumLine.unspawnNotes.length) {
 						for (unspawn in unspawnNotes) {
 							final unspawnNote:Note = field.strumLine.unspawnNotes[unspawnNotes.indexOf(unspawn)];
-							unspawnNote.texture = unspawn.texture;
+							if (unspawnNote.texture != unspawn.texture) unspawnNote.texture = unspawn.texture;
 							unspawnNote.rgbShader = unspawn.rgbShader;
 							unspawnNote.mustPress = unspawn.mustPress;
 							unspawnNote.ignoreNote = unspawn.ignoreNote;
