@@ -14,6 +14,7 @@ class StrumNote extends modcharting.NewModchartArrow
 	public var direction:Float = 90;
 	public var downScroll:Bool = false;
 	public var sustainReduce:Bool = true;
+	public var ai:Bool = false;
 
 	public var splash:NoteSplash = null;
 	public var holdSplash:SustainSplash = null;
@@ -87,7 +88,7 @@ class StrumNote extends modcharting.NewModchartArrow
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
-		this.released = player <= 0;
+		this.released = ai;
 		this.ID = noteData;
 		this.loadShader = loadShader;
 		super(x, y);
@@ -256,12 +257,12 @@ class StrumNote extends modcharting.NewModchartArrow
 		// 		resetAnim = 0;
 		// 	}
 		// }
+		super.update(elapsed);
 
-		if (player <= 0 && animation.curAnim != null && animation.curAnim.name != "static" && animation.curAnim.finished && released) {
+		if (ai && animation.curAnim != null && animation.curAnim.name != "static" && animation.curAnim.finished && released) {
 			playAnim('static');
 			released = false;
 		}
-		super.update(elapsed);
 	}
 
 	@:allow(flixel.FlxCamera)

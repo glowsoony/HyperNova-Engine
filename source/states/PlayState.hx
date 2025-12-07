@@ -984,23 +984,23 @@ class PlayState extends MusicBeatState
 		passedCheckPoint.size = 40;
 		passedCheckPoint.alpha = 0;
 		add(passedCheckPoint);
-		if (notITGMod && SONG.notITG && !SONG.newModchartTool) {
-			playfieldRenderer.forEach(field -> {
-				if (field != null) 
-				{
-					if (unspawnNotes.length == field.strumLine.unspawnNotes.length) {
-						for (unspawn in unspawnNotes) {
-							final unspawnNote:Note = field.strumLine.unspawnNotes[unspawnNotes.indexOf(unspawn)];
-							if (unspawnNote.texture != unspawn.texture) unspawnNote.texture = unspawn.texture;
-							unspawnNote.rgbShader = unspawn.rgbShader;
-							unspawnNote.mustPress = unspawn.mustPress;
-							unspawnNote.ignoreNote = unspawn.ignoreNote;
-							unspawnNote.offsetX = unspawn.offsetX;
-						}
-					}
-				}
-			});
-		}
+		// if (notITGMod && SONG.notITG && !SONG.newModchartTool) {
+		// 	playfieldRenderer.forEach(field -> {
+		// 		if (field != null) 
+		// 		{
+		// 			if (unspawnNotes.length == field.strumLine.unspawnNotes.length) {
+		// 				for (unspawn in unspawnNotes) {
+		// 					final unspawnNote:Note = field.strumLine.unspawnNotes[unspawnNotes.indexOf(unspawn)];
+		// 					if (unspawnNote.texture != unspawn.texture) unspawnNote.texture = unspawn.texture;
+		// 					unspawnNote.rgbShader = unspawn.rgbShader;
+		// 					unspawnNote.mustPress = unspawn.mustPress;
+		// 					unspawnNote.ignoreNote = unspawn.ignoreNote;
+		// 					if (unspawn.offsetX != unspawnNote.offsetX) unspawnNote.offsetX = unspawn.offsetX;
+		// 				}
+		// 			}
+		// 		}
+		// 	});
+		// }
 	}
 
 	function set_songSpeed(value:Float):Float
@@ -2273,6 +2273,7 @@ class PlayState extends MusicBeatState
 				playerStrums.add(babyArrow);
 			else
 			{
+				babyArrow.ai = true;
 				if (!forcedAScroll ? (ClientPrefs.data.middleScroll) : (forceMiddleScroll && !forceRightScroll))
 				{
 					babyArrow.x += 310;
@@ -2628,7 +2629,10 @@ class PlayState extends MusicBeatState
 		doDeathCheck();
 
 		if (SONG.notITG && notITGMod && !SONG.newModchartTool && playfieldRenderer != null)
+		{
 			playfieldRenderer.spawnNotes();
+			playfieldRenderer.forEach(field -> if (field != null) field.strumLine.cpuControlled = cpuControlled);
+		}
 		if (unspawnNotes[0] != null)
 		{
 			var time:Float = spawnTime * playbackRate;
@@ -2694,6 +2698,7 @@ class PlayState extends MusicBeatState
 								strumGroup = opponentStrums;
 
 							var strum:StrumNote = strumGroup.members[daNote.noteData];
+							if (@:privateAccess strum.player > 0) strum.ai = cpuControlled;
 							daNote.followStrumNote(strum, songSpeed / playbackRate);
 
 							if (daNote.extraData.get("constantHealth") != null)
@@ -2898,15 +2903,7 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 			opponentVocals.pause();
 		}
-		if (!cpuControlled)
-		{
-			for (note in playerStrums)
-				if (note.animation.curAnim != null && note.animation.curAnim.name != 'static')
-				{
-					note.playAnim('static');
-					note.resetAnim = 0;
-				}
-		}
+
 		openSubState(new PauseSubState());
 
 		#if DISCORD_ALLOWED
@@ -4555,14 +4552,9 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (!cpuControlled)
-			{
-				var spr = playerStrums.members[note.noteData];
-				if (spr != null)
-					spr.playAnim('confirm', true);
-			}
-			else
-				strumPlayAnim(false, Std.int(Math.abs(note.noteData)), Conductor.stepCrochet * 1.25 / 1000 / playbackRate);
+			playerStrums.members[note.noteData].playAnim('confirm', true);
+			if (playerStrums.members[note.noteData].ai)
+				playerStrums.members[note.noteData].released = true;
 			vocals.volume = 1;
 
 			if (!note.isSustainNote)
@@ -4679,11 +4671,6 @@ class PlayState extends MusicBeatState
 		spawnHoldSplash(note, playerStrums.members[note.noteData]);
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
-
-		if (note.isSustainNote){
-			playerStrums.members[leData].animation.curAnim.curFrame = 3; //huh
-			playerStrums.members[leData].animation.pause();
-		}
 	}
 
 	public function setRatingImage(rat:Float)

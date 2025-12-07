@@ -567,6 +567,7 @@ class Note extends modcharting.NewModchartArrow
 			offsetX += width / 2;
 			copyAngle = false;
 
+			isHoldEnd = false;
 			animation.play(colArray[noteData % colArray.length] + 'holdend');
 
 			updateHitbox();
@@ -593,6 +594,7 @@ class Note extends modcharting.NewModchartArrow
 
 			if (prevNote.isSustainNote)
 			{
+				prevNote.isHoldEnd = false;
 				prevNote.animation.play(colArray[prevNote.noteData % colArray.length] + 'hold');
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;

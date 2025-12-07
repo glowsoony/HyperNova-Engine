@@ -260,6 +260,7 @@ class Strumline
 
 				if (j == 0)
 				{
+					babyArrow.ai = true;
 					if (ClientPrefs.data.middleScroll && !PlayState.forceRightScroll || PlayState.forceMiddleScroll)
 					{
 						babyArrow.x += 310;
@@ -272,8 +273,8 @@ class Strumline
 
 				strums.add(babyArrow);
 				babyArrow.field = field;
-				renderer.allObjects.add(babyArrow);
 				babyArrow.playerPosition();
+				renderer.allObjects.add(babyArrow);
 			}
 		}
     }
@@ -363,6 +364,7 @@ class Strumline
 		notes.forEachAlive(function(daNote:Note)
 		{
 			final strum:StrumNote = strums.members[daNote.mustPress ? daNote.noteData+4 : daNote.noteData];
+			if (@:privateAccess strum.player > 0) strum.ai = cpuControlled;
 			daNote.followStrumNote(strum, renderer.speed / renderer.rate);
 
 			if (daNote.mustPress)
@@ -549,13 +551,24 @@ class Strumline
 		final strum:StrumNote = strums.members[note.noteData + (note.mustPress ? 4 : 0)];
 		if (!player)
 		{
-			note.hitByOpponent = true;
-			strumPlayAnim(note.noteData, ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
+			strum.playAnim('confirm', true);
+			if (note.isSustainNote && note.nextNote != null) {
+				strum.animation.curAnim.curFrame = 3;
+				strum.animation.curAnim.pause();
+			}
 			strum.released = true;
+			note.hitByOpponent = true;
 		}
 		else {
 			note.wasGoodHit = true;
-			strumPlayAnim(note.noteData + 4, !cpuControlled ? -1 : ModchartUtil.getFakeCrochet() / 4 * 1.25 / 1000 / renderer.rate);
+			strum.playAnim('confirm', true);
+			if (strum.ai) {
+				if (note.isSustainNote && note.nextNote != null) {
+					strum.animation.curAnim.curFrame = 3;
+					strum.animation.curAnim.pause();
+				}
+				strum.released = true;
+			}
 			if (!note.isSustainNote)
 				playSplash(note, strum);
 		}
@@ -570,12 +583,8 @@ class Strumline
 		if (!note.isSustainNote && (note.newMesh == null || note.newMesh.sustainLength <= 0.0))
 			invalidateNote(note);
 
-		@:privateAccess
-		final opponent:Bool = strum.player <= 0 && note.nextNote != null;
-		if ((opponent && (note.isSustainNote || note.tail.length > 0)) || !opponent && note.isSustainNote){
-			strum.animation.curAnim.curFrame = 3; //huh
-			strum.animation.pause();
-		}
+		if (strum.ai && note.isHoldEnd)
+			strum.playAnim('static', true);
 	}
 
 	public function playHold(note:Note, strum:StrumNote)

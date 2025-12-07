@@ -2151,6 +2151,27 @@ class FunkinLua
 			}
 		});
 
+		function getFieldName():String
+			return 'playfieldRenderer.noteFields';
+		Lua_helper.add_callback(lua, "getNotefields", getFieldName);
+		Lua_helper.add_callback(lua, "getPlayfieldName", function(field:Int = -1):String return getFieldName() +'[$field]');
+		Lua_helper.add_callback(lua, "getPlayfieldUN", function(field:Int = -1):String return getFieldName() +'[$field]' + '.strumLine.unspawnNotes');
+		Lua_helper.add_callback(lua, "getPlayfieldUNL", function(field:Int = -1):Int {
+			final field:modcharting.NoteField = PlayState.instance.playfieldRenderer.noteFields[field];
+			if (field == null) return 0;
+			return field.strumLine.unspawnNotes.length;
+		});
+		Lua_helper.add_callback(lua, "getPlayfieldUNV", function(field:Int = -1, index:Int, name:String) {
+			final field:modcharting.NoteField = PlayState.instance.playfieldRenderer.noteFields[field];
+			if (field == null) return null;
+			return Reflect.getProperty(field.strumLine.unspawnNotes[index], name);
+		});
+		Lua_helper.add_callback(lua, "setPlayfieldUNV", function(field:Int = -1, index:Int, name:String, value:Dynamic) {
+			final field:modcharting.NoteField = PlayState.instance.playfieldRenderer.noteFields[field];
+			if (field == null) return;
+			Reflect.setProperty(field.strumLine.unspawnNotes[index], name, value);
+		});
+
 		/*Lua_helper.add_callback(lua, "makeArrowCopy", function(tag:String = '', x:Float, y:Float, noteData:Int, isStrum:Bool, 
 				camera:String, daSkin:String, daType:String, daNoteTypeStyle:String, daScaleX:Float, daScaleY:Float) 
 			{
